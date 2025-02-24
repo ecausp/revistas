@@ -21,6 +21,7 @@ $admin = [
         'text' => 'SubItem 3',
         'url' => 'subitem3',
     ],
+    
 ];
 
 $submenu2 = [
@@ -68,9 +69,12 @@ $menu = [
 
 $right_menu = [
     [
-        // menu utilizado para views da biblioteca senhaunica-socialite.
         'key' => 'senhaunica-socialite',
     ],
+    [
+        'key' => 'laravel-tools',
+    ],
+    
     [
         'key' => 'laravel-tools',
     ],
