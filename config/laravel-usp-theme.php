@@ -74,10 +74,6 @@ $right_menu = [
     [
         'key' => 'laravel-tools',
     ],
-    
-    [
-        'key' => 'laravel-tools',
-    ],
     [
         'text' => '<i class="fas fa-cog"></i>',
         'title' => 'Configurações',
