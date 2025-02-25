@@ -4,15 +4,7 @@ Sistema Gráfica da ECA/USP
 
 ## Funcionalidades
 
--   O Financeiro faz uma consulta para serviçoes de gráfica e editoração, e cria uma Licitação.
--   A Empresa vencedora cadastra no sistema:
-    -   valor total licitado
-    -   vigência
-    -   distribuição dos valores
-    -   tipos de serviços
-    -   quantidades
-    -   valores
-    -   contato
+-   O Financeiro faz uma consulta para serviços de gráfica e editoração, e cria uma Licitação. Na conclusão obtém a Empresa vencedora e cadastra no sistema Gráfica o valor total licitado, vigência, distribuição dos valores entre as revistas, tipos de serviços, quantidades, valores, contato e credenciais de acesso desta Empresa.
 -   A Revista recebe notificação da conclusão da Licitação;
 -   A Revista cria o pedido de Serviço, visualiza as tabelas de valores contratados, recursos financeiros disponíveis e gerencia os pedidos;
 -   A Empresa verifica se os serviços solicitados nos pedidos estão de acordo;
