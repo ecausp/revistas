@@ -28,8 +28,14 @@ class LicitacaoController extends Controller
 
     // listar todas as licitacoes
     public function index()
-  {
-    $licitacoes = Licitacao::all();
-    return view('licitacoes.index', compact('licitacoes'));
-  }
+    {
+        $licitacoes = Licitacao::all();
+        return view('licitacoes.index', compact('licitacoes'));
+    }
+
+    // Exibir os detalhes de uma licitação
+    public function show(Licitacao $licitacao)
+    {
+        return view('licitacoes.show', compact('licitacao'));
+    }
 }
