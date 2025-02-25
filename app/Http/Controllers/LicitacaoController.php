@@ -38,4 +38,24 @@ class LicitacaoController extends Controller
     {
         return view('licitacoes.show', compact('licitacao'));
     }
+
+    // Exibir o formulário para editar uma licitação
+    public function edit(Licitacao $licitacao)
+    {
+        return view('licitacoes.edit', compact('licitacao'));
+    }
+
+    // Atualizar os dados de uma licitação
+    public function update(Request $request, Licitacao $licitacao)
+    {
+        $request->validate([
+            'descricao' => 'required',
+            'ano' => 'required|digits:4',
+            'valor_total' => 'required|numeric',
+        ]);
+
+        $licitacao->update($request->all());
+        return redirect()->route('licitacoes.index');
+    }
+
 }

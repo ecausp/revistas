@@ -27,3 +27,5 @@ Route::get('licitacoes/create', [LicitacaoController::class, 'create'])->name('l
 Route::post('licitacoes', [LicitacaoController::class, 'store'])->name('licitacoes.store');
 Route::get('licitacoes', [LicitacaoController::class, 'index'])->name('licitacoes.index');
 Route::get('licitacoes/{licitacao}', [LicitacaoController::class, 'show'])->name('licitacoes.show');
+Route::get('licitacoes/{licitacao}/edit', [LicitacaoController::class, 'edit'])->name('licitacoes.edit');
+Route::put('licitacoes/{licitacao}', [LicitacaoController::class, 'update'])->name('licitacoes.update');
