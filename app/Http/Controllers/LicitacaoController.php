@@ -58,4 +58,9 @@ class LicitacaoController extends Controller
         return redirect()->route('licitacoes.index');
     }
 
+    public function destroy(Licitacao $licitacao)
+    {
+        $licitacao->delete();
+        return redirect()->route('licitacoes.index');
+    }
 }

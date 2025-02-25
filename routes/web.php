@@ -29,3 +29,4 @@ Route::get('licitacoes', [LicitacaoController::class, 'index'])->name('licitacoe
 Route::get('licitacoes/{licitacao}', [LicitacaoController::class, 'show'])->name('licitacoes.show');
 Route::get('licitacoes/{licitacao}/edit', [LicitacaoController::class, 'edit'])->name('licitacoes.edit');
 Route::put('licitacoes/{licitacao}', [LicitacaoController::class, 'update'])->name('licitacoes.update');
+Route::delete('licitacoes/{licitacao}', [LicitacaoController::class, 'destroy'])->name('licitacoes.destroy');

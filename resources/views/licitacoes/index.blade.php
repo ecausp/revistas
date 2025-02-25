@@ -27,7 +27,11 @@
                     <td>
                         <a href="{{ route('licitacoes.show', $licitacao) }}">Visualizar</a>
                         <a href="{{ route('licitacoes.edit', $licitacao) }}">Editar</a>
-                        
+                        <form action="{{ route('licitacoes.destroy', $licitacao) }}" method="POST" style="display:inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit">Excluir</button>
+                        </form>
                     </td>
                 </tr>
             @endforeach
