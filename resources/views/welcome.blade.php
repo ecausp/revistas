@@ -6,7 +6,7 @@
       Arquivo README.md
     </div>
     <div class="card-body">
-      {!! md2html(file_get_contents(base_path('README.md'))) !!}
+      {!! md2html(file_get_contents(base_path('welcome.md'))) !!}
     </div>
   </div>
 @endsection
