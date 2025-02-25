@@ -9,6 +9,8 @@ class Licitacao extends Model
 {
     use HasFactory;
 
+    protected $table = 'licitacoes';
+
     protected $fillable = [
         'descricao',
         'ano',
