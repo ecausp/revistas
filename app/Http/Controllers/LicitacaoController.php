@@ -25,4 +25,11 @@ class LicitacaoController extends Controller
         Licitacao::create($request->all());
         return redirect()->route('licitacoes.index');
     }
+
+    // listar todas as licitacoes
+    public function index()
+  {
+    $licitacoes = Licitacao::all();
+    return view('licitacoes.index', compact('licitacoes'));
+  }
 }
