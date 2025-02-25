@@ -21,3 +21,5 @@ Dockerfile.custom
 # lando php.ini
 php.ini
 
+# dev
+/documentos
