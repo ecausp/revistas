@@ -1,68 +1,103 @@
 <?php
 
-$admin = [
+$submenu1 = [
     [
-        'text' => '<i class="fas fa-atom"></i>  SubItem 1',
-        'url' => 'subitem1',
+        'type' => 'header',
+        'text' => '<i class="fa fa-shopping-cart" aria-hidden="true"></i> Licitações',
+        'can' => 'admin'
     ],
     [
-        'text' => 'SubItem 2',
-        'url' =>  '/subitem2',
-        'can' => 'admin',
+        'text' => '<i class="fas fa-plus-circle" aria-hidden="true"></i> Cadastrar',
+        'url' => 'licitacoes/create',
+        'can' => 'admin'
+    ],
+    [
+        'text' => '<i class="fas fa-list-ul" aria-hidden="true"></i> Listar',
+        'url' => 'licitacoes',
+        'can' => 'admin'
     ],
     [
         'type' => 'divider',
     ],
     [
         'type' => 'header',
-        'text' => 'Cabeçalho',
+        'text' => '<i class="fa fa-building" aria-hidden="true"></i> Empresas',
+        'can' => 'admin'
     ],
     [
-        'text' => 'SubItem 3',
-        'url' => 'subitem3',
-    ],
-    
-];
-
-$submenu2 = [
-    [
-        'text' => 'SubItem 1',
-        'url' => 'subitem1',
+        'text' => '<i class="fas fa-plus-circle" aria-hidden="true"></i> Cadastrar',
+        'url' => 'empresas/create',
+        'can' => 'admin'
     ],
     [
-        'text' => 'SubItem 2',
-        'url' => 'subitem2',
-        'can' => 'admin',
+        'text' => '<i class="fas fa-list-ul" aria-hidden="true"></i> Listar',
+        'url' => 'empresas',
+        'can' => 'admin'
+    ],
+    [
+        'type' => 'divider',
+    ],
+    [
+        'type' => 'header',
+        'text' => '<i class="fa fa-wrench" aria-hidden="true"></i> Serviços',
+        'can' => 'admin'
+    ],
+    [
+        'text' => '<i class="fas fa-plus-circle" aria-hidden="true"></i> Cadastrar',
+        'url' => 'servicos/create',
+        'can' => 'admin'
+    ],
+    [
+        'text' => '<i class="fas fa-list-ul" aria-hidden="true"></i> Listar',
+        'url' => 'servicos',
+        'can' => 'admin'
+    ],
+    [
+        'type' => 'divider',
+    ],
+    [
+        'type' => 'header',
+        'text' => '<i class="fa fa-book" aria-hidden="true"></i> Revistas',
+        'can' => 'admin'
+    ],
+    [
+        'text' => '<i class="fas fa-plus-circle" aria-hidden="true"></i> Cadastrar',
+        'url' => 'revistas/create',
+        'can' => 'admin'
+    ],
+    [
+        'text' => '<i class="fas fa-list-ul" aria-hidden="true"></i> Listar',
+        'url' => 'revistas',
+        'can' => 'admin'
+    ],
+    [
+        'type' => 'divider',
+    ],
+    [
+        'type' => 'header',
+        'text' => '<i class="fas fa-money-bill-alt" aria-hidden="true"></i> Limites',
+        'can' => 'admin'
+    ],
+    [
+        'text' => '<i class="fas fa-plus-circle" aria-hidden="true"></i> Cadastrar',
+        'url' => 'limites/create',
+        'can' => 'admin'
+    ],
+    [
+        'text' => '<i class="fas fa-list-ul" aria-hidden="true"></i> Listar',
+        'url' => 'limites',
+        'can' => 'admin'
     ],
 ];
 
 $menu = [
     [
-        'text' => '<i class="fas fa-home"></i> Home',
-        'url' => 'home',
-    ],
-    [
         # este item de menu será substituido no momento da renderização
         'key' => 'menu_dinamico',
     ],
     [
-        'text' => 'Drop Down',
-        'submenu' => $submenu2,
-        'can' => '',
-    ],
-    [
-        'text' => 'Está logado',
-        'url' => config('app.url') . '/logado', // com caminho absoluto
-        'can' => 'user',
-    ],
-    [
-        'text' => 'Menu gerente',
-        'url' => 'gerente',
-        'can' => 'gerente',
-    ],
-    [
-        'text' => 'Menu admin',
-        'submenu' => $admin,
+        'text' => 'Administração',
+        'submenu' => $submenu1,
         'can' => 'admin',
     ],
 ];
@@ -75,7 +110,7 @@ $right_menu = [
         'key' => 'laravel-tools',
     ],
     [
-        'text' => '<i class="fas fa-cog"></i>',
+        'text' => '<i class="fas fa-cog" aria-hidden="true"></i>',
         'title' => 'Configurações',
         'target' => '_blank',
         'url' => config('app.url') . '/item1',
