@@ -23,12 +23,4 @@ Route::fallback(function(){
     return view('errors.404');
  });
 
-//Route::resource('licitacoes', LicitacaoController::class); 
-
-Route::get('licitacoes/create', [LicitacaoController::class, 'create'])->name('licitacoes.create');
-Route::post('licitacoes', [LicitacaoController::class, 'store'])->name('licitacoes.store');
-Route::get('licitacoes', [LicitacaoController::class, 'index'])->name('licitacoes.index');
-Route::get('licitacoes/{licitacao}', [LicitacaoController::class, 'show'])->name('licitacoes.show');
-Route::get('licitacoes/{licitacao}/edit', [LicitacaoController::class, 'edit'])->name('licitacoes.edit');
-Route::put('licitacoes/{licitacao}', [LicitacaoController::class, 'update'])->name('licitacoes.update');
-Route::delete('licitacoes/{licitacao}', [LicitacaoController::class, 'destroy'])->name('licitacoes.destroy');
+Route::resource('licitacoes', LicitacaoController::class)->parameters(['licitacoes' => 'licitacao']);
