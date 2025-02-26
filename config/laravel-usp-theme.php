@@ -1,38 +1,92 @@
 <?php
 
-$admin = [
+$submenu1 = [
     [
-        'text' => '<i class="fas fa-atom"></i>  SubItem 1',
-        'url' => 'subitem1',
+        'type' => 'header',
+        'text' => '<i class="fa fa-shopping-cart" aria-hidden="true"></i> Licitações',
+        'can' => 'admin'
     ],
     [
-        'text' => 'SubItem 2',
-        'url' =>  '/subitem2',
-        'can' => 'admin',
+        'text' => '<i class="fas fa-plus-circle aria-hidden="true"></i> Cadastrar',
+        'url' => 'licitacoes/create',
+        'can' => 'admin'
+    ],
+    [
+        'text' => '<i class="fas fa-list-ul"></i> Listar',
+        'url' => 'licitacoes',
+        'can' => 'admin'
     ],
     [
         'type' => 'divider',
     ],
     [
         'type' => 'header',
-        'text' => 'Cabeçalho',
+        'text' => '<i class="fa fa-building" aria-hidden="true"></i> Empresas',
+        'can' => 'admin'
     ],
     [
-        'text' => 'SubItem 3',
-        'url' => 'subitem3',
-    ],
-    
-];
-
-$submenu2 = [
-    [
-        'text' => 'SubItem 1',
-        'url' => 'subitem1',
+        'text' => '<i class="fas fa-plus-circle aria-hidden="true"></i> Cadastrar',
+        'url' => 'empresas/create',
+        'can' => 'admin'
     ],
     [
-        'text' => 'SubItem 2',
-        'url' => 'subitem2',
-        'can' => 'admin',
+        'text' => '<i class="fas fa-list-ul"></i> Listar',
+        'url' => 'empresas',
+        'can' => 'admin'
+    ],
+    [
+        'type' => 'divider',
+    ],
+    [
+        'type' => 'header',
+        'text' => '<i class="fa fa-wrench" aria-hidden="true"></i> Serviços',
+        'can' => 'admin'
+    ],
+    [
+        'text' => '<i class="fas fa-plus-circle aria-hidden="true"></i> Cadastrar',
+        'url' => 'servicos/create',
+        'can' => 'admin'
+    ],
+    [
+        'text' => '<i class="fas fa-list-ul"></i> Listar',
+        'url' => 'servicos',
+        'can' => 'admin'
+    ],
+    [
+        'type' => 'divider',
+    ],
+    [
+        'type' => 'header',
+        'text' => '<i class="fa fa-book" aria-hidden="true"></i> Revistas',
+        'can' => 'admin'
+    ],
+    [
+        'text' => '<i class="fas fa-plus-circle aria-hidden="true"></i> Cadastrar',
+        'url' => 'revistas/create',
+        'can' => 'admin'
+    ],
+    [
+        'text' => '<i class="fas fa-list-ul"></i> Listar',
+        'url' => 'revistas',
+        'can' => 'admin'
+    ],
+    [
+        'type' => 'divider',
+    ],
+    [
+        'type' => 'header',
+        'text' => '<i class="fas fa-money" aria-hidden="true"></i> Limites',
+        'can' => 'admin'
+    ],
+    [
+        'text' => '<i class="fas fa-plus-circle aria-hidden="true"></i> Cadastrar',
+        'url' => 'limites/create',
+        'can' => 'admin'
+    ],
+    [
+        'text' => '<i class="fas fa-list-ul"></i> Listar',
+        'url' => 'limites',
+        'can' => 'admin'
     ],
 ];
 
@@ -46,24 +100,14 @@ $menu = [
         'key' => 'menu_dinamico',
     ],
     [
-        'text' => 'Drop Down',
-        'submenu' => $submenu2,
-        'can' => '',
+        'text' => 'Administração',
+        'submenu' => $submenu1,
+        'can' => 'admin',
     ],
     [
         'text' => 'Está logado',
         'url' => config('app.url') . '/logado', // com caminho absoluto
         'can' => 'user',
-    ],
-    [
-        'text' => 'Menu gerente',
-        'url' => 'gerente',
-        'can' => 'gerente',
-    ],
-    [
-        'text' => 'Menu admin',
-        'submenu' => $admin,
-        'can' => 'admin',
     ],
 ];
 
