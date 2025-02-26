@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\LicitacaoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,3 +22,5 @@ Route::get('/', function () {
 Route::fallback(function(){
     return view('errors.404');
  });
+
+Route::resource('licitacoes', LicitacaoController::class)->parameters(['licitacoes' => 'licitacao']);
