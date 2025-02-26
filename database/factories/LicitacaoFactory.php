@@ -21,7 +21,7 @@ class LicitacaoFactory extends Factory
             //
             'descricao' => $this->faker->sentence,
             'ano' => $this->faker->year,
-            'valor_total' => $this->faker->randomNumber(6),
+            'valor_total' => $this->faker->randomFloat(2, 0, 1000000),
         ];
     }
 }
