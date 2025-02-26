@@ -1,11 +1,26 @@
+# Sistema Gráfica
+
 ## Conceito
 
-Sistema Gráfica da ECA/USP
+Realizar pedidos referentes aos serviços de Editora e Gráfica.
 
-## Funcionalidades
-
--   Realizar pedidos referentes aos setores de Editora e Gráfica
+1. O Financeiro faz uma consulta para serviços de gráfica e editoração, e cria uma Licitação. Na conclusão obtém a Empresa vencedora e cadastra no sistema Gráfica o valor total licitado, vigência, distribuição dos valores entre as revistas, tipos de serviços, quantidades, valores, contato e credenciais de acesso desta Empresa.
+2. A Revista recebe notificação da conclusão da Licitação;
+3. A Revista cria o pedido de Serviço, visualiza as tabelas de valores contratados, recursos financeiros disponíveis e gerencia os pedidos;
+4. A Empresa verifica se os serviços solicitados nos pedidos estão de acordo;
+5. O Financeiro verifica se os valores estão de acordo e faz o empenho;
+6. O Sistema debita o valor dos serviços, atualiza o saldo da Revista e notifica a Empresa para execução dos serviços;
+7. A Revista confere e recebe o serviço;
+8. O Sistema notifica o Financeiro para pagamento;
+9. O Financeiro efetua o pagamento.
 
 ## Procedimentos de Deploy
 
--   adicionar os arquivos do lando disponíveis [aqui](https://github.com/ecausp/laravel)
+```
+composer install
+cp .env.example .env 
+# no arquivo .env configure as credenciais mysql, senha única e replicado
+php artisan key:generate
+php artisan migrate
+php artisan serve
+```
