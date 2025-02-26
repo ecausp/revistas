@@ -1,10 +1,9 @@
 <!-- resources/views/licitacoes/edit.blade.php -->
 @extends('layouts.app')
+
 @section('content')
-  <div class="card">
-    <div class="card-header h4">
-      Editar Licitação
-    </div>
+    <h1>Editar Licitação</h1>
+    @can('admin')
     <form action="{{ route('licitacoes.update', $licitacao) }}" method="POST">
         @csrf
         @method('PUT')
@@ -16,4 +15,5 @@
         <input type="text" name="valor_total" id="valor_total" value="{{ $licitacao->valor_total }}" required><br>
         <button type="submit">Atualizar</button>
     </form>
+    @endcan
 @endsection

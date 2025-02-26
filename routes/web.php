@@ -23,6 +23,8 @@ Route::fallback(function(){
     return view('errors.404');
  });
 
+//Route::resource('licitacoes', LicitacaoController::class); 
+
 Route::get('licitacoes/create', [LicitacaoController::class, 'create'])->name('licitacoes.create');
 Route::post('licitacoes', [LicitacaoController::class, 'store'])->name('licitacoes.store');
 Route::get('licitacoes', [LicitacaoController::class, 'index'])->name('licitacoes.index');

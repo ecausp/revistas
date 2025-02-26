@@ -7,6 +7,7 @@
     <div class="card-header h4">
       Criar Licitação
     </div>
+    @can('admin')
     <form action="{{ route('licitacoes.store') }}" method="POST">
         @csrf
         <label for="descricao">Descrição:</label>
@@ -17,5 +18,5 @@
         <input type="text" name="valor_total" id="valor_total" required><br>
         <button type="submit">Salvar</button>
     </form>
-
+    @endcan
 @endsection
