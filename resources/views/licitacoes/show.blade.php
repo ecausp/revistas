@@ -1,16 +1,13 @@
 <!-- resources/views/licitacoes/show.blade.php -->
+@extends('layouts.app')
 
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Detalhes da Licitação</title>
-</head>
-<body>
-    <h1>Detalhes da Licitação</h1>
+@section('content')
+  <div class="card">
+    <div class="card-header h4">
+      Detalhes da Licitação
+    </div>
     <p><strong>Descrição:</strong> {{ $licitacao->descricao }}</p>
     <p><strong>Ano:</strong> {{ $licitacao->ano }}</p>
     <p><strong>Valor Total:</strong> {{ number_format($licitacao->valor_total, 2, ',', '.') }}</p>
     <a href="{{ route('licitacoes.index') }}">Voltar</a>
-</body>
-</html>
+@endsection

@@ -1,15 +1,13 @@
 <!-- resources/views/licitacoes/index.blade.php -->
+@extends('layouts.app')
 
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Licitacoes</title>
-</head>
-<body>
-    <h1>Licitacoes</h1>
+@section('content')
+  <div class="card">
+    <div class="card-header h4">
+      Licitações
+    </div>
     <a href="{{ route('licitacoes.create') }}">Criar Nova Licitação</a>
-    <table>
+    <table class="table table-striped dataTable no-footer">
         <thead>
             <tr>
                 <th>Descrição</th>
@@ -37,5 +35,4 @@
             @endforeach
         </tbody>
     </table>
-</body>
-</html>
+@endsection

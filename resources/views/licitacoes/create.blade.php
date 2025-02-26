@@ -1,13 +1,12 @@
-<!-- resources/views/licitacoes/create.blade.php -->
 
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Criar Licitação</title>
-</head>
-<body>
-    <h1>Criar Licitação</h1>
+<!-- resources/views/licitacoes/create.blade.php -->
+@extends('layouts.app')
+
+@section('content')
+  <div class="card">
+    <div class="card-header h4">
+      Criar Licitação
+    </div>
     <form action="{{ route('licitacoes.store') }}" method="POST">
         @csrf
         <label for="descricao">Descrição:</label>
@@ -18,5 +17,5 @@
         <input type="text" name="valor_total" id="valor_total" required><br>
         <button type="submit">Salvar</button>
     </form>
-</body>
-</html>
+
+@endsection

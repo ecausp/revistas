@@ -1,13 +1,10 @@
 <!-- resources/views/licitacoes/edit.blade.php -->
-
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Editar Licitação</title>
-</head>
-<body>
-    <h1>Editar Licitação</h1>
+@extends('layouts.app')
+@section('content')
+  <div class="card">
+    <div class="card-header h4">
+      Editar Licitação
+    </div>
     <form action="{{ route('licitacoes.update', $licitacao) }}" method="POST">
         @csrf
         @method('PUT')
@@ -19,5 +16,4 @@
         <input type="text" name="valor_total" id="valor_total" value="{{ $licitacao->valor_total }}" required><br>
         <button type="submit">Atualizar</button>
     </form>
-</body>
-</html>
+@endsection
