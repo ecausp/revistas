@@ -39,7 +39,7 @@ $submenu1 = [
     ],
     [
         'type' => 'header',
-        'text' => '<i class="fa fa-wrench" aria-hidden="true"></i> Serviços',
+        'text' => '<i class="fas fa-tasks" aria-hidden="true"></i> Serviços',
         'can' => 'admin'
     ],
     [
@@ -96,7 +96,7 @@ $menu = [
         'key' => 'menu_dinamico',
     ],
     [
-        'text' => 'Administração',
+        'text' => '<i class="fas fa-tools"></i> Administração',
         'submenu' => $submenu1,
         'can' => 'admin',
     ],
@@ -109,13 +109,13 @@ $right_menu = [
     [
         'key' => 'laravel-tools',
     ],
-    [
-        'text' => '<i class="fas fa-cog" aria-hidden="true"></i>',
-        'title' => 'Configurações',
-        'target' => '_blank',
-        'url' => config('app.url') . '/item1',
-        'align' => 'right',
-    ],
+    // [
+    //     'text' => '<i class="fas fa-cog" aria-hidden="true"></i>',
+    //     'title' => 'Configurações',
+    //     'target' => '_blank',
+    //     'url' => config('app.url') . '/item1',
+    //     'align' => 'right',
+    // ],
 ];
 
 
