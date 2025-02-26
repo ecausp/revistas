@@ -8,7 +8,7 @@
     <div class="card-body">
       <div class="card-body" style="font-size:16px">
         <ol>
-          <li>O Financeiro faz uma consulta para serviços de gráfica e editoração, e cria uma Licitação. Na conclusão obtém a Empresa vencedora e cadastra no sistema Gráfica o valor total licitado, vigência, distribuição dos valores entre as revistas, tipos de serviços, quantidades, valores, contato e credenciais de acesso desta Empresa.</li>
+          <li>O Financeiro faz uma consulta para serviços de gráfica e editoração e cria uma Licitação. Na conclusão, obtém a Empresa vencedora e cadastra no sistema o valor total licitado, vigência, distribuição dos valores (Limites) entre as revistas, tipos de serviços, quantidades, valore unitário de cada serviço, contato e credenciais de acesso desta Empresa.</li>
           <li>A Revista recebe notificação da conclusão da Licitação;</li>
           <li>A Revista cria o pedido de Serviço, visualiza as tabelas de valores contratados, recursos financeiros disponíveis e gerencia os pedidos;</li>
           <li>A Empresa verifica se os serviços solicitados nos pedidos estão de acordo;</li>
