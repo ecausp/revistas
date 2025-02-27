@@ -6,6 +6,7 @@
     <div class="card-header h4">
       Licitações
     </div>
+    <div class="card-body">
     @can('admin')
     <a href="{{ route('licitacoes.create') }}">Criar Nova Licitação</a>
     <table class="table table-striped dataTable no-footer">
@@ -37,4 +38,5 @@
         </tbody>
     </table>
     @endcan
+    </div>
 @endsection
