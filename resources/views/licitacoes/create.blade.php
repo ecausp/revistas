@@ -12,7 +12,7 @@
             @csrf
             <div class="mb-1">
                 <label for="descricao" class="form-label">Descrição</label>
-                <textarea class="form-control" name="descricao" id="descricao" rows="1" required></textarea>
+                <input class="form-control" name="descricao" id="descricao" rows="1" required></input>
             </div>
 
             <div class="mb-1">
@@ -32,8 +32,6 @@
             </div>
 
         </form>
-
-
         @endcan
     </div>
     @endsection
