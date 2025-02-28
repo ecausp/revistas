@@ -9,7 +9,7 @@
     </div>
     <div class="card-body">
     @can('admin')
-      <form action="{{ route('licitacoes.store') }}" method="POST">
+      <form action="{{ route('licitacoes.store') }}" method="POST" class="needs-validation" novalidate>
         @csrf
         <div class="mb-1">
           <label for="descricao" class="form-label">Descrição</label>
@@ -25,9 +25,13 @@
           <label for="valor_total" class="form-label">Valor Total</label>
           <input type="number" class="form-control" name="valor_total" id="valor_total" required>
         </div>
-        <button type="submit" class="btn btn-primary">Salvar</button>
 
+        <div class="container mt-5 col">
+          <button type="submit" class="btn btn-primary">Salvar</button>
+          <a href="{{ route('licitacoes.index') }}" class="btn btn-secondary"><i class="fas fa-chevron-left"></i> Voltar</a>
 
+        </div>
+      
       </form>
 
       
