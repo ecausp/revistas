@@ -18,9 +18,20 @@ Realizar pedidos referentes aos serviços de Editora e Gráfica.
 
 ```
 composer install
-cp .env.example .env 
+cp .env.example .env
 # no arquivo .env configure as credenciais mysql, senha única e replicado
 php artisan key:generate
 php artisan migrate
 php artisan serve
 ```
+
+## Seeder de Licitações
+
+Para popular o banco de dados com dados de teste, usamos um seeder. Para isso, basta usar o comando
+
+```
+php artisan db:seed --class=LicitacaoSeeder
+```
+
+Para alterar a quantidade de dados gerados, modificar o arquivo `database\seeders\LicitacaoSeeder.php`;
+Para alterar o modo com que esses dados falsos são gerados, modificar o arquivo `database\factories\LicitacaoFactory.php`;
