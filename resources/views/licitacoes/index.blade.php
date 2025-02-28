@@ -25,8 +25,8 @@
                     <td>{{ $licitacao->ano }}</td>
                     <td>{{ number_format($licitacao->valor_total, 2, ',', '.') }}</td>
                     <td>
-                        <a href="{{ route('licitacoes.show', $licitacao) }}"><i class="fas fa-eye"></i> </a>
-                        <a href="{{ route('licitacoes.edit', $licitacao) }}"><i class="fas fa-edit"></i></a>
+                        <a href="{{ route('licitacoes.show', $licitacao) }}" class="btn btn-primary"><i class="fas fa-eye"></i> </a>
+                        <a href="{{ route('licitacoes.edit', $licitacao) }}" class="btn btn-warning"><i class="fas fa-edit"></i></a>
 
                     </td>
                 </tr>
