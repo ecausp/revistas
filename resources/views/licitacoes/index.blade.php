@@ -8,7 +8,7 @@
     </div>
     <div class="card-body">
     @can('admin')
-    <a href="{{ route('licitacoes.create') }}" class="btn btn-primary">Criar Nova Licitação</a>
+    <a href="{{ route('licitacoes.create') }}" class="btn btn-primary mb-3">Criar Nova Licitação</a>
     <table class="table table-striped dataTable no-footer responsive">
         <thead>
             <tr>
