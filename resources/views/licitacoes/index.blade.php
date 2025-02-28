@@ -8,8 +8,8 @@
     </div>
     <div class="card-body">
     @can('admin')
-    <a href="{{ route('licitacoes.create') }}">Criar Nova Licitação</a>
-    <table class="table table-striped dataTable no-footer">
+    <a href="{{ route('licitacoes.create') }}" class="btn btn-primary">Criar Nova Licitação</a>
+    <table class="table table-striped dataTable no-footer responsive">
         <thead>
             <tr>
                 <th>Descrição</th>
@@ -25,12 +25,13 @@
                     <td>{{ $licitacao->ano }}</td>
                     <td>{{ number_format($licitacao->valor_total, 2, ',', '.') }}</td>
                     <td>
-                        <a href="{{ route('licitacoes.show', $licitacao) }}">Visualizar</a>
-                        <a href="{{ route('licitacoes.edit', $licitacao) }}">Editar</a>
+                        <a href="{{ route('licitacoes.show', $licitacao) }}"><i class="fas fa-eye"></i> </a>
+                        <a href="{{ route('licitacoes.edit', $licitacao) }}"><i class="fas fa-edit"></i></a>
                         <form action="{{ route('licitacoes.destroy', $licitacao) }}" method="POST" style="display:inline;">
                             @csrf
                             @method('DELETE')
-                            <button type="submit">Excluir</button>
+                            <button type="submit" class="btn btn-danger">Excluir</button>
+
                         </form>
                     </td>
                 </tr>

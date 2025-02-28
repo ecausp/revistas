@@ -17,7 +17,8 @@
         <input type="text" name="ano" id="ano" value="{{ $licitacao->ano }}" required><br>
         <label for="valor_total">Valor Total:</label>
         <input type="text" name="valor_total" id="valor_total" value="{{ $licitacao->valor_total }}" required><br>
-        <button type="submit">Atualizar</button>
+        <button type="submit" class="btn btn-primary">Atualizar</button>
+
       </form>
     </div>
     @endcan
