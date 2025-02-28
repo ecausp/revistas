@@ -11,12 +11,20 @@
       <form action="{{ route('licitacoes.update', $licitacao) }}" method="POST">
         @csrf
         @method('PUT')
-        <label for="descricao">Descrição:</label>
-        <input type="text" name="descricao" id="descricao" value="{{ $licitacao->descricao }}" required><br>
-        <label for="ano">Ano:</label>
-        <input type="text" name="ano" id="ano" value="{{ $licitacao->ano }}" required><br>
-        <label for="valor_total">Valor Total:</label>
-        <input type="text" name="valor_total" id="valor_total" value="{{ $licitacao->valor_total }}" required><br>
+        <div class="mb-1">
+          <label for="descricao" class="form-label">Descrição</label>
+          <textarea class="form-control" name="descricao" id="descricao" rows="1" value="{{ $licitacao->descricao }}" required></textarea>
+        </div>
+
+        <div class="mb-1">
+          <label for="ano" class="form-label">Ano</label>
+          <input type="month" class="form-control" name="ano" id="ano" value="{{ $licitacao->ano }}" required>
+        </div>
+
+        <div class="mb-1">
+          <label for="valor_total" class="form-label">Valor Total</label>
+          <input type="number" class="form-control" name="valor_total" id="valor_total" value="{{ $licitacao->valor_total }}" required>
+        </div>
         <button type="submit" class="btn btn-primary">Atualizar</button>
 
       </form>
