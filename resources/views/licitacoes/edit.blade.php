@@ -2,9 +2,13 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1>Editar Licitação</h1>
+<div class="card">
+    <div class="card-header h5">
+      Editar Licitação
+    </div>
     @can('admin')
-    <form action="{{ route('licitacoes.update', $licitacao) }}" method="POST">
+    <div class="card-body">
+      <form action="{{ route('licitacoes.update', $licitacao) }}" method="POST">
         @csrf
         @method('PUT')
         <label for="descricao">Descrição:</label>
@@ -14,6 +18,7 @@
         <label for="valor_total">Valor Total:</label>
         <input type="text" name="valor_total" id="valor_total" value="{{ $licitacao->valor_total }}" required><br>
         <button type="submit">Atualizar</button>
-    </form>
+      </form>
+    </div>
     @endcan
 @endsection
