@@ -15,7 +15,6 @@ class LicitacaoSeeder extends Seeder
     {
         //
         Licitacao::factory()
-        ->count(100)->create();
+        ->count(250)->create();
     }
 }
-

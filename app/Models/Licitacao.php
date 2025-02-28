@@ -15,5 +15,6 @@ class Licitacao extends Model
         'descricao',
         'ano',
         'valor_total',
+        'editor',
     ];
 }
