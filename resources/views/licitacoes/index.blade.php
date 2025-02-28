@@ -9,7 +9,8 @@
     <div class="card-body">
         @can('admin')
         <a href="{{ route('licitacoes.create') }}" class="btn btn-primary mb-3">Criar Nova Licitação</a>
-        <table class="table datatable-simples no-footer dt-paging-100 dt-fixed-header table-striped responsive">
+        <table
+            class="table datatable-simples dt-fixed-header dt-paging-50 responsive no-footer table-striped responsive">
             <thead>
                 <tr>
                     <th>Descrição</th>
