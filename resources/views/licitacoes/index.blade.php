@@ -27,12 +27,7 @@
                     <td>
                         <a href="{{ route('licitacoes.show', $licitacao) }}"><i class="fas fa-eye"></i> </a>
                         <a href="{{ route('licitacoes.edit', $licitacao) }}"><i class="fas fa-edit"></i></a>
-                        <form action="{{ route('licitacoes.destroy', $licitacao) }}" method="POST" style="display:inline;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger">Excluir</button>
 
-                        </form>
                     </td>
                 </tr>
             @endforeach
