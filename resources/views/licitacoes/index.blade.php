@@ -3,7 +3,7 @@
 
 @section('content')
   <div class="card">
-    <div class="card-header h4">
+    <div class="card-header h5">
       Licitações
     </div>
     <div class="card-body">
