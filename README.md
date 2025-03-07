@@ -4,7 +4,7 @@
 
 Realizar pedidos referentes aos serviços de Editora e Gráfica.
 
-1. O Financeiro faz uma consulta para serviços de gráfica e editoração e cria uma Licitação. Na conclusão, obtém a Empresa vencedora e cadastra no sistema o valor total licitado, vigência, distribuição dos valores (Limites) entre as revistas, tipos de serviços, quantidades, valore unitário de cada serviço, contato e credenciais de acesso desta Empresa.
+1. O Financeiro faz uma consulta para serviços de gráfica e editoração e cria uma Licitação. Na conclusão, obtém a Empresa vencedora e cadastra no sistema o valor total licitado, vigência, distribuição dos limites (serviços e quantidades) entre as revistas, tipos de serviços, quantidades, valore unitário de cada serviço, contato e credenciais de acesso desta Empresa.
 2. A Revista recebe notificação da conclusão da Licitação;
 3. A Revista cria o Pedido de Serviço, visualiza as tabelas de valores contratados, recursos financeiros disponíveis e gerencia os pedidos;
 4. A Empresa verifica se os serviços solicitados nos pedidos estão de acordo;
