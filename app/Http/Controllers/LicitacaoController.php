@@ -30,9 +30,10 @@ class LicitacaoController extends Controller
             "descricao" => $request->descricao,
             "ano" => $request->ano,
             "valor_total" => $request->valor_total,
-    ];
+        ];
 
         Licitacao::create($licitacao);
+        session()->flash('success', 'Cadastrado com sucesso!');
         return redirect()->route('licitacoes.index');
     }
 
@@ -73,9 +74,10 @@ class LicitacaoController extends Controller
             "descricao" => $request->descricao,
             "ano" => $request->ano,
             "valor_total" => $request->valor_total,
-    ];
+        ];
         
         $licitacao->update($licitacao_editada);
+        session()->flash('success', 'Atualizado com sucesso!');
         return redirect()->route('licitacoes.index');
     }
 
@@ -83,6 +85,7 @@ class LicitacaoController extends Controller
     {
         $this->authorize('admin');
         $licitacao->delete();
+        session()->flash('danger', 'Licitação: ' . $licitacao->descricao . ' - ' . $licitacao->ano . ' removida!');
         return redirect()->route('licitacoes.index');
     }
 }
