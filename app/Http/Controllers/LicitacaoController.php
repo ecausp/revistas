@@ -40,7 +40,7 @@ class LicitacaoController extends Controller
     public function index()
     {
         $this->authorize('admin');
-        $licitacoes = Licitacao::all();
+        $licitacoes = Licitacao::orderBy('ano', 'desc')->orderBy('descricao')->get();
         return view('licitacoes.index', compact('licitacoes'));
     }
 
