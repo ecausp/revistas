@@ -14,18 +14,18 @@
             <div class="mb-1">
                 <label for="descricao" class="form-label">Descrição</label>
                 <input type="text" class="form-control" name="descricao" id="descricao"
-                    value="{{ $licitacao->descricao }}" required></input>
+                    value="{{ old('descricao', $licitacao->descricao) }}" required></input>
             </div>
 
             <div class="mb-1">
                 <label for="ano" class="form-label">Ano</label>
-                <input type="month" class="form-control" name="ano" id="ano" value="{{ $licitacao->ano }}" required>
+                <input type="month" class="form-control" name="ano" id="ano" value="{{ old('ano', $licitacao->ano) }}" required>
             </div>
 
             <div class="mb-1">
                 <label for="valor_total" class="form-label">Valor Total</label>
                 <input type="number" class="form-control" name="valor_total" id="valor_total"
-                    value="{{ $licitacao->valor_total }}" required>
+                    value="{{ old('valor_total', $licitacao->valor_total) }}" required>
             </div>
 
             <div class="container mt-5 col">
@@ -38,7 +38,6 @@
     @endcan
 </div>
 @endsection
-
 
 {{-- 
 Não encontrei o viewMode years no JQuery Datepicker do Laravel USP Theme.
