@@ -25,10 +25,11 @@ class LicitacaoController extends Controller
         ]);
 
         $licitacao = new Licitacao();
-        $licitacao = ['editor' => $request->user()->name,
-        "descricao" => $request->descricao,
-        "ano" => $request->ano,
-        "valor_total" => $request->valor_total,
+        $licitacao = [
+            'editor' => $request->user()->name,
+            "descricao" => $request->descricao,
+            "ano" => $request->ano,
+            "valor_total" => $request->valor_total,
     ];
 
         Licitacao::create($licitacao);
@@ -67,12 +68,12 @@ class LicitacaoController extends Controller
             'valor_total' => 'required|numeric',
         ]);
 
-        $licitacao_editada = ['editor' => $request->user()->name,
-        "descricao" => $request->descricao,
-        "ano" => $request->ano,
-        "valor_total" => $request->valor_total,
+        $licitacao_editada = [
+            'editor' => $request->user()->name,
+            "descricao" => $request->descricao,
+            "ano" => $request->ano,
+            "valor_total" => $request->valor_total,
     ];
-
         
         $licitacao->update($licitacao_editada);
         return redirect()->route('licitacoes.index');

@@ -12,14 +12,10 @@
         <p><strong>Ano:</strong> {{ $licitacao->ano }}</p>
         <p><strong>Valor Total:</strong> {{ number_format($licitacao->valor_total, 2, ',', '.') }}</p>
 
-
-        <div class="container mt-3 mb-3 text-right">
-            <small class=" text-muted">editado em: {{  $licitacao->updated_at }}
-                <br>
-                por: {{ $licitacao->editor }}
-            </small>
-        </div>
-
+        <small class="text-muted">editado em: {{  $licitacao->updated_at }}
+            <br>
+            por: {{ $licitacao->editor }}
+        </small>
 
         <div class="container mt-5 col">
             <a href="{{ route('licitacoes.edit', $licitacao) }}" class="btn btn-primary"><i class="fas fa-edit"></i>
