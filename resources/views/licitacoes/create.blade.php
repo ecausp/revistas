@@ -18,7 +18,7 @@
             <div class="mb-1">
                 <label for="ano" class="form-label">Ano</label>
                 <input type="month" class="form-control" name="ano" id="ano" required>
-            </div>
+            </div>         
 
             <div class="mb-1">
                 <label for="valor_total" class="form-label">Valor Total</label>
@@ -34,4 +34,31 @@
         </form>
         @endcan
     </div>
-    @endsection
+</div>    
+@endsection
+
+{{-- 
+Não encontrei o viewMode years no JQuery Datepicker do Laravel USP Theme.
+Precisei utilizar o Bootstrap Datepicker.
+TODO: Verificar se o Bootstrap Datepicker funciona com o Laravel USP Theme.  
+--}}
+
+@section('styles')
+  @parent
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+@endsection
+
+@section('javascripts_bottom')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+  @parent
+  <script>
+    $(document).ready(function() {
+        $('#ano').datepicker({
+            format: "yyyy",         // Exibir apenas o ano
+            viewMode: "years",      // Iniciar na visualização de anos
+            minViewMode: "years",   // Impedir mudança para meses/dias
+            autoclose: true         // Fecha automaticamente ao selecionar o ano
+        });
+    });
+  </script>
+@endsection
