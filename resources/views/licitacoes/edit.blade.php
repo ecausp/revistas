@@ -24,7 +24,7 @@
 
             <div class="mb-1">
                 <label for="valor_total" class="form-label">Valor Total</label>
-                <input type="number" class="form-control" name="valor_total" id="valor_total"
+                <input type="text" class="form-control money" name="valor_total" id="valor_total"
                     value="{{ old('valor_total', $licitacao->valor_total) }}" required>
             </div>
 
@@ -61,6 +61,9 @@ TODO: Verificar se o Bootstrap Datepicker funciona com o Laravel USP Theme.
             minViewMode: "years",   // Impedir mudança para meses/dias
             autoclose: true         // Fecha automaticamente ao selecionar o ano
         });
+
+        // Formato moeda
+        $('.money').mask('000.000.000.000.000,00', {reverse: true});
     });
   </script>
 @endsection

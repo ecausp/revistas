@@ -13,17 +13,17 @@
             @csrf
             <div class="mb-1">
                 <label for="descricao" class="form-label">Descrição</label>
-                <input class="form-control" name="descricao" id="descricao" rows="1" required></input>
+                <input class="form-control" name="descricao" id="descricao" rows="1" placeholder="Licitação ..." required></input>
             </div>
 
             <div class="mb-1">
                 <label for="ano" class="form-label">Ano</label>
-                <input type="month" class="form-control" name="ano" id="ano" required>
+                <input type="month" class="form-control" name="ano" id="ano" placeholder="{{ date('Y') }}" required>
             </div>         
 
             <div class="mb-1">
                 <label for="valor_total" class="form-label">Valor Total</label>
-                <input type="number" class="form-control" name="valor_total" id="valor_total" required>
+                <input type="text" class="form-control money" name="valor_total" id="valor_total" required>
             </div>
 
             <div class="container mt-5 col">
@@ -60,6 +60,9 @@ TODO: Verificar se o Bootstrap Datepicker funciona com o Laravel USP Theme.
             minViewMode: "years",   // Impedir mudança para meses/dias
             autoclose: true         // Fecha automaticamente ao selecionar o ano
         });
+        
+        // Formato moeda
+        $('.money').mask('000.000.000.000.000,00', {reverse: true});
     });
   </script>
 @endsection

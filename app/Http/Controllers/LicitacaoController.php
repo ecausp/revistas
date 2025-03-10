@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Licitacao;
 use Illuminate\Http\Request;
 
+use function Ramsey\Uuid\v1;
+
 class LicitacaoController extends Controller
 {
     //exibir o form para criar uma nova licitacao
@@ -18,6 +20,10 @@ class LicitacaoController extends Controller
     public function store(Request $request)
     {
         $this->authorize('admin');
+        
+        // Primeiro remove os pontos e depois troca a virgula por ponto
+        $request['valor_total'] = str_replace(',', '.', str_replace('.', '', $request->valor_total));
+        
         $request->validate([
             'descricao' => 'required',
             'ano' => 'required|digits:4',
@@ -63,6 +69,10 @@ class LicitacaoController extends Controller
     public function update(Request $request, Licitacao $licitacao)
     {
         $this->authorize('admin');
+
+        // Primeiro remove os pontos e depois troca a virgula por ponto
+        $request['valor_total'] = str_replace(',', '.', str_replace('.', '', $request->valor_total));
+        
         $request->validate([
             'descricao' => 'required',
             'ano' => 'required|digits:4',
