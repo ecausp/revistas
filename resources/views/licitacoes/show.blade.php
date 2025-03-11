@@ -12,7 +12,7 @@
         <p><strong>Ano:</strong> {{ $licitacao->ano }}</p>
         <p><strong>Valor Total:</strong> {{ number_format($licitacao->valor_total, 2, ',', '.') }}</p>
 
-        <small class="text-muted">Atualizado em {{ date_format($licitacao->updated_at, 'd/m/Y H:i') }} 
+        <small class="text-muted">Atualizado em {{ date_format($licitacao->updated_at, 'd/m/Y H:i') }}
             <br />por {{ $licitacao->editor }}</small>
 
         <div class="container mt-5 col">
@@ -22,7 +22,8 @@
             <form action="{{ route('licitacoes.destroy', $licitacao) }}" method="POST" style="display:inline;">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Apagar</button>
+                <button type="submit" onclick="return confirm('Você tem certeza que deseja deletar essa licitação?')"
+                    class="btn btn-danger"><i class="fas fa-trash-alt"></i> Apagar</button>
             </form>
 
             <a href="{{ route('licitacoes.index') }}" class="btn btn-secondary"><i class="fas fa-chevron-left"></i>
@@ -30,5 +31,5 @@
         </div>
     </div>
     @endcan
-</div>    
+</div>
 @endsection
