@@ -19,15 +19,11 @@
             <a href="{{ route('licitacoes.edit', $licitacao) }}" class="btn btn-primary"><i class="fas fa-edit"></i>
                 Editar</a>
 
-            <form action="{{ route('licitacoes.destroy', $licitacao) }}" method="POST" style="display:inline;">
-                @csrf
-                @method('DELETE')
-                <button type="submit" onclick="return confirm('Você tem certeza que deseja deletar essa licitação?')"
-                    class="btn btn-danger"><i class="fas fa-trash-alt"></i> Apagar</button>
-            </form>
+            @include('licitacoes.partials.delete')
 
             <a href="{{ route('licitacoes.index') }}" class="btn btn-secondary"><i class="fas fa-chevron-left"></i>
                 Voltar</a>
+
         </div>
     </div>
     @endcan
