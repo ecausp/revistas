@@ -10,6 +10,16 @@
         : '') }}" required>
 </div>
 
+<div class="mb-1">
+    <label for="licitacao_id" class="form-label">Licitação</label>
+    <select class="form-control select2" name="state">
+        @foreach ($licitacoes as $licitacao)
+        <option value="{{ $licitacao->id }}">{{ $licitacao->descricao }} - {{ $licitacao->ano }}</option>
+        @endforeach
+    </select>
+</div>
+
+
 
 <div class="container mt-5 col">
     <button type="submit" class="btn btn-primary">Atualizar</button>
