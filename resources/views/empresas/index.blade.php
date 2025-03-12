@@ -27,9 +27,9 @@
                     <td>{{ $empresa->cnpj }}</td>
                     <td>{{ $empresa->razao_social }}</td>
                     <td>
-                        <a href="{{ route('licitacoes.show', $licitacao) }}" class="btn btn-primary"><i
+                        <a href="{{ route('empresas.show', $empresa) }}" class="btn btn-primary"><i
                                 class="fas fa-eye"></i> </a>
-                        <a href="{{ route('licitacoes.edit', $licitacao) }}" class="btn btn-warning"><i
+                        <a href="{{ route('empresas.edit', $empresa) }}" class="btn btn-warning"><i
                                 class="fas fa-edit"></i></a>
 
                     </td>

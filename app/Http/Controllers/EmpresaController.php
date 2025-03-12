@@ -23,13 +23,13 @@ class EmpresaController extends Controller
         $this->authorize('admin');
         
         $request->validate([
-            'cnpj' => 'required|digits:18',
+            'cnpj' => 'required',
             'razao_social' => 'required',
         ]);
 
         $empresa = new Empresa();
 
-        Empresa::create($empresa);
+        Empresa::create($request->all());
         session()->flash('success', 'Cadastrado com sucesso!');
         return redirect()->route('empresas.index');
     }
@@ -38,7 +38,7 @@ class EmpresaController extends Controller
     public function index()
     {
         $this->authorize('admin');
-        $empresa = Empresa::all();
+        $empresas = Empresa::all();
         return view('empresas.index', compact('empresas'));
     }
     
@@ -62,11 +62,11 @@ class EmpresaController extends Controller
         $this->authorize('admin');
     
         $request->validate([
-            'cnpj' => 'required|digits:18',
+            'cnpj' => 'required',
             'razao_social' => 'required',
         ]);
         
-        $empresa->update($request);
+        $empresa->update($request->all());
         session()->flash('success', 'Atualizado com sucesso!');
         return redirect()->route('empresas.index');
     }
