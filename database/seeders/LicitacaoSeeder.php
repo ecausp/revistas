@@ -13,7 +13,7 @@ class LicitacaoSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        // 
         Licitacao::factory()
         ->count(250)->create();
     }
