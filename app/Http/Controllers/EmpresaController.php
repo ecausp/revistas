@@ -66,7 +66,8 @@ class EmpresaController extends Controller
     public function edit(Empresa $empresa)
     {
         $this->authorize('admin');
-        return view('empresas.edit', compact('empresa'));
+        $licitacoes = Licitacao::orderBy('ano', 'desc')->orderBy('descricao')->get();
+        return view('empresas.edit', compact('empresa', 'licitacoes'));
     }
     
     // Atualizar os dados de uma empresa
@@ -77,6 +78,7 @@ class EmpresaController extends Controller
         $request->validate([
             'cnpj' => 'required',
             'razao_social' => 'required',
+            'licitacao_id' => 'required',
         ]);
         
         $empresa->update($request->all());
