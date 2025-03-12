@@ -17,4 +17,9 @@ class Licitacao extends Model
         'valor_total',
         'editor',
     ];
+
+    public function empresa()
+    {
+        return $this->belongsToMany(Empresa::class, 'empresa-licitacao');
+    }
 }

@@ -14,4 +14,9 @@ class Empresa extends Model
     'cnpj',
     'razao_social'
     ];
+
+    public function licitacao()
+    {
+        return $this->belongsToMany(Licitacao::class, 'empresa-licitacao');
+    }
 }
