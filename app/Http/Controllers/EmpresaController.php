@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Empresa;
 use Illuminate\Http\Request;
 
+
+use function Ramsey\Uuid\v1;
+
 class EmpresaController extends Controller
 {
     //exibir o form para criar uma nova empresa
