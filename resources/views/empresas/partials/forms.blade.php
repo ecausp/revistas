@@ -1,6 +1,6 @@
 <div class="mb-1">
     <label for="cnpj" class="form-label">CNPJ</label>
-    <input type="text" class="form-control" name="cnpj" id="cnpj" value="{{ old('cnpj', isset($empresa) ? $empresa->cnpj
+    <input type="text" class="form-control cnpj" name="cnpj" id="cnpj" value="{{ old('cnpj', isset($empresa) ? $empresa->cnpj
         :"XX.XXX.XXX/0001-XX") }}" required></input>
 </div>
 

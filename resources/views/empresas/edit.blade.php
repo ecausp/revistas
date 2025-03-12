@@ -19,3 +19,24 @@
     @endcan
 </div>
 @endsection
+
+
+
+@section('styles')
+@parent
+<link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+@endsection
+
+@section('javascripts_bottom')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+@parent
+<script>
+$(document).ready(function() {
+    // Formato cnpj
+    $('.cnpj').mask('00.000.000/0000-00', {
+        reverse: true
+    });
+});
+</script>
+@endsection
