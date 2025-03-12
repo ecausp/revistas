@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Empresa;
+use App\Models\EmpresaLicitacao;
 use App\Models\Licitacao;
 use Illuminate\Http\Request;
 
@@ -28,11 +29,20 @@ class EmpresaController extends Controller
         $request->validate([
             'cnpj' => 'required',
             'razao_social' => 'required',
+            'licitacao_id' => 'required',
         ]);
 
         $empresa = new Empresa();
+        $empresa->cnpj = $request->cnpj;
+        $empresa->razao_social = $request->razao_social;
+        $empresa->save();
 
-        Empresa::create($request->all());
+        $relacao = new EmpresaLicitacao();
+        $relacao->empresa_id = $empresa->id;
+        $relacao->licitacao_id = $request->licitacao_id;
+        $relacao->valor = 1000;
+        $relacao->save();
+
         session()->flash('success', 'Cadastrado com sucesso!');
         return redirect()->route('empresas.index');
     }
