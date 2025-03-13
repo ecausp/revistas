@@ -72,15 +72,14 @@ class EmpresaController extends Controller
     
     // Atualizar os dados de uma empresa
     public function update(Request $request, Empresa $empresa)
-    {
+    {        
         $this->authorize('admin');
     
         $request->validate([
             'cnpj' => 'required',
             'razao_social' => 'required',
-            'licitacao_id' => 'required',
         ]);
-        
+
         $empresa->update($request->all());
         session()->flash('success', 'Atualizado com sucesso!');
         return redirect()->route('empresas.index');

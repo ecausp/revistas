@@ -12,11 +12,16 @@
 
 <div class="mb-1">
     <label for="licitacao_id" class="form-label">Licitação</label>
-    <select class="form-control select2" name="licitacao_id" id="licitacao_id">
-        @foreach ($licitacoes as $licitacao)
-        <option value="{{ $licitacao->id }}">{{ $licitacao->descricao }} - {{ $licitacao->ano }}</option>
-        @endforeach
-    </select>
+
+    @if (isset($empresa))
+    <select class="form-control select2" name="licitacao_id" id="licitacao_id" disabled>
+        @else
+        <select class="form-control select2" name="licitacao_id" id="licitacao_id">
+            @endif
+            @foreach ($licitacoes as $licitacao)
+            <option value="{{ $licitacao->id }}">{{ $licitacao->descricao }} - {{ $licitacao->ano }}</option>
+            @endforeach
+        </select>
 </div>
 
 
