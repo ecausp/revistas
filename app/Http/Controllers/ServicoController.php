@@ -33,6 +33,11 @@ class ServicoController extends Controller
     {
         $this->authorize('admin');
 
+        // Primeiro remove os pontos
+        $request['quantidade'] = str_replace('.', '', $request->quantidade);       
+        // Primeiro remove os pontos e depois troca a virgula por ponto
+        $request['valor_unitario'] = str_replace(',', '.', str_replace('.', '', $request->valor_unitario));
+
         $request->validate([
             'descricao' => 'required',
             'quantidade' => 'required|numeric',
@@ -69,6 +74,11 @@ class ServicoController extends Controller
     public function update(Request $request, Servico $servico)
     {
         $this->authorize('admin');
+
+        // Primeiro remove os pontos
+        $request['quantidade'] = str_replace('.', '', $request->quantidade);       
+        // Primeiro remove os pontos e depois troca a virgula por ponto
+        $request['valor_unitario'] = str_replace(',', '.', str_replace('.', '', $request->valor_unitario));
 
         $request->validate([
             'descricao' => 'required',

@@ -10,8 +10,8 @@
     <div class="card-body">
         <p><strong>Descrição: </strong> {{ $servico->descricao }}</p>
         <p><strong>Quantidade: </strong> {{ $servico->quantidade }}</p>
-        <p><strong>Unidade de Medida: </strong>{{ $servico->unidade_medida }}</p>
-        <p><strong>Valor Unitario: </strong>{{ $servico->valor_unitario }}</p>
+        <p><strong>Unidade de medida: </strong>{{ $servico->unidade_medida }}</p>
+        <p><strong>Valor Unitário: </strong>{{ $servico->valor_unitario }}</p>
 
         <div class="container mt-5 col">
             <a href="{{ route('servicos.edit', $servico) }}" class="btn btn-primary"><i class="fas fa-edit"></i>
