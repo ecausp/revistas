@@ -18,12 +18,11 @@
 </div>
 @endsection
 
-
 @section('javascripts_bottom')
-<script>
-$(document).ready(function() {
-    // Formato cnpj
-    $('.telefone9digitos').mask("(00) 90000-0000");
-});
-</script>
+    <script>
+        $(document).ready(function() {
+            // Formato cnpj
+            $('.telefone9digitos').mask("(00) 90000-0000");
+        });
+    </script>
 @endsection
