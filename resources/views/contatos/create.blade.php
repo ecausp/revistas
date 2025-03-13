@@ -11,18 +11,7 @@
         @can('admin')
         <form action="{{ route('contatos.store') }}" method="POST">
             @csrf
-
-            <label for="name">Nome:</label><br>
-            <input type="text" id="name" name="name" placeholder="Nome"><br>
-
-            <label for="email">Email:</label><br>
-            <input type="text" id="email" name="email" placeholder="exemplo@email.com"><br><br>
-
-            <label for="telefone">Telefone:</label><br>
-            <input type="text" id="telefone" name="telefone" placeholder="(xx) xxxx-xxxx"><br><br>
-
-            <input type="submit" value="Cadastrar">
-
+            @include('contatos.partials.forms')
         </form>
         @endcan
     </div>
