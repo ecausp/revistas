@@ -11,7 +11,7 @@
     </div>
     <div class="card-body">
         @can('admin')
-        <a href="{{ route('empresas.create') }}" class="btn btn-primary mb-3">Registrar Nova Empresa</a>
+        <a href="{{ route('empresas.create') }}" class="btn btn-primary mb-3"><i class="fas fa-plus"></i>  Empresa</a>
         <table
             class="table datatable-simples dt-fixed-header dt-paging-50 responsive no-footer table-striped responsive">
             <thead>

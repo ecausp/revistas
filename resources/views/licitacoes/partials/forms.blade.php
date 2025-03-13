@@ -13,12 +13,18 @@
 <div class="mb-1">
     <label for="valor_total" class="form-label">Valor Total</label>
     <input type="text" class="form-control money" name="valor_total" id="valor_total"
-        value="{{ old('valor_total', "ARRUMAR") }}" placeholder={{ isset($licitacao) ? $licitacao->valor_total
+        value="{{ old('valor_total', "ARRUMAR") }}" value={{ isset($licitacao) ? $licitacao->valor_total
         : "000.000.000.000" }} required>
 </div>
 
 <div class="container mt-5 col">
-    <button type="submit" class="btn btn-primary">Atualizar</button>
+    <button type="submit" class="btn btn-primary">
+        @if (isset($licitacao))
+            <i class="fas fa-save"></i> Atualizar
+        @else
+            <i class="fas fa-save"></i> Salvar
+        @endif
+    </button>
     <a href="{{ route('licitacoes.index') }}" class="btn btn-secondary"><i class="fas fa-chevron-left"></i>
         Voltar</a>
 </div>

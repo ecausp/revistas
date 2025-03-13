@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LicitacaoController;
 use App\Http\Controllers\EmpresaController;
 use App\Http\Controllers\ServicoController;
+use App\Http\Controllers\ContatoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,8 +24,9 @@ Route::get('/', function () {
 // Permite usar Gate::check('user')na view 404
 Route::fallback(function(){
     return view('errors.404');
- });
+});
 
 Route::resource('licitacoes', LicitacaoController::class)->parameters(['licitacoes' => 'licitacao']);
 Route::resource('empresas', EmpresaController::class);
-Route::resource('servicos',ServicoController::class);
+Route::resource('servicos', ServicoController::class);
+Route::resource('contatos', ContatoController::class);
