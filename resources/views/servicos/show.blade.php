@@ -4,11 +4,10 @@
 @section('content')
 <div class="card">
     <div class="card-header h5">
-        Detalhes da Serviço
+        {{ $servico->descricao }}
     </div>
     @can('admin')
     <div class="card-body">
-        <p><strong>Descrição: </strong>{{ $servico->descricao }}</p>
         <p><strong>Quantidade: </strong>{{ number_format($servico->quantidade, 0, ',', '.') }}</p>
         <p><strong>Unidade de medida: </strong>{{ $servico->unidade_medida }}</p>
         <p><strong>Valor Unitário: </strong>{{ number_format($servico->valor_unitario, 2, ',', '.') }}</p>
