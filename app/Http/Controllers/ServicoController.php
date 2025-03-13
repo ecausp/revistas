@@ -11,8 +11,9 @@ class ServicoController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        //
+    {   
+        $servicos = Servico::all();
+        return view('servicos.index', compact('servicos'));
     }
 
     /**
@@ -20,7 +21,7 @@ class ServicoController extends Controller
      */
     public function create()
     {
-        //
+        return view('servicos.create');
     }
 
     /**
@@ -28,7 +29,9 @@ class ServicoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        Servico::create($request->all());
+        return redirect()->route('servicos.index')
+        ->with('success', 'Servico created successfully.');
     }
 
     /**
@@ -36,7 +39,7 @@ class ServicoController extends Controller
      */
     public function show(Servico $servico)
     {
-        //
+        return view('servicos.show', compact('servico'));
     }
 
     /**
@@ -44,7 +47,7 @@ class ServicoController extends Controller
      */
     public function edit(Servico $servico)
     {
-        //
+        return view('servicos.edit', compact('servico'));
     }
 
     /**
@@ -52,7 +55,9 @@ class ServicoController extends Controller
      */
     public function update(Request $request, Servico $servico)
     {
-        //
+        $servico->update($request->all());
+        return redirect()->route('servicos.index')
+            ->with('success', 'Servico updated successfully.');
     }
 
     /**
@@ -60,6 +65,8 @@ class ServicoController extends Controller
      */
     public function destroy(Servico $servico)
     {
-        //
+        $servico->delete();
+        return redirect()->route('servicos.index')
+          ->with('success', 'Servico deleted successfully');
     }
 }
