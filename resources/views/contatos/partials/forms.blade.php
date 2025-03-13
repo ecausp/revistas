@@ -5,7 +5,7 @@
 
 <div class="mb-1">
     <label for="email" class="form-label">Email</label>
-    <input type="text" class="form-control" name="email" id="email" placeholder="exemplo@email.com" required>
+    <input type="email" class="form-control" name="email" id="email" placeholder="exemplo@email.com" required>
 </div>
 
 <div class="mb-1">
