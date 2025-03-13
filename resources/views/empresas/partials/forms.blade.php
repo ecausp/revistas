@@ -29,4 +29,11 @@
     <button type="submit" class="btn btn-primary">{{ isset($empresa) ? "Atualizar" : "Salvar"}}</button>
     <a href="{{ route('empresas.index') }}" class="btn btn-secondary"><i class="fas fa-chevron-left"></i>
         Voltar</a>
+
+    @if (isset($empresa))
+    <a href="{{ route('contatos.create') }}" class="btn btn-success"><i class="fas fa-user"></i>
+        Cadastrar Contato</a>
+
+    @endif
+
 </div>
