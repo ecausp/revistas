@@ -12,6 +12,7 @@ class ServicoController extends Controller
      */
     public function index()
     {   
+        $this->authorize('admin');
         $servicos = Servico::all();
         return view('servicos.index', compact('servicos'));
     }
@@ -21,6 +22,7 @@ class ServicoController extends Controller
      */
     public function create()
     {
+        $this->authorize('admin');
         return view('servicos.create');
     }
 
@@ -29,9 +31,18 @@ class ServicoController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('admin');
+
+        $request->validate([
+            'descricao' => 'required',
+            'quantidade' => 'required|numeric',
+            'unidade_medida' => 'required',
+            'valor_unitario' => 'required|numeric',
+        ]);
+
         Servico::create($request->all());
-        return redirect()->route('servicos.index')
-        ->with('success', 'Servico created successfully.');
+        session()->flash('success', 'Cadastrado com sucesso!');
+        return redirect()->route('servicos.index');
     }
 
     /**
@@ -39,6 +50,7 @@ class ServicoController extends Controller
      */
     public function show(Servico $servico)
     {
+        $this->authorize('admin');
         return view('servicos.show', compact('servico'));
     }
 
@@ -47,6 +59,7 @@ class ServicoController extends Controller
      */
     public function edit(Servico $servico)
     {
+        $this->authorize('admin');
         return view('servicos.edit', compact('servico'));
     }
 
@@ -55,9 +68,18 @@ class ServicoController extends Controller
      */
     public function update(Request $request, Servico $servico)
     {
+        $this->authorize('admin');
+
+        $request->validate([
+            'descricao' => 'required',
+            'quantidade' => 'required|numeric',
+            'unidade_medida' => 'required',
+            'valor_unitario' => 'required|numeric',
+        ]);
+        
         $servico->update($request->all());
-        return redirect()->route('servicos.index')
-            ->with('success', 'Servico updated successfully.');
+        session()->flash('success', 'Atualizado com sucesso!');
+        return redirect()->route('servicos.index');
     }
 
     /**
@@ -65,8 +87,9 @@ class ServicoController extends Controller
      */
     public function destroy(Servico $servico)
     {
+        $this->authorize('admin');
         $servico->delete();
-        return redirect()->route('servicos.index')
-          ->with('success', 'Servico deleted successfully');
+        session()->flash('danger', 'Licitação: ' . $servico->descricao . ' removido!');
+        return redirect()->route('servicos.index');
     }
 }
