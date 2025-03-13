@@ -18,7 +18,7 @@ class Licitacao extends Model
         'editor',
     ];
 
-    public function empresa()
+    public function empresas()
     {
         return $this->belongsToMany(Empresa::class, 'empresa-licitacao');
     }
