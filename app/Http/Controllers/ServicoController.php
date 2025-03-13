@@ -89,7 +89,7 @@ class ServicoController extends Controller
     {
         $this->authorize('admin');
         $servico->delete();
-        session()->flash('danger', 'Licitação: ' . $servico->descricao . ' removido!');
+        session()->flash('danger', 'Serviço: ' . $servico->descricao . ' removido!');
         return redirect()->route('servicos.index');
     }
 }
