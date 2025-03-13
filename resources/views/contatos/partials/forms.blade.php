@@ -10,7 +10,8 @@
 
 <div class="mb-1">
     <label for="telefone" class="form-label">Telefone</label>
-    <input type="text" class="form-control" name="telefone" id="telefone" placeholder="(xx) xxxx-xxxx" required>
+    <input type="text" class="form-control telefone9digitos" name="telefone" id="telefone" placeholder="(xx) xxxx-xxxx"
+        required>
 </div>
 
 
