@@ -18,7 +18,6 @@ class LicitacaoFactory extends Factory
     public function definition(): array
     {
         return [
-            //
             'descricao' => $this->faker->sentence,
             'ano' => $this->faker->year,
             'valor_total' => $this->faker->randomFloat(2, 0, 1000000),
