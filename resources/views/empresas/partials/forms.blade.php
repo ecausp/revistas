@@ -31,7 +31,7 @@
         Voltar</a>
 
     @if (isset($empresa))
-    <a href="{{ route('contatos.create') }}" class="btn btn-success"><i class="fas fa-user"></i>
+    <a href="{{ route('contatos.create', $empresa) }}" class="btn btn-success"><i class="fas fa-user"></i>
         Cadastrar Contato</a>
 
     @endif
