@@ -20,9 +20,9 @@
 <div class="container mt-5 col">
     <button type="submit" class="btn btn-primary">
         @if (isset($licitacao))
-        Atualizar
+            <i class="fas fa-save"></i> Atualizar
         @else
-        Salvar
+            <i class="fas fa-save"></i> Salvar
         @endif
     </button>
     <a href="{{ route('licitacoes.index') }}" class="btn btn-secondary"><i class="fas fa-chevron-left"></i>

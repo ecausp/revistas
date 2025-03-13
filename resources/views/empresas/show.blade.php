@@ -4,12 +4,11 @@
 @section('content')
 <div class="card">
     <div class="card-header h5">
-        Detalhes da Empresa
+        {{ $empresa->razao_social }}
     </div>
     @can('admin')
     <div class="card-body">
         <p><strong>CNPJ:</strong> {{ $empresa->cnpj }}</p>
-        <p><strong>Razão Social:</strong> {{ $empresa->razao_social }}</p>
 
         <div class="container mt-5 col">
             <a href="{{ route('empresas.edit', $empresa) }}" class="btn btn-primary"><i class="fas fa-edit"></i>
