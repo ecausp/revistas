@@ -5,7 +5,7 @@
 
 <div class="card">
     <div class="card-header h5">
-        Editar servico
+        Editar Serviço
     </div>
     <div class="card-body">
 

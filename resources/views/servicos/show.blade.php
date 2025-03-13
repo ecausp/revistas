@@ -4,14 +4,14 @@
 @section('content')
 <div class="card">
     <div class="card-header h5">
-        Detalhes da servico
+        Detalhes da Serviço
     </div>
     @can('admin')
     <div class="card-body">
-        <p><strong>Descrição: </strong> {{ $servico->descricao }}</p>
-        <p><strong>Quantidade: </strong> {{ $servico->quantidade }}</p>
+        <p><strong>Descrição: </strong>{{ $servico->descricao }}</p>
+        <p><strong>Quantidade: </strong>{{ number_format($servico->quantidade, 0, ',', '.') }}</p>
         <p><strong>Unidade de medida: </strong>{{ $servico->unidade_medida }}</p>
-        <p><strong>Valor Unitário: </strong>{{ $servico->valor_unitario }}</p>
+        <p><strong>Valor Unitário: </strong>{{ number_format($servico->valor_unitario, 2, ',', '.') }}</p>
 
         <div class="container mt-5 col">
             <a href="{{ route('servicos.edit', $servico) }}" class="btn btn-primary"><i class="fas fa-edit"></i>

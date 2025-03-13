@@ -5,7 +5,7 @@
 
 <div class="card">
     <div class="card-header h5">
-        Criar Servico
+        Criar Serviço
     </div>
     <div class="card-body">
         @can('admin')
