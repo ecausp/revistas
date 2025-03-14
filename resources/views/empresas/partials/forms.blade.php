@@ -29,7 +29,7 @@
     <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salvar</button>
 
     @if (isset($empresa))
-    <a href="{{ route('empresa.contato.create',  $empresa )}}" class="btn btn-success"><i class="fas fa-user"></i>
+    <a href="{{ route('contatos.create',  $empresa )}}" class="btn btn-success"><i class="fas fa-user"></i>
         Contato(s)</a>
     @endif
 

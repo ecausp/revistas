@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Contato;
 use Illuminate\Http\Request;
-use App\Models\User;
 use App\Models\Empresa;
 
 class ContatoController extends Controller
@@ -21,14 +21,13 @@ class ContatoController extends Controller
     {
         $this->authorize('admin');
         
-
         $request->validate([
             'name' => 'required',
             'email' => 'required',
             'telefone' => 'required',
         ]);
 
-        User::create($request->all());
+        Contato::create($request->all());
         session()->flash('success', 'Cadastrado com sucesso!');
         return redirect()->route('empresas.index');
     }
