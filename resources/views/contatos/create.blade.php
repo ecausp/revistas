@@ -5,7 +5,7 @@
 
 <div class="card">
     <div class="card-header h5">
-        Cadastrar Contato
+        Cadastrar Contato para a empresa {{ $empresa->razao_social }}
     </div>
     <div class="card-body">
         @can('admin')
@@ -19,10 +19,10 @@
 @endsection
 
 @section('javascripts_bottom')
-    <script>
-        $(document).ready(function() {
-            // Formato cnpj
-            $('.telefone9digitos').mask("(00) 90000-0000");
-        });
-    </script>
+<script>
+$(document).ready(function() {
+    // Formato cnpj
+    $('.telefone9digitos').mask("(00) 90000-0000");
+});
+</script>
 @endsection

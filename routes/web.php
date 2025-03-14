@@ -30,3 +30,6 @@ Route::resource('licitacoes', LicitacaoController::class)->parameters(['licitaco
 Route::resource('empresas', EmpresaController::class);
 Route::resource('servicos', ServicoController::class);
 Route::resource('contatos', ContatoController::class);
+
+# rota para conseguir pegar a empresa que está cadastrando esse contato;
+Route::get('/contatos/create/{empresa}', ContatoController::class.'@empresa_contato')->name('empresa.contato.create');
