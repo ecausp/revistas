@@ -10,9 +10,10 @@
     <div class="card-body">
         <p><strong>CNPJ:</strong> {{ $empresa->cnpj }}</p>
 
+        @if (sizeof($contatos) > 0)
+
         <p><strong>Contatos:</strong></p>
-        <table
-            class="table datatable-simples dt-fixed-header dt-paging-50 responsive no-footer table-striped responsive">
+        <table class="table datatable-simples responsive">
             <thead>
                 <tr>
                     <th>Nome</th>
@@ -31,6 +32,7 @@
             </tbody>
         </table>
 
+        @endif
 
         @include('empresas.partials.licitacoes')
 
