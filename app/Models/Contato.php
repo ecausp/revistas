@@ -15,5 +15,13 @@ class Contato extends Model
         "name",
         "email",
         "telefone",
+        "empresa_id",
     ];
+
+    public function post()
+    {
+
+        return $this->belongsTo(Empresa::class);
+
+    }
 }

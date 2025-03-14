@@ -5,6 +5,7 @@ use App\Http\Controllers\LicitacaoController;
 use App\Http\Controllers\EmpresaController;
 use App\Http\Controllers\ServicoController;
 use App\Http\Controllers\ContatoController;
+use App\Models\Empresa;
 
 /*
 |--------------------------------------------------------------------------

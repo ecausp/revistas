@@ -27,7 +27,13 @@ class ContatoController extends Controller
             'telefone' => 'required',
         ]);
 
-        Contato::create($request->all());
+        $contato = new Contato();
+        $contato->name = $request->name;
+        $contato->email = $request->email;
+        $contato->telefone = $request->telefone;
+        $contato->empresa_id = $request->empresa_id;
+        $contato->save();
+
         session()->flash('success', 'Cadastrado com sucesso!');
         return redirect()->route('empresas.index');
     }
