@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Empresa;
+use App\Models\Contato;
 use App\Models\EmpresaLicitacao;
 use App\Models\Licitacao;
 use Illuminate\Http\Request;
@@ -59,7 +60,9 @@ class EmpresaController extends Controller
     public function show(Empresa $empresa)
     {
         $this->authorize('admin');
-        return view('empresas.show', compact('empresa'));
+
+        $contatos = Contato::where('empresa_id', $empresa->id)->get();
+        return view('empresas.show', compact('empresa', 'contatos'));
     }
     
     // Exibir o formulário para editar uma empresa

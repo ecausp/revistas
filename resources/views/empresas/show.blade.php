@@ -10,7 +10,16 @@
     <div class="card-body">
         <p><strong>CNPJ:</strong> {{ $empresa->cnpj }}</p>
 
-        @include('empresas.partials.licitacoes')    
+        <p><strong>Contatos:</strong></p>
+        @foreach ($contatos as $contato)
+        <p>
+            {{ $contato->name }}
+        </p>
+
+        @endforeach
+
+
+        @include('empresas.partials.licitacoes')
 
         <div class="container mt-5 col">
             <a href="{{ route('empresas.edit', $empresa) }}" class="btn btn-primary"><i class="fas fa-edit"></i>
