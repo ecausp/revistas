@@ -7,7 +7,7 @@
                 </tr>
                 <tr>
                     <th>Descrição</th>
-                    <th>ano</th>
+                    <th>Ano</th>
                     <th>Ações</th>
                 </tr>
             </thead>
