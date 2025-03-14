@@ -13,16 +13,16 @@ class Empresa extends Model
 
     protected $table = 'empresas';
     protected $fillable = [
-    'cnpj',
-    'razao_social'
+        'cnpj',
+        'razao_social'
     ];
 
-    public function licitacao()
+    public function licitacoes()
     {
         return $this->belongsToMany(Licitacao::class, 'empresa-licitacao');
     }
 
-    public function contato()
+    public function contatos()
     {
         return $this->hasMany(User::class,'contato-empresa');
     }
