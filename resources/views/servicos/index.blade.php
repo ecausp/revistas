@@ -33,7 +33,7 @@
                     <td>
                         <a href="{{ route('servicos.show', $servico) }}" class="btn btn-primary"><i
                                 class="fas fa-eye"></i> </a>
-                        <a href="{{ route('servicos.edit', $servico) }}" class="btn btn-warning"><i
+                        <a href="{{ route('servicos.edit', $servico) }}" class="btn btn-primary"><i
                                 class="fas fa-edit"></i></a>
                     </td>
                 </tr>

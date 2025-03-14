@@ -11,7 +11,7 @@
     </div>
     <div class="card-body">
         @can('admin')
-        <a href="{{ route('empresas.create') }}" class="btn btn-primary mb-3"><i class="fas fa-plus"></i>  Empresa</a>
+        <a href="{{ route('empresas.create') }}" class="btn btn-primary mb-3"><i class="fas fa-plus"></i> Empresa</a>
         <table
             class="table datatable-simples dt-fixed-header dt-paging-50 responsive no-footer table-striped responsive">
             <thead>
@@ -29,7 +29,7 @@
                     <td>
                         <a href="{{ route('empresas.show', $empresa) }}" class="btn btn-primary"><i
                                 class="fas fa-eye"></i> </a>
-                        <a href="{{ route('empresas.edit', $empresa) }}" class="btn btn-warning"><i
+                        <a href="{{ route('empresas.edit', $empresa) }}" class="btn btn-primary"><i
                                 class="fas fa-edit"></i></a>
 
                     </td>
