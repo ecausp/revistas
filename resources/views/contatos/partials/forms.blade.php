@@ -14,6 +14,11 @@
         required>
 </div>
 
+<div class="mb-1">
+    <input type="hidden" class="form-control" name="empresa_id" id="empresa_id"
+        placeholder="{{ $empresa->razao_social }}" value="{{ $empresa->id }}">
+</div>
+
 <div class="container mt-5 col">
     <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Cadastrar</button>
     <a href="{{ route('empresas.index') }}" class="btn btn-secondary"><i class="fas fa-chevron-left"></i>

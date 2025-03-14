@@ -5,6 +5,7 @@ use App\Http\Controllers\LicitacaoController;
 use App\Http\Controllers\EmpresaController;
 use App\Http\Controllers\ServicoController;
 use App\Http\Controllers\ContatoController;
+use App\Models\Empresa;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,4 +30,8 @@ Route::fallback(function(){
 Route::resource('licitacoes', LicitacaoController::class)->parameters(['licitacoes' => 'licitacao']);
 Route::resource('empresas', EmpresaController::class);
 Route::resource('servicos', ServicoController::class);
-Route::resource('contatos', ContatoController::class);
+
+# rota para conseguir pegar a empresa que está cadastrando esse contato;
+Route::get('/contatos/create/{empresa}', ContatoController::class . '@create')->name('contatos.create');
+// adds a post to the database
+Route::post('/contatos', ContatoController::class .'@store')->name('contatos.store');

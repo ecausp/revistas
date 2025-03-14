@@ -10,7 +10,31 @@
     <div class="card-body">
         <p><strong>CNPJ:</strong> {{ $empresa->cnpj }}</p>
 
-        @include('empresas.partials.licitacoes')    
+        @if (sizeof($contatos) > 0)
+
+        <p><strong>Contatos:</strong></p>
+        <table class="table datatable-simples responsive">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <th>Telefone</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($contatos as $contato)
+                <tr>
+                    <td>{{ $contato->name }}</td>
+                    <td>{{ $contato->email }}</td>
+                    <td>{{ $contato->telefone }}</td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+
+        @endif
+
+        @include('empresas.partials.licitacoes')
 
         <div class="container mt-5 col">
             <a href="{{ route('empresas.edit', $empresa) }}" class="btn btn-primary"><i class="fas fa-edit"></i>
