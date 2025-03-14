@@ -22,8 +22,4 @@ class Empresa extends Model
         return $this->belongsToMany(Licitacao::class, 'empresa-licitacao');
     }
 
-    public function contatos()
-    {
-        return $this->hasMany(User::class,'contato-empresa');
-    }
 }
