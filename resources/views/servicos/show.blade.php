@@ -4,7 +4,7 @@
 @section('content')
 <div class="card">
     <div class="card-header h5">
-        {{ $servico->descricao }}
+        Serviço: {{ $servico->descricao }}
     </div>
     @can('admin')
     <div class="card-body">

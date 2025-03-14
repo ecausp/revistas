@@ -4,7 +4,7 @@
 @section('content')
 <div class="card">
     <div class="card-header h5">
-        {{ $empresa->razao_social }}
+        Empresa: {{ $empresa->razao_social }}
     </div>
     @can('admin')
     <div class="card-body">
