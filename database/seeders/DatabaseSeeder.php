@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             LicitacaoSeeder::class,
             ServicoSeeder::class,
             ContatoSeeder::class,
+            RevistaSeeder::class,
         ]);
     }
 }
