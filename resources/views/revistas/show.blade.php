@@ -8,7 +8,7 @@
     </div>
     @can('admin')
     <div class="card-body">
-        <p><strong>Centro de Despesas: </strong>{{ $revista->centro_despesa }}</p>
+        <p><strong>Centro de Despesa: </strong>{{ $revista->centro_despesa }}</p>
 
         <div class="container mt-5 col">
             <a href="{{ route('revistas.edit', $revista) }}" class="btn btn-primary"><i class="fas fa-edit"></i>

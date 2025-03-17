@@ -1,11 +1,11 @@
 <div class="mb-1">
-    <label for="descricao" class="form-label">Descrição: </label>
+    <label for="descricao" class="form-label">Descrição </label>
     <input type="text" class="form-control" name="descricao" id="descricao" value="{{ old('descricao', isset($servico) ? $servico->descricao
         : '') }}" placeholder="Serviço..." required></input>
 </div>
 
 <div class="mb-1">
-    <label for="quantidade" class="form-label">Quantidade: </label>
+    <label for="quantidade" class="form-label">Quantidade </label>
     <input type="text" class="form-control numero" name="quantidade" id="quantidade" value="{{ old('quantidade', isset($servico) ? $servico->quantidade
         : '') }}" placeholder="000.000.000.000.000" required></input>
 </div>

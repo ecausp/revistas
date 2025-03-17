@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Revista;
 use Illuminate\Http\Request;
+use Uspdev\Replicado\Financeiro;
 
 class RevistaController extends Controller
 {
@@ -23,7 +24,8 @@ class RevistaController extends Controller
     public function create()
     {
         $this->authorize('admin');
-        return view('revistas.create');
+        $centros_despesas = Financeiro::ListarCentrosDespesas();
+        return view('revistas.create', compact('centros_despesas'));
     }
 
     /**
@@ -58,7 +60,8 @@ class RevistaController extends Controller
     public function edit(Revista $revista)
     {
         $this->authorize('admin');
-        return view('revistas.edit', compact('revista'));
+        $centros_despesas = Financeiro::ListarCentrosDespesas();
+        return view('revistas.edit', compact('revista', 'centros_despesas'));
     }
 
     /**
