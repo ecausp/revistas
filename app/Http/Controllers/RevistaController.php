@@ -1,0 +1,91 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Revista;
+use Illuminate\Http\Request;
+
+class RevistaController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {   
+        $this->authorize('admin');
+        $revistas = Revista::all();
+        return view('revistas.index', compact('revistas'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        $this->authorize('admin');
+        return view('revistas.create');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        $this->authorize('admin');
+
+        $request->validate([
+            'name' => 'required',
+            'centro_despesa' => 'required',
+        ]);
+
+        Revista::create($request->all());
+        session()->flash('success', 'Cadastrado com sucesso!');
+        return redirect()->route('revistas.index');
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Revista $revista)
+    {
+        $this->authorize('admin');
+        return view('revistas.show', compact('revista'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Revista $revista)
+    {
+        $this->authorize('admin');
+        return view('revistas.edit', compact('revista'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, Revista $revista)
+    {
+        $this->authorize('admin');
+
+        $request->validate([
+            'name' => 'required',
+            'centro_despesa' => 'required',
+        ]);
+        
+        $revista->update($request->all());
+        session()->flash('success', 'Atualizado com sucesso!');
+        return redirect()->route('revistas.index');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Revista $revista)
+    {
+        $this->authorize('admin');
+        $revista->delete();
+        session()->flash('danger', 'Revista: ' . $revista->name . ' removida!');
+        return redirect()->route('revistas.index');
+    }
+}
