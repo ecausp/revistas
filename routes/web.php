@@ -6,6 +6,7 @@ use App\Http\Controllers\EmpresaController;
 use App\Http\Controllers\ServicoController;
 use App\Http\Controllers\ContatoController;
 use App\Http\Controllers\RevistaController;
+use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,3 +37,9 @@ Route::resource('revistas', RevistaController::class);
 Route::get('/contatos/create/{empresa}', ContatoController::class . '@create')->name('contatos.create');
 // adds a post to the database
 Route::post('/contatos', ContatoController::class .'@store')->name('contatos.store');
+
+// logon
+Route::get('/login_laravel', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login_laravel', [AuthController::class, 'login'])->name('login');
+Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
+Route::post('/logout_laravel', [AuthController::class, 'logout'])->name('logout');
