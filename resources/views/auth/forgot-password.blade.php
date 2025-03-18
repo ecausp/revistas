@@ -1,26 +1,21 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+@extends('layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Esqueci a Senha</title>
-</head>
+@section('content')
 
-<body>
-    <h2>Recuperar Senha</h2>
+<h2>Recuperar Senha</h2>
 
-    @if(session('status'))
-    <p style="color: green;">{{ session('status') }}</p>
-    @endif
+@if(session('status'))
+<p style="color: green;">{{ session('status') }}</p>
+@endif
 
-    <form action="{{ route('password.email') }}" method="POST">
-        @csrf
-        <label>Email:</label>
-        <input type="email" name="email" required>
-        <br>
-        <button type="submit">Enviar Link de Recuperação</button>
-    </form>
-</body>
-
-</html>
+<form action="{{ route('password.email') }}" method="POST">
+    @csrf
+    <div class="mb-1">
+        <label for="email" class="form-label">Email</label>
+        <input type="text" class="form-control email" name="email" id="email" placeholder="email@exemplo.com"
+            required></input>
+    </div>
+    <br>
+    <button type="submit" class="btn btn-primary">Enviar Link</button>
+</form>
+@endsection

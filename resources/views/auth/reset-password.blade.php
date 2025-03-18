@@ -1,33 +1,35 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+@extends('layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Redefinir Senha</title>
-</head>
+@section('content')
 
-<body>
-    <h2>Redefinir Senha</h2>
+<h2>Redefinir Senha</h2>
 
-    @if(session('error'))
-    <p style="color: red;">{{ session('error') }}</p>
-    @endif
+@if(session('error'))
+<p style="color: red;">{{ session('error') }}</p>
+@endif
 
-    <form action="{{ route('password.update') }}" method="POST">
-        @csrf
-        <input type="hidden" name="token" value="{{ $token }}">
-        <label>Email:</label>
-        <input type="email" name="email" required>
-        <br>
-        <label>Nova Senha:</label>
-        <input type="password" name="password" required>
-        <br>
-        <label>Confirmar Nova Senha:</label>
-        <input type="password" name="password_confirmation" required>
-        <br>
-        <button type="submit">Alterar Senha</button>
-    </form>
+<form action="{{ route('password.update') }}" method="POST">
+    @csrf
+    <input type="hidden" name="token" value="{{ $token }}">
+
+    <div class="mb-1">
+        <label for="email" class="form-label">Email</label>
+        <input type="text" class="form-control email" name="email" id="email" placeholder="email@exemplo.com"
+            required></input>
+    </div>
+
+    <div class="mb-1">
+        <label for="senha" class="form-label">Nova Senha</label>
+        <input type="password" class="form-control" name="password" id="password" required></input>
+    </div>
+
+    <div class="mb-1">
+        <label for="senha" class="form-label">Nova Senha</label>
+        <input type="password" class="form-control" name="password_confirmation" id="password_confirmation"
+            required></input>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Alterar Senha</button>
+</form>
 </body>
-
-</html>
+@endsection
