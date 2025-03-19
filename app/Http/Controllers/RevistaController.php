@@ -58,7 +58,7 @@ class RevistaController extends Controller
     public function show(Revista $revista)
     {
         $this->authorize('admin');
-        $editor = User::where('id', $revista->editor)->first()->name;
+        $editor = User::where('id', $revista->editor)->first();
         $updated_at = $revista->updated_at;
         return view('revistas.show', compact('revista', 'updated_at','editor' ) );
     }

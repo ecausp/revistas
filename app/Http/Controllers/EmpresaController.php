@@ -63,7 +63,7 @@ class EmpresaController extends Controller
     {
 
         $this->authorize('admin');
-        $editor = User::where('id', $empresa->editor)->first()->name;
+        $editor = User::where('id', $empresa->editor)->first();
         $updated_at = $empresa->updated_at;
         $contatos = Contato::where('empresa_id', $empresa->id)->get();
         return view('empresas.show', compact('empresa', 'contatos', "editor", "updated_at"));
