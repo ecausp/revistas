@@ -48,7 +48,7 @@ class LicitacaoController extends Controller
     public function index()
     {
         $this->authorize('admin');
-        $licitacoes = Licitacao::orderBy('ano', 'desc')->orderBy('descricao');
+        $licitacoes = Licitacao::orderBy('ano', 'desc')->orderBy('descricao')->get();
         return view('licitacoes.index', compact('licitacoes'));
     }
 
@@ -56,7 +56,7 @@ class LicitacaoController extends Controller
     public function show(Licitacao $licitacao)
     {
         $this->authorize('admin');
-        $editor = User::where('id', $licitacao->editor)->first()->name;
+        $editor = User::where('id', $licitacao->editor)->first();
         $updated_at = $licitacao->updated_at;
         return view('licitacoes.show', compact("licitacao", 'updated_at', "editor"));
     }

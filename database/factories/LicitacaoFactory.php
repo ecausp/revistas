@@ -18,9 +18,9 @@ class LicitacaoFactory extends Factory
     {
         return [
             'descricao' => $this->faker->sentence,
-            'ano' => $this->faker->year(),
-            'valor_total' => $this->faker->randomFloat(2, 0, 999),
-            'editor' => 1,
+            'ano'=> $this->faker->year($max = 'now'),
+            'valor_total'=> $this->faker->randomFloat(2, 0, 999),
+            'editor'=> 1,
         ];
     }
 }
