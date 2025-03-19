@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Licitacao;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 use function Ramsey\Uuid\v1;
@@ -55,7 +56,9 @@ class LicitacaoController extends Controller
     public function show(Licitacao $licitacao)
     {
         $this->authorize('admin');
-        return view('licitacoes.show', compact('licitacao'));
+        $editor = User::where('id', $licitacao->editor)->first()->name;
+        $updated_at = $licitacao->updated_at;
+        return view('licitacoes.show', compact("licitacao", 'updated_at', "editor"));
     }
 
     // Exibir o formulário para editar uma licitação
@@ -80,7 +83,7 @@ class LicitacaoController extends Controller
         ]);
 
         $licitacao_editada = [
-            'editor' => $request->user()->name,
+            'editor' => $request->user()->id,
             "descricao" => $request->descricao,
             "ano" => $request->ano,
             "valor_total" => $request->valor_total,

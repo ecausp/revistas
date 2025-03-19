@@ -9,6 +9,7 @@
     @can('admin')
     <div class="card-body">
         <p><strong>CNPJ:</strong> {{ $empresa->cnpj }}</p>
+        @include('partials.editor')
 
         @include('empresas.partials.contatos')
         @include('empresas.partials.licitacoes')

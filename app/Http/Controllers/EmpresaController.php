@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Empresa;
 use App\Models\Contato;
+use App\Models\User;
 use App\Models\EmpresaLicitacao;
 use App\Models\Licitacao;
 use Illuminate\Http\Request;
@@ -34,6 +35,7 @@ class EmpresaController extends Controller
         ]);
 
         $empresa = new Empresa();
+        $empresa->editor = $request->user()->id;
         $empresa->cnpj = $request->cnpj;
         $empresa->razao_social = $request->razao_social;
         $empresa->save();
@@ -59,10 +61,12 @@ class EmpresaController extends Controller
     // Exibir os detalhes de uma empresa
     public function show(Empresa $empresa)
     {
-        $this->authorize('admin');
 
+        $this->authorize('admin');
+        $editor = User::where('id', $empresa->editor)->first()->name;
+        $updated_at = $empresa->updated_at;
         $contatos = Contato::where('empresa_id', $empresa->id)->get();
-        return view('empresas.show', compact('empresa', 'contatos'));
+        return view('empresas.show', compact('empresa', 'contatos', "editor", "updated_at"));
     }
     
     // Exibir o formulário para editar uma empresa

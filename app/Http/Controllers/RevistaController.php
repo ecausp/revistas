@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Revista;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Uspdev\Replicado\Financeiro;
 
@@ -57,7 +58,9 @@ class RevistaController extends Controller
     public function show(Revista $revista)
     {
         $this->authorize('admin');
-        return view('revistas.show', compact('revista'));
+        $editor = User::where('id', $revista->editor)->first()->name;
+        $updated_at = $revista->updated_at;
+        return view('revistas.show', compact('revista', 'updated_at','editor' ) );
     }
 
     /**

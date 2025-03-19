@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Servico;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class ServicoController extends Controller
@@ -66,7 +67,9 @@ class ServicoController extends Controller
     public function show(Servico $servico)
     {
         $this->authorize('admin');
-        return view('servicos.show', compact('servico'));
+        $editor = User::where('id', $servico->editor)->first()->name;
+        $updated_at = $servico->updated_at;
+        return view('servicos.show', compact('servico', 'updated_at', 'editor'));
     }
 
     /**
