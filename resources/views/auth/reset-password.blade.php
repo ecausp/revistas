@@ -28,6 +28,7 @@
         <input type="password" class="form-control" name="password_confirmation" id="password_confirmation"
             required></input>
     </div>
+    <br>
 
     <button type="submit" class="btn btn-primary">Alterar Senha</button>
 </form>
