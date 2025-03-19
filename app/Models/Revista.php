@@ -12,5 +12,6 @@ class Revista extends Model
     protected $fillable = [
         "name",
         "centro_despesa",
+        "editor",
     ];
 }

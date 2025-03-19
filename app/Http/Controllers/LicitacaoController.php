@@ -32,7 +32,7 @@ class LicitacaoController extends Controller
 
         $licitacao = new Licitacao();
         $licitacao = [
-            'editor' => $request->user()->name,
+            'editor' => $request->user()->id,
             "descricao" => $request->descricao,
             "ano" => $request->ano,
             "valor_total" => $request->valor_total,

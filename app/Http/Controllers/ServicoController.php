@@ -45,7 +45,17 @@ class ServicoController extends Controller
             'valor_unitario' => 'required|numeric',
         ]);
 
-        Servico::create($request->all());
+        $servico = new Servico();
+        $servico = [
+            'editor' => $request->user()->id,
+            "descricao" => $request->descricao,
+            "quantidade" => $request->quantidade,
+            "unidade_medida" => $request->unidade_medida,
+            "valor_unitario" => $request->valor_unitario,
+        ];
+
+
+        Servico::create($servico);
         session()->flash('success', 'Cadastrado com sucesso!');
         return redirect()->route('servicos.index');
     }
@@ -87,7 +97,15 @@ class ServicoController extends Controller
             'valor_unitario' => 'required|numeric',
         ]);
         
-        $servico->update($request->all());
+        $servico_editado = [
+            'editor' => $request->user()->name,
+            "descicao" => $request->descricao,
+            "quantidade" => $request->quantidade,
+            "unidade_medida" => $request->unidade_medida,
+            "valor_unitario" => $request->valor_unitario,
+        ];
+        
+        $servico->update($servico_editado);
         session()->flash('success', 'Atualizado com sucesso!');
         return redirect()->route('servicos.index');
     }

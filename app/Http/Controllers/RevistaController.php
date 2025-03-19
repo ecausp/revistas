@@ -40,7 +40,13 @@ class RevistaController extends Controller
             'centro_despesa' => 'required',
         ]);
 
-        Revista::create($request->all());
+        $Revista = new Revista();
+        $revista = [
+            'editor' => $request->user()->id,
+            "name" => $request->name,
+            "centro_despesa" => $request->centro_despesa,
+        ];
+        Revista::create($revista);
         session()->flash('success', 'Cadastrado com sucesso!');
         return redirect()->route('revistas.index');
     }
@@ -76,7 +82,13 @@ class RevistaController extends Controller
             'centro_despesa' => 'required',
         ]);
         
-        $revista->update($request->all());
+        $revista_editada = [
+            "editor" => $request->user()->id,
+            "name" => $request->name,
+            "centro_despesa" => $request->centro_despesa,  
+        ];
+        
+        $revista->update($revista_editada);
         session()->flash('success', 'Atualizado com sucesso!');
         return redirect()->route('revistas.index');
     }

@@ -15,5 +15,6 @@ class Servico extends Model
         "quantidade",
         "unidade_medida",
         "valor_unitario",
+        "editor",
     ];
 }
