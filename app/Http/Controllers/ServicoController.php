@@ -101,7 +101,7 @@ class ServicoController extends Controller
         ]);
         
         $servico_editado = [
-            'editor' => $request->user()->name,
+            'editor' => $request->user()->id,
             "descicao" => $request->descricao,
             "quantidade" => $request->quantidade,
             "unidade_medida" => $request->unidade_medida,
