@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Servico;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class ServicoController extends Controller
@@ -45,7 +46,17 @@ class ServicoController extends Controller
             'valor_unitario' => 'required|numeric',
         ]);
 
-        Servico::create($request->all());
+        $servico = new Servico();
+        $servico = [
+            'editor' => $request->user()->id,
+            "descricao" => $request->descricao,
+            "quantidade" => $request->quantidade,
+            "unidade_medida" => $request->unidade_medida,
+            "valor_unitario" => $request->valor_unitario,
+        ];
+
+
+        Servico::create($servico);
         session()->flash('success', 'Cadastrado com sucesso!');
         return redirect()->route('servicos.index');
     }
@@ -56,7 +67,9 @@ class ServicoController extends Controller
     public function show(Servico $servico)
     {
         $this->authorize('admin');
-        return view('servicos.show', compact('servico'));
+        $editor = User::where('id', $servico->editor)->first();
+        $updated_at = $servico->updated_at;
+        return view('servicos.show', compact('servico', 'updated_at', 'editor'));
     }
 
     /**
@@ -87,7 +100,15 @@ class ServicoController extends Controller
             'valor_unitario' => 'required|numeric',
         ]);
         
-        $servico->update($request->all());
+        $servico_editado = [
+            'editor' => $request->user()->id,
+            "descicao" => $request->descricao,
+            "quantidade" => $request->quantidade,
+            "unidade_medida" => $request->unidade_medida,
+            "valor_unitario" => $request->valor_unitario,
+        ];
+        
+        $servico->update($servico_editado);
         session()->flash('success', 'Atualizado com sucesso!');
         return redirect()->route('servicos.index');
     }

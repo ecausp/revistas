@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Contato;
 use Illuminate\Http\Request;
 use App\Models\Empresa;
+use App\Models\Contato;
+use App\Models\User;
 
 class ContatoController extends Controller
 {
@@ -27,10 +28,14 @@ class ContatoController extends Controller
             'telefone' => 'required',
         ]);
 
+        $user = new User();
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->telefone = $request->telefone;
+        $user->save();
+
         $contato = new Contato();
-        $contato->name = $request->name;
-        $contato->email = $request->email;
-        $contato->telefone = $request->telefone;
+        $contato->contato_id = $user->id;
         $contato->empresa_id = $request->empresa_id;
         $contato->save();
 

@@ -10,6 +10,8 @@
     <div class="card-body">
         <p><strong>Centro de Despesa: </strong>{{ $revista->centro_despesa }}</p>
 
+        @include('partials.editor')
+
         <div class="container mt-5 col">
             <a href="{{ route('revistas.edit', $revista) }}" class="btn btn-primary"><i class="fas fa-edit"></i>
                 Editar</a>
