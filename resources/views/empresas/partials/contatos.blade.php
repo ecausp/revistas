@@ -12,14 +12,18 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($empresa->contatos as $contato)
-                <tr>
-                    <td>{{ App\Models\User::find($contato->contato_id)->name }}</td>
-                    <td>{{ App\Models\User::find($contato->contato_id)->email }}</td>
-                    <td>{{ App\Models\User::find($contato->contato_id)->telefone }}</td>
-                </tr>
+        
+            @foreach ($users as $user)
+            <tr>
+                <td>{{ $user[0]->name }}</td>
+                <td>{{ $user[0]->email }}</td>
+                <td>{{ $user[0]->telefone }}</td>
+
+            </tr>
+
             @endforeach
         </tbody>
     </table>
 </div>
+
 @endif

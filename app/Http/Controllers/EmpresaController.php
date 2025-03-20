@@ -7,6 +7,7 @@ use App\Models\Contato;
 use App\Models\User;
 use App\Models\EmpresaLicitacao;
 use App\Models\Licitacao;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 use function Ramsey\Uuid\v1;
@@ -65,7 +66,15 @@ class EmpresaController extends Controller
         $editor = User::where('id', $empresa->editor)->first();
         $updated_at = $empresa->updated_at;
         $contatos = Contato::where('empresa_id', $empresa->id)->get();
-        return view('empresas.show', compact('empresa', 'contatos', "editor", "updated_at"));
+      
+        $users = [];
+        $i = 0;
+        foreach ($contatos as $contato) {
+            $users[$i] = User::where('id', $contato->user_id)->get()->all();
+            $i++;
+        };
+        return view('empresas.show', compact('empresa', 'contatos', 'users'));
+
     }
     
     // Exibir o formulário para editar uma empresa
