@@ -16,7 +16,7 @@ class AuthController extends Controller
 {
     public function showLogin()
     {
-        return view('auth.login');
+        return view('auth.autenticacao_empresa');
     }
 
     public function login(Request $request)
@@ -107,6 +107,6 @@ class AuthController extends Controller
 
         DB::table('password_resets')->where('email', $request->email)->delete();
 
-        return redirect()->route('dashboard');
+        return redirect()->route('home');
     }
 }

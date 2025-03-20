@@ -44,19 +44,10 @@ Route::get('/contatos/create/{empresa}', ContatoController::class . '@create')->
 Route::post('/contatos', ContatoController::class .'@store')->name('contatos.store');
 
 // logon
-Route::get('/login_laravel', [AuthController::class, 'showLogin'])->name('login')->middleware(EnsureUserIsLogged::class);
-Route::post('/login_laravel', [AuthController::class, 'login'])->name('login')->middleware(EnsureUserIsLogged::class);
-Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
+Route::get('/login_empresa', [AuthController::class, 'showLogin'])->name('login')->middleware(EnsureUserIsLogged::class);
+Route::post('/login_empresa', [AuthController::class, 'login'])->name('login')->middleware(EnsureUserIsLogged::class);
 Route::get('/logout', function(){Auth::logout();})->middleware(EnsureUserIsLogged::class);
-Route::get('/forgot-password', [AuthController::class, 'showForgotPassword'])->name('password.request');
-Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email');
-Route::get('/reset-password/{token}', [AuthController::class, 'showResetPassword'])->name('password.reset');
-Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
-
-
-
-// mail route
-Route::get('/send-test-email', function () {
-    Mail::to('destinatario@teste.com')->send(new TestMail());
-    return 'E-mail de teste enviado com sucesso!';
-});
+Route::get('/esqueci-senha', [AuthController::class, 'showForgotPassword'])->name('password.request');
+Route::post('/esqueci-senha', [AuthController::class, 'sendResetLink'])->name('password.email');
+Route::get('/redefinir-senha/{token}', [AuthController::class, 'showResetPassword'])->name('password.reset');
+Route::post('/redefinir-senha', [AuthController::class, 'resetPassword'])->name('password.update');

@@ -2,7 +2,7 @@
 
 @section('content')
 
-<h2>Login</h2>
+<h2>Autenticação da Empresa</h2>
 @if(session('error'))
 <p style="color: red;">{{ session('error') }}</p>
 @endif
