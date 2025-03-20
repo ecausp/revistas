@@ -37,7 +37,7 @@ class ContatoController extends Controller
         $user->save();
 
         $contato = new Contato();
-        $contato->contato_id = $user->id;
+        $contato->user_id = $user->id;
         $contato->empresa_id = $request->empresa_id;
         $contato->save();
 

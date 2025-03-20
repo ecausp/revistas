@@ -6,6 +6,7 @@ use App\Models\Empresa;
 use App\Models\Contato;
 use App\Models\EmpresaLicitacao;
 use App\Models\Licitacao;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 
@@ -62,7 +63,13 @@ class EmpresaController extends Controller
         $this->authorize('admin');
 
         $contatos = Contato::where('empresa_id', $empresa->id)->get();
-        return view('empresas.show', compact('empresa', 'contatos'));
+        $users = [];
+        $i = 0;
+        foreach ($contatos as $contato) {
+            $users[$i] = User::where('id', $contato->user_id)->get()->all();
+            $i++;
+        };
+        return view('empresas.show', compact('empresa', 'contatos', 'users'));
     }
     
     // Exibir o formulário para editar uma empresa

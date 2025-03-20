@@ -12,15 +12,16 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($empresa->contatos as $contato)
+            @foreach ($users as $user)
             <tr>
-                <td>{{ $contato->name }}</td>
-                <td>{{ $contato->email }}</td>
-                <td>{{ $contato->telefone }}</td>
+                <td>{{ $user[0]->name }}</td>
+                <td>{{ $user[0]->email }}</td>
+                <td>{{ $user[0]->telefone }}</td>
 
             </tr>
             @endforeach
         </tbody>
     </table>
 </div>
+
 @endif
