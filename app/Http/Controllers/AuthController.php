@@ -21,22 +21,18 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        if(Auth::check())
-        {
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
+
+        if (auth()->attempt($credentials)) {
             return redirect()->route('home' );
         }
-        else{
-            $credentials = $request->validate([
-                'email' => 'required|email',
-                'password' => 'required'
-            ]);
-
-            if (auth()->attempt($credentials)) {
-                return redirect()->route('home' );
-            }
         
-            return back()->withErrors(['message' => 'Invalid credentials']);
-        }
+        session()->flash('danger', 'Credenciais inválidas!');
+        return redirect()->route('login');
+
     }
 
     public function logout()

@@ -26,7 +26,7 @@
         </div>
         <br>
 
-        <button type="submit" class="btn btn-primary">Alterar Senha</button>
+        <button type="submit" class="btn btn-primary"><i class="fas fa-exchange-alt"></i> Alterar Senha</button>
         </form>
     </div>
     @endsection

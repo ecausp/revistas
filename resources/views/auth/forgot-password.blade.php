@@ -16,7 +16,7 @@
                     required></input>
             </div>
             <br>
-            <button type="submit" class="btn btn-primary">Enviar Link</button>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Enviar Link</button>
         </form>
     </div>
     @endsection

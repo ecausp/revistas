@@ -28,8 +28,11 @@
 
             <div class="container mt-5 col">
 
-                <button type="submit" class="btn btn-primary">Entrar</button>
-                <a href="{{ route('password.request') }}" class="btn btn-secondary">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-sign-in-alt" aria-hidden="true"></i>
+                    Entrar</button>
+                <a href="{{ route('password.request') }}" class="btn btn-secondary"><i class="fas fa-question"
+                        aria-hidden="true"></i>
+
                     Esqueci a Senha</a>
             </div>
         </form>
