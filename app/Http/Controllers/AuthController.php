@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ResetPasswordMail;
 use App\Models\User;
@@ -20,33 +21,22 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            //'password' => 'required'
-        ]);
-
-        $user = User::where('email', $request->email)->first();
-
-        //if (!$user || !Hash::check($request->password, $user->password)) {
-        //    return redirect()->route('login')->with('error', 'Credenciais inválidas');
-        //}
-
-        session(['user_id' => $user->id]); // Salva o usuário na sessão
-
-        return redirect()->route('dashboard');
-    }
-
-    public function dashboard()
-    {
-        $userId = session('user_id');
-
-        if (!$userId) {
-            return redirect()->route('login')->with('error', 'Faça login primeiro.');
+        if(Auth::check())
+        {
+            return redirect()->route('home' );
         }
+        else{
+            $credentials = $request->validate([
+                'email' => 'required|email',
+                'password' => 'required'
+            ]);
 
-        $user = User::find($userId);
-
-        return view('auth.dashboard', compact('user'));
+            if (auth()->attempt($credentials)) {
+                return redirect()->route('home' );
+            }
+        
+            return back()->withErrors(['message' => 'Invalid credentials']);
+        }
     }
 
     public function logout()
