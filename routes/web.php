@@ -49,5 +49,5 @@ Route::post('/login_empresa', [AuthController::class, 'login'])->name('login')->
 Route::get('/logout', function(){Auth::logout();})->middleware(EnsureUserIsLogged::class);
 Route::get('/esqueci-senha', [AuthController::class, 'showForgotPassword'])->name('password.request');
 Route::post('/esqueci-senha', [AuthController::class, 'sendResetLink'])->name('password.email');
-Route::get('/redefinir-senha/{token}', [AuthController::class, 'showResetPassword'])->name('password.reset');
-Route::post('/redefinir-senha', [AuthController::class, 'resetPassword'])->name('password.update');
+Route::get('/reset-password/{token}', [AuthController::class, 'showResetPassword'])->name('password.reset');
+Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
