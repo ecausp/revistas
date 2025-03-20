@@ -21,6 +21,7 @@ class ServicoFactory extends Factory
             'quantidade' => $this->faker->numberBetween($min = 1, $max = 9000),
             'unidade_medida' => $this->faker->word,
             'valor_unitario' => $this->faker->randomFloat(2, 0, 999),
+            'editor' => 1,
         ];
     }
 }

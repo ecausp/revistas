@@ -14,7 +14,8 @@ class Empresa extends Model
     protected $table = 'empresas';
     protected $fillable = [
         'cnpj',
-        'razao_social'
+        'razao_social',
+        'editor',
     ];
 
     public function licitacoes()

@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Empresa;
 use App\Models\Contato;
+use App\Models\User;
 use App\Models\EmpresaLicitacao;
 use App\Models\Licitacao;
 use App\Models\User;
 use Illuminate\Http\Request;
-
 
 use function Ramsey\Uuid\v1;
 
@@ -35,6 +35,7 @@ class EmpresaController extends Controller
         ]);
 
         $empresa = new Empresa();
+        $empresa->editor = $request->user()->id;
         $empresa->cnpj = $request->cnpj;
         $empresa->razao_social = $request->razao_social;
         $empresa->save();
@@ -53,16 +54,19 @@ class EmpresaController extends Controller
     public function index()
     {
         $this->authorize('admin');
-        $empresas = Empresa::all();
+        $empresas = Empresa::orderBy('updated_at', 'desc')->get();
         return view('empresas.index', compact('empresas'));
     }
     
     // Exibir os detalhes de uma empresa
     public function show(Empresa $empresa)
     {
-        $this->authorize('admin');
 
+        $this->authorize('admin');
+        $editor = User::where('id', $empresa->editor)->first();
+        $updated_at = $empresa->updated_at;
         $contatos = Contato::where('empresa_id', $empresa->id)->get();
+      
         $users = [];
         $i = 0;
         foreach ($contatos as $contato) {
@@ -70,6 +74,7 @@ class EmpresaController extends Controller
             $i++;
         };
         return view('empresas.show', compact('empresa', 'contatos', 'users'));
+
     }
     
     // Exibir o formulário para editar uma empresa
@@ -90,7 +95,14 @@ class EmpresaController extends Controller
             'razao_social' => 'required',
         ]);
 
-        $empresa->update($request->all());
+        $empresa_editada = [
+            'editor' => $request->user()->id,
+            "cnpj" => $request->cnpj,
+            "razao_social" => $request->razao_social,
+        ];
+
+
+        $empresa->update($empresa_editada);
         session()->flash('success', 'Atualizado com sucesso!');
         return redirect()->route('empresas.index');
     }

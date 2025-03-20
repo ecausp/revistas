@@ -12,6 +12,7 @@
             </tr>
         </thead>
         <tbody>
+        
             @foreach ($users as $user)
             <tr>
                 <td>{{ $user[0]->name }}</td>
@@ -19,6 +20,7 @@
                 <td>{{ $user[0]->telefone }}</td>
 
             </tr>
+
             @endforeach
         </tbody>
     </table>

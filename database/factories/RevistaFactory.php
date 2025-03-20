@@ -19,6 +19,7 @@ class RevistaFactory extends Factory
         return [
             'name' => $this->faker->company,
             'centro_despesa' => $this->faker->word,
+            'editor' => 1,
         ];
     }
 }

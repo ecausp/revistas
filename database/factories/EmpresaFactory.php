@@ -20,6 +20,7 @@ class EmpresaFactory extends Factory
         return [
             'cnpj' => $this->faker->cnpj,
             'razao_social' => $this->faker->company,
+            'editor' => 1,
         ];
     }
 }

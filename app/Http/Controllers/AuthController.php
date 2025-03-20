@@ -12,6 +12,8 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
+use function Ramsey\Uuid\v1;
+
 class AuthController extends Controller
 {
     public function showLogin()
@@ -30,10 +32,9 @@ class AuthController extends Controller
             return redirect()->route('home' );
         }
         
-        session()->flash('danger', 'Credenciais inválidas!');
+        session()->flash('success', 'Cadastrado com sucesso!');
         return redirect()->route('login');
-
-    }
+    }   
 
     public function logout()
     {
