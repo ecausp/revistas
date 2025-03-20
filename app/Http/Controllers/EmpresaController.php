@@ -9,7 +9,6 @@ use App\Models\EmpresaLicitacao;
 use App\Models\Licitacao;
 use Illuminate\Http\Request;
 
-
 use function Ramsey\Uuid\v1;
 
 class EmpresaController extends Controller
@@ -87,7 +86,14 @@ class EmpresaController extends Controller
             'razao_social' => 'required',
         ]);
 
-        $empresa->update($request->all());
+        $empresa_editada = [
+            'editor' => $request->user()->id,
+            "cnpj" => $request->cnpj,
+            "razao_social" => $request->razao_social,
+        ];
+
+
+        $empresa->update($empresa_editada);
         session()->flash('success', 'Atualizado com sucesso!');
         return redirect()->route('empresas.index');
     }

@@ -32,6 +32,8 @@ class ContatoController extends Controller
         $user->name = $request->name;
         $user->email = $request->email;
         $user->telefone = $request->telefone;
+        // para contornar um usuário externo (funções do Replicado exigem um numero USP)
+        $user->codpes = 0;
         $user->save();
 
         $contato = new Contato();

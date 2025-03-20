@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ResetPasswordMail;
 use App\Models\User;
@@ -11,43 +12,29 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
+use function Ramsey\Uuid\v1;
+
 class AuthController extends Controller
 {
     public function showLogin()
     {
-        return view('auth.login');
+        return view('auth.autenticacao_empresa');
     }
 
     public function login(Request $request)
     {
         $credentials = $request->validate([
             'email' => 'required|email',
-            //'password' => 'required'
+            'password' => 'required'
         ]);
 
-        $user = User::where('email', $request->email)->first();
-
-        //if (!$user || !Hash::check($request->password, $user->password)) {
-        //    return redirect()->route('login')->with('error', 'Credenciais inválidas');
-        //}
-
-        session(['user_id' => $user->id]); // Salva o usuário na sessão
-
-        return redirect()->route('dashboard');
-    }
-
-    public function dashboard()
-    {
-        $userId = session('user_id');
-
-        if (!$userId) {
-            return redirect()->route('login')->with('error', 'Faça login primeiro.');
+        if (auth()->attempt($credentials)) {
+            return redirect()->route('home' );
         }
-
-        $user = User::find($userId);
-
-        return view('auth.dashboard', compact('user'));
-    }
+        
+        session()->flash('success', 'Cadastrado com sucesso!');
+        return redirect()->route('login');
+    }   
 
     public function logout()
     {
@@ -117,6 +104,6 @@ class AuthController extends Controller
 
         DB::table('password_resets')->where('email', $request->email)->delete();
 
-        return redirect()->route('dashboard');
+        return redirect()->route('home');
     }
 }
