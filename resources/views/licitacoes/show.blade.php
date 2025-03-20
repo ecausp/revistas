@@ -11,9 +11,8 @@
         <p><strong>Ano:</strong> {{ $licitacao->ano }}</p>
         <p><strong>Valor Total:</strong> {{ number_format($licitacao->valor_total, 2, ',', '.') }}</p>
 
-        @include('partials.editor')
-
         @include('licitacoes.partials.empresas')
+        @include('partials.editor')
 
         <div class="container mt-5 col">
             <a href="{{ route('licitacoes.edit', $licitacao) }}" class="btn btn-primary"><i class="fas fa-edit"></i>

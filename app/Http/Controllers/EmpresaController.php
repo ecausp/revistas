@@ -54,7 +54,7 @@ class EmpresaController extends Controller
     public function index()
     {
         $this->authorize('admin');
-        $empresas = Empresa::all();
+        $empresas = Empresa::orderBy('updated_at', 'desc')->get();
         return view('empresas.index', compact('empresas'));
     }
     

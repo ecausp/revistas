@@ -9,10 +9,10 @@
     @can('admin')
     <div class="card-body">
         <p><strong>CNPJ:</strong> {{ $empresa->cnpj }}</p>
-        @include('partials.editor')
 
         @include('empresas.partials.contatos')
         @include('empresas.partials.licitacoes')
+        @include('partials.editor')
 
         <div class="container mt-5 col">
             <a href="{{ route('empresas.edit', $empresa) }}" class="btn btn-primary"><i class="fas fa-edit"></i>
