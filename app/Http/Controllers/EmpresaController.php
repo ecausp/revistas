@@ -7,7 +7,6 @@ use App\Models\Contato;
 use App\Models\User;
 use App\Models\EmpresaLicitacao;
 use App\Models\Licitacao;
-use App\Models\User;
 use Illuminate\Http\Request;
 
 use function Ramsey\Uuid\v1;
