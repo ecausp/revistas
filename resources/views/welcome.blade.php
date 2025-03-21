@@ -3,12 +3,12 @@
 @section('content')
   <div class="card">
     <div class="card-header h5">
-      Conceito
+      Sobre
     </div>
     <div class="card-body">
       <div class="card-body" style="font-size:16px">
         <p>
-          Sistema para solicitação de serviços de gráfica e editora.    
+          Controle orçamentário das revistas da unidade para pedidos de serviços de editora e gráfica.    
         </p>
       </div>
     </div>   
