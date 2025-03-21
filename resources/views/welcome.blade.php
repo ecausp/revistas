@@ -11,11 +11,11 @@
           Controle orçamentário das revistas da unidade para pedidos de serviços de editora e gráfica.    
         </p>
         
-        @can('user')
+        @if (!Auth::check())
           <p>
-            <a href="{{ route('login') }}" class="btn btn-success"><i class="fas fa-sign-in-alt" aria-hidden="true"></i> Entrar como Empresa</a>
+            <a href="{{ route('login') }}" class="btn btn-success"><i class="fas fa-sign-in-alt" aria-hidden="true"></i> Empresa</a>
           </p>
-        @endcan
+        @endif
       
       </div>
     </div>
