@@ -1,8 +1,8 @@
-# Sistema Gráfica
+# Sistema de Orçamento das Revistas
 
 ## Conceito
 
-Realizar pedidos referentes aos serviços de Editora e Gráfica.
+As revistas podem realizar pedidos referentes aos serviços de editora e gráfica.
 
 1. O Financeiro faz uma consulta para serviços de gráfica e editoração e cria uma Licitação. Na conclusão, obtém a Empresa vencedora e cadastra no sistema o valor total licitado, vigência, distribuição dos limites (serviços e quantidades) entre as revistas, tipos de serviços, quantidades, valore unitário de cada serviço, contato e credenciais de acesso desta Empresa.
 2. A Revista recebe notificação da conclusão da Licitação;
