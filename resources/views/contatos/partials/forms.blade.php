@@ -1,6 +1,6 @@
 <div class="mb-1">
     <label for="name" class="form-label">Nome</label>
-    <input type="text" class="form-control" name="name" id="name" placeholder="Nome completo" required></input>
+    @include('searchDemo')
 </div>
 
 <div class="mb-1">
