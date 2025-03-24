@@ -11,7 +11,6 @@ use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
-
 use function Ramsey\Uuid\v1;
 
 class AuthController extends Controller
@@ -31,8 +30,8 @@ class AuthController extends Controller
         if (auth()->attempt($credentials)) {
             return redirect()->route('home' );
         }
-        
-        session()->flash('success', 'Cadastrado com sucesso!');
+
+        session()->flash('danger', 'Credenciais inválidas!');
         return redirect()->route('login');
     }   
 
@@ -40,9 +39,9 @@ class AuthController extends Controller
     {
         session()->forget('user_id'); // Remove o usuário da sessão
 
-        return redirect()->route('login')->with('message', 'Logout realizado com sucesso');
+        session()->flash('sucess', 'Logout realizado com sucesso!');
+        return redirect()->route('login');
     }
-
 
     public function showForgotPassword()
     {
@@ -55,14 +54,14 @@ class AuthController extends Controller
 
         $user = User::where('email', $request->email)->first();
         if (!$user) {
-            return back()->with('status', 'Se este e-mail existir, um link será enviado.');
+            session()->flash('danger', 'Credenciais inválidas!');
+            return back();
         }
-
+        DB::table('password_resets')->where('email', $request->email)->delete();
         $token = Str::random(60);
-
         DB::table('password_resets')->insert([
             'email' => $user->email,
-            'token' => Hash::make($token),
+            'token' => $token,
             'created_at' => Carbon::now(),
         ]);
 
@@ -70,7 +69,9 @@ class AuthController extends Controller
 
         Mail::to($user->email)->send(new ResetPasswordMail($resetUrl));
 
-        return back()->with('status', 'Se este e-mail existir, um link será enviado.');
+
+        session()->flash('success', 'Se este e-mail existir, um link será enviado!');
+        return back();
     }
 
     public function showResetPassword($token, Request $request)
@@ -85,25 +86,26 @@ class AuthController extends Controller
             'password' => 'required|confirmed|min:6',
             'token' => 'required',
         ]);
-
         $record = DB::table('password_resets')
-            ->where('email', $request->email)
-            ->first();
+            ->where('email', $request->email)->first();
+            if (!$record || $request->token !== $record->token) {
 
-        if (!$record || !Hash::check($request->token, $record->token)) {
-            return back()->with('error', 'Token inválido ou expirado.');
+                return back();
         }
-
+        
         $user = User::where('email', $request->email)->first();
         if (!$user) {
-            return back()->with('error', 'Usuário não encontrado.');
+            session()->flash('danger', 'Usuário não encontrado!');
+            return back();
         }
 
         $user->password = Hash::make($request->password);
         $user->save();
 
+        
         DB::table('password_resets')->where('email', $request->email)->delete();
+        session()->flash('success', 'Senha redefinida com sucesso!');
+        return redirect()->route("home");
 
-        return redirect()->route('home');
     }
 }
