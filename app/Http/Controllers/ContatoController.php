@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use App\Models\Empresa;
 use App\Models\Contato;
 use App\Models\User;
@@ -13,6 +14,16 @@ class ContatoController extends Controller
     {
         $this->authorize('admin');
         return view('contatos.create', compact('empresa'));
+    }
+
+    public function autocomplete(Request $request): JsonResponse
+    {
+        $data = User::select("name")
+                    ->where('name', 'LIKE', '%'. $request->get('query'). '%')
+                    ->take(10)
+                    ->get();
+       
+        return response()->json($data);
     }
 
     /**
