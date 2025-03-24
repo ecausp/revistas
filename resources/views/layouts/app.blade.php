@@ -15,19 +15,19 @@
 {{-- Fim de blocos do laravel-usp-theme --}}
 
 @section('title')
-  @parent
+@parent
 @endsection
 
 @section('styles')
-  @parent
-  <style>
-    /*seus estilos*/
-  </style>
+@parent
+<style>
+/*seus estilos*/
+</style>
 @endsection
 
 @section('javascripts_bottom')
-  @parent
-  <script>
-    // Seu código .js
-  </script>
+@parent
+<script>
+// Seu código .js
+</script>
 @endsection
