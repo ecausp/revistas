@@ -24,7 +24,9 @@ class ServicoController extends Controller
     public function create()
     {
         $this->authorize('admin');
-        return view('servicos.create');
+        $unidades_medida = $stringArray = explode(",", env('UNIDADES_MEDIDA'));
+
+        return view('servicos.create', compact('unidades_medida'));
     }
 
     /**
@@ -78,7 +80,9 @@ class ServicoController extends Controller
     public function edit(Servico $servico)
     {
         $this->authorize('admin');
-        return view('servicos.edit', compact('servico'));
+
+        $unidades_medida = $stringArray = explode(",", env('UNIDADES_MEDIDA'));
+        return view('servicos.edit', compact('servico', 'unidades_medida'));
     }
 
     /**

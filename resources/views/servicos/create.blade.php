@@ -19,17 +19,17 @@
 @endsection
 
 @section('javascripts_bottom')
-    @parent
-    <script>
-    $(document).ready(function() {
-        // Formato número
-        $('.numero').mask('000.000.000.000.000', {
-            reverse: true
-        });
-        // Formato moeda
-            $('.money').mask('000.000.000.000.000,00', {
+@parent
+<script>
+$(document).ready(function() {
+    // Formato número
+    $('.numero').mask('000.000.000.000.000', {
         reverse: true
-        });
     });
-    </script>
+    // Formato moeda
+    $('.money').mask('000.000.000.000.000,00', {
+        reverse: true
+    });
+});
+</script>
 @endsection
