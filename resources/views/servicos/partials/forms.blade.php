@@ -7,20 +7,32 @@
 <div class="mb-1">
     <label for="quantidade" class="form-label">Quantidade </label>
     <input type="text" class="form-control numero" name="quantidade" id="quantidade" value="{{ old('quantidade', isset($servico) ? $servico->quantidade
-        : '') }}" placeholder="000.000.000.000.000" required></input>
+        : '') }}" placeholder="000" required></input>
 </div>
 
-<div class="mb-1">
-    <label for="unidade_medida" class="form-label">Unidade de Medida</label>
-    <input type="text" class="form-control" name="unidade_medida" id="unidade_medida" value="{{ old('unidade_medida', isset($servico) ? $servico->unidade_medida
-        : '') }}" placeholder="laudas, palavras, caracteres, páginas, milheiros, unidades, a0, a1, a2, a3, a4, a5, carta" required></input>
-</div>
 
 <div class="mb-1">
     <label for="valor_unitario" class="form-label">Valor Unitário</label>
     <input type="text" class="form-control money" name="valor_unitario" id="valor_unitario" value="{{ old('valor_unitario', isset($servico) ? $servico->valor_unitario
-        : '') }}" placeholder="000.000.000.000.000,00" required></input>
+        : '') }}" placeholder="0,00" required></input>
 </div>
+
+<div class="mb-1">
+    <label for="unidade_medida" class="form-label">Unidade de Medida</label>
+
+    @if (isset($servico))
+    <select class="form-control select2" name="unidade_medida" id="unidade_medida">
+        <option value="{{ $servico->unidade_medida }}" selected>{{ $servico->unidade_medida }} </option>
+        @else
+        <select class="form-control select2" name="unidade_medida" id="unidade_medida">
+            <option value="" selected>Unidade de Medida...</option>
+            @endif
+            @foreach ($unidades_medida as $unidade_medida)
+            <option value="{{ $unidade_medida }}">{{ $unidade_medida }}</option>
+            @endforeach
+        </select>
+</div>
+
 
 <div class="container mt-5 col">
     <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salvar</button>
