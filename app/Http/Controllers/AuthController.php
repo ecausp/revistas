@@ -95,7 +95,6 @@ class AuthController extends Controller
         
         $user = User::where('email', $request->email)->first();
         if (!$user) {
-            session()->flash('danger', 'Usuário não encontrado!');
             return back();
         }
 
