@@ -67,10 +67,12 @@ class AuthController extends Controller
 
         $resetUrl = url("/reset-password/{$token}?email={$user->email}");
 
-        Mail::to($user->email)->send(new ResetPasswordMail($resetUrl));
-
-
-        session()->flash('success', 'Se este e-mail existir, um link será enviado!');
+        try {
+            Mail::to($user->email)->send(new ResetPasswordMail($resetUrl));
+            session()->flash('success', 'Se este e-mail existir, um link será enviado!');
+        } catch (\Exception $e) {
+            session()->flash('danger', 'O e-mail não pode ser enviado. Informe administrador do sistema.');
+        }
         return back();
     }
 
