@@ -89,7 +89,7 @@ class AuthController extends Controller
         $record = DB::table('password_resets')
             ->where('email', $request->email)->first();
             if (!$record || $request->token !== $record->token) {
-
+                session()->flash('danger', 'Token inválido!');
                 return back();
         }
         
