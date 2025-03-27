@@ -16,16 +16,6 @@ class ContatoController extends Controller
         return view('contatos.create', compact('empresa'));
     }
 
-    public function autocomplete(Request $request): JsonResponse
-    {
-        $data = User::select("name")
-                    ->where('name', 'LIKE', '%'. $request->get('query'). '%')
-                    ->take(10)
-                    ->get();
-       
-        return response()->json($data);
-    }
-
     /**
      * Store a newly created resource in storage.
      */
@@ -55,4 +45,23 @@ class ContatoController extends Controller
         session()->flash('success', 'Cadastrado com sucesso!');
         return redirect()->route('empresas.index');
     }
+
+    public function index()
+    {
+        return view('searchDemo');
+    }
+    
+    public function autocomplete(Request $request)
+    {
+        $data = User::select( "name", "email", "telefone") // Pegando os dados necessários
+                    ->where('name', 'LIKE', '%'. $request->get('query'). '%')
+                    ->take(10)
+                    ->get();
+    
+        // Retornar os dados como um array associativo para que o frontend possa processá-los corretamente
+        return response()->json($data);
+    }
+    
+ 
+
 }
