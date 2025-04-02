@@ -40,22 +40,21 @@ $(document).ready(function() {
 });
 </script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Seleciona o botão de adicionar
-    let botaoAdicionar = document.getElementById('add-servico');
+$(document).ready(function() {
+    // Ativar Select2 nos selects que já existem
+    $('.servico-select').select2({
+        placeholder: "Selecione um serviço",
+        allowClear: true
+    });
 
-    // Verifica se o botão existe antes de adicionar o evento
-    if (botaoAdicionar) {
-        botaoAdicionar.addEventListener('click', function() {
-            let container = document.getElementById('servicos-container');
+    $('#add-servico').on('click', function() {
+        let container = $('#servicos-container');
 
-            // Criar um novo div para o input e o botão de remover
-            let novoCampo = document.createElement('div');
-            novoCampo.classList.add('mb-3', 'd-flex', 'align-items-center');
-
-            novoCampo.innerHTML = `
-                    <div class="mr-1">
-                    <select class="form-control select2" name="servico_id" id="servico_id">
+        // Criar um novo div para o select e botão de remover
+        let novoCampo = $(`
+<div class="mb-3 d-flex align-items-center">
+                <div class="mr-1">
+                    <select class="form-select servico-select" name="servico_id" id="servico_id">
                         <option value="" selected>Serviço...</option>
                         @foreach ($servicos as $servico)
                         <option value="{{ $servico->id }}">{{ $servico->descricao }} - {{ $servico->unidade_medida }}
@@ -63,23 +62,29 @@ document.addEventListener('DOMContentLoaded', function() {
                         @endforeach
                     </select>
                 </div>
-               
-                    <button type="button" class="btn btn-danger remove-batata">
+                    <button type="button" class="btn btn-danger remove-servico">
                         <i class="fas fa-minus"></i>
                     </button>
-                `;
+                </div>
+            `);
 
-            // Adiciona o novo campo ao container
-            container.appendChild(novoCampo);
+        // Adicionar o novo campo ao container
+        container.append(novoCampo);
 
-            // Adiciona evento ao botão de remover dentro do novo campo
-            novoCampo.querySelector('.remove-batata').addEventListener('click', function() {
-                novoCampo.remove();
-            });
+        // Aplicar Select2 no novo select
+        novoCampo.find('.servico-select').select2({
+            placeholder: "Selecione um serviço",
+            allowClear: true
         });
-    }
+
+        // Evento para remover o select
+        novoCampo.find('.remove-servico').on('click', function() {
+            novoCampo.remove();
+        });
+    });
 });
 </script>
+
 
 
 @endsection
