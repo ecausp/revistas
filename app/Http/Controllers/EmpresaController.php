@@ -8,7 +8,7 @@ use App\Models\User;
 use App\Models\EmpresaLicitacao;
 use App\Models\Licitacao;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Log;
 use function Ramsey\Uuid\v1;
 
 class EmpresaController extends Controller
@@ -70,9 +70,11 @@ class EmpresaController extends Controller
         $i = 0;
         foreach ($contatos as $contato) {
             $users[$i] = User::where('id', $contato->user_id)->get()->all();
+            Log::debug('usuario:', $users[$i]);
             $i++;
         };
-        return view('empresas.show', compact('empresa', 'contatos', 'users'));
+        
+        return view('empresas.show', compact('empresa','users'));
 
     }
     
