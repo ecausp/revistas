@@ -14,18 +14,18 @@
     <label for="licitacao_id" class="form-label">Licitação</label>
 
     @if (isset($empresa))
-        @php
-            $licitacao_id = \App\Models\EmpresaLicitacao::all()->where('empresa_id', '=', $empresa->id)->first()->licitacao_id;
-            $licitacao = \App\Models\Licitacao::find($licitacao_id);
-        @endphp
-        <select class="form-control select2" name="licitacao_id" id="licitacao_id" disabled>
-            <option value="{{ $licitacao->id }}" selected>{{ $licitacao->descricao }} - {{ $licitacao->ano }}</option>
-    @else
+    @php
+    $licitacao_id = \App\Models\EmpresaLicitacao::all()->where('empresa_id', '=', $empresa->id)->first()->licitacao_id;
+    $licitacao = \App\Models\Licitacao::find($licitacao_id);
+    @endphp
+    <select class="form-control select2" name="licitacao_id" id="licitacao_id" disabled>
+        <option value="{{ $licitacao->id }}" selected>{{ $licitacao->descricao }} - {{ $licitacao->ano }}</option>
+        @else
         <select class="form-control select2" name="licitacao_id" id="licitacao_id">
             <option value="" selected>Licitação...</option>
-    @endif
+            @endif
             @foreach ($licitacoes as $licitacao)
-                <option value="{{ $licitacao->id }}">{{ $licitacao->descricao }} - {{ $licitacao->ano }}</option>
+            <option value="{{ $licitacao->id }}">{{ $licitacao->descricao }} - {{ $licitacao->ano }}</option>
             @endforeach
         </select>
 </div>

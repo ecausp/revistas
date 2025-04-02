@@ -7,6 +7,7 @@ use App\Models\Contato;
 use App\Models\User;
 use App\Models\EmpresaLicitacao;
 use App\Models\Licitacao;
+use App\Models\Servico;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use function Ramsey\Uuid\v1;
@@ -83,7 +84,8 @@ class EmpresaController extends Controller
     {
         $this->authorize('admin');
         $licitacoes = Licitacao::orderBy('ano', 'desc')->orderBy('descricao')->get();
-        return view('empresas.edit', compact('empresa', 'licitacoes'));
+        $servicos = Servico::orderBy('descricao', 'desc')->get();
+        return view('empresas.edit', compact('empresa', 'licitacoes', 'servicos'));
     }
     
     // Atualizar os dados de uma empresa

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Contato;
+use app\Models\Servico;
 
 class Empresa extends Model
 {
@@ -22,7 +23,10 @@ class Empresa extends Model
     {
         return $this->belongsToMany(Licitacao::class, 'empresa-licitacao');
     }
-
+    public function servicos()
+    {
+        return $this->belongsToMany(Servico::class, 'empresa_servico');
+    }
     public function contatos()
     {
 
