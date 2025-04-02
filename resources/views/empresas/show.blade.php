@@ -12,6 +12,7 @@
 
         @include('empresas.partials.contatos')
         @include('empresas.partials.licitacoes')
+        @include('empresas.partials.servicos')
         @include('partials.editor')
 
         <div class="container mt-5 col">

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Empresa;
 use App\Models\Contato;
+use App\Models\EmpresaServico;
 use App\Models\User;
 use App\Models\EmpresaLicitacao;
 use App\Models\Licitacao;
@@ -104,6 +105,11 @@ class EmpresaController extends Controller
             "razao_social" => $request->razao_social,
         ];
 
+
+        $relacao = new EmpresaServico();
+        $relacao->empresa_id = $empresa->id;
+        $relacao->servico_id = $request->servico_id;
+        $relacao->save();
 
         $empresa->update($empresa_editada);
         session()->flash('success', 'Atualizado com sucesso!');
