@@ -19,8 +19,7 @@
         placeholder="{{ $empresa->razao_social }}" value="{{ $empresa->id }}">
 </div>
 
-<span id="mensagem-usuario" style="color: red; display: none; font-size: 14px;">Usuário já cadastrado no banco de
-    dados</span>
+<span id="mensagem-usuario" style="color: red; display: none; font-size: 14px;">Usuário já cadastrado!</span>
 
 <div class="container mt-5 ml-0 col">
     <button type="submit" id="cadastrar" class="btn btn-primary"><i class="fas fa-save"></i> Cadastrar</button>
