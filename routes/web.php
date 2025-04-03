@@ -53,8 +53,7 @@ Route::get('/reset-password/{token}', [AuthController::class, 'showResetPassword
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 
 
-// teste do autocomplete   
-use App\Http\Controllers\SearchController;
-    
-Route::get('demo-search', [SearchController::class, 'index']);
-Route::get('autocomplete', [SearchController::class, 'autocomplete'])->name('autocomplete');
+Route::get('demo-search', [ContatoController::class, 'index']);
+Route::get('autocomplete', [ContatoController::class, 'autocomplete'])->name('autocomplete');
+Route::get('get-user-details', [ContatoController::class, 'getUserDetails'])->name('get-user-details');
+ 
