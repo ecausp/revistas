@@ -60,9 +60,16 @@ $('#search').typeahead({
         $('#email').val(item.email).prop('readonly', true); // Preenche e-mail
         $('#telefone').val(item.telefone).prop('readonly', true); // Preenche telefone
         $('#cadastrar').prop('disabled', true); // Desabilita o botão "Salvar"
-        $('#mensagem-usuario').show();
+
+        $('#mensagem-usuario').fadeIn(); // Exibe a mensagem e só some se o usuário fechar
+
         return item.name; // Retorna apenas o nome no campo de busca
     }
+});
+</script>
+<script>
+document.getElementById('fechar-mensagem').addEventListener('click', function() {
+    document.getElementById('mensagem-usuario').style.display = 'none';
 });
 </script>
 
