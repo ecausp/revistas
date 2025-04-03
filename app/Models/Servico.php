@@ -17,4 +17,9 @@ class Servico extends Model
         "valor_unitario",
         "editor",
     ];
+
+    public function empresas()
+    {
+        return $this->belongsToMany(Empresa::class, 'empresa_servico');
+    }
 }

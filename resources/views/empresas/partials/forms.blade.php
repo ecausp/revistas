@@ -1,33 +1,64 @@
-<div class="mb-1">
-    <label for="cnpj" class="form-label">CNPJ</label>
-    <input type="text" class="form-control cnpj" name="cnpj" id="cnpj" value="{{ old('cnpj', isset($empresa) ? $empresa->cnpj
+@if (isset($empresa))
+
+<div class="row">
+    <div class="col-md-6">
+
+        @endif
+        <div class="mb-1">
+            <label for="cnpj" class="form-label">CNPJ</label>
+            <input type="text" class="form-control cnpj" name="cnpj" id="cnpj" value="{{ old('cnpj', isset($empresa) ? $empresa->cnpj
         : '') }}" placeholder="00.000.000/0000-00" required></input>
-</div>
+        </div>
 
-<div class="mb-1">
-    <label for="razao_social" class="form-label">Razão Social</label>
-    <input type="text" class="form-control" name="razao_social" id="razao_social" value="{{ old('razao_social', isset($empresa) ? $empresa->razao_social
+        <div class="mb-1">
+            <label for="razao_social" class="form-label">Razão Social</label>
+            <input type="text" class="form-control" name="razao_social" id="razao_social" value="{{ old('razao_social', isset($empresa) ? $empresa->razao_social
         : '') }}" required>
-</div>
+        </div>
 
-<div class="mb-1">
-    <label for="licitacao_id" class="form-label">Licitação</label>
+        <div class="mb-1">
+            <label for="licitacao_id" class="form-label">Licitação</label>
 
-    @if (isset($empresa))
-        @php
-            $licitacao_id = \App\Models\EmpresaLicitacao::all()->where('empresa_id', '=', $empresa->id)->first()->licitacao_id;
+            @if (isset($empresa))
+            @php
+            $licitacao_id = \App\Models\EmpresaLicitacao::all()->where('empresa_id', '=',
+            $empresa->id)->first()->licitacao_id;
             $licitacao = \App\Models\Licitacao::find($licitacao_id);
-        @endphp
-        <select class="form-control select2" name="licitacao_id" id="licitacao_id" disabled>
-            <option value="{{ $licitacao->id }}" selected>{{ $licitacao->descricao }} - {{ $licitacao->ano }}</option>
-    @else
-        <select class="form-control select2" name="licitacao_id" id="licitacao_id">
-            <option value="" selected>Licitação...</option>
-    @endif
-            @foreach ($licitacoes as $licitacao)
-                <option value="{{ $licitacao->id }}">{{ $licitacao->descricao }} - {{ $licitacao->ano }}</option>
-            @endforeach
-        </select>
+            @endphp
+            <select class="form-control select2" name="licitacao_id" id="licitacao_id" disabled>
+                <option value="{{ $licitacao->id }}" selected>{{ $licitacao->descricao }} - {{ $licitacao->ano }}
+                </option>
+                @else
+                <select class="form-control select2" name="licitacao_id" id="licitacao_id">
+                    <option value="" selected>Licitação...</option>
+                    @endif
+                    @foreach ($licitacoes as $licitacao)
+                    <option value="{{ $licitacao->id }}">{{ $licitacao->descricao }} - {{ $licitacao->ano }}</option>
+                    @endforeach
+                </select>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+
+        <label for="servico" class="form-label">Serviço</label>
+        <div id="servicos-container">
+            <div class="mb-3 d-flex align-items-center">
+                <div class="mr-1">
+                    <select class="form-select select2" name="servico_id" id="servico_id">
+                        <option value="" selected>Serviço...</option>
+                        @foreach ($servicos as $servico)
+                        <option value="{{ $servico->id }}">{{ $servico->descricao }} - {{ $servico->unidade_medida }}
+                        </option>
+                        @endforeach
+                    </select>
+                </div>
+                <button type="button" class="btn btn-success" id="add-servico">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 
 

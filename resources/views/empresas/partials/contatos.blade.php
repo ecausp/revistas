@@ -11,16 +11,12 @@
                 <th>Telefone</th>
             </tr>
         </thead>
+
+        @foreach ($users as $user)
         <tbody>
-        
-            @foreach ($users as $user)
-            <tr>
-                <td>{{ $user[0]->name }}</td>
-                <td>{{ $user[0]->email }}</td>
-                <td>{{ $user[0]->telefone }}</td>
-
-            </tr>
-
+            <td>{{ $user[0]->name }}</td>
+            <td>{{ $user[0]->email }}</td>
+            <td>{{ $user[0]->telefone }}</td>
             @endforeach
         </tbody>
     </table>
