@@ -45,7 +45,7 @@
         <div id="servicos-container">
             <div class="mb-3 d-flex align-items-center">
                 <div class="mr-1">
-                    <select class="form-select select2" name="servico_id" id="servico_id">
+                    <select class="form-select select2" name="servico_id" id="servico_id" multiple="multiple">
                         <option value="" selected>Serviço...</option>
                         @foreach ($servicos as $servico)
                         <option value="{{ $servico->id }}">{{ $servico->descricao }} - {{ $servico->unidade_medida }}
