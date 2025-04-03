@@ -8,10 +8,12 @@ $licitacao = \App\Models\Licitacao::find($licitacao_id);
     <label for="name" class="form-label">Nome</label>
     <input type="text" class="typeahead form-control" name="name" id="search" type="text">
 </div>
-<br>
-<div id="mensagem-usuario" class="alert alert-danger alert-dismissible fade show" role="alert" style="display: none;">
+
+<div id="mensagem-usuario" class="alert alert-danger alert-dismissible fade show mt-3" role="alert"
+    style="display: none;">
     <span id="mensagem-texto">Este contato já está cadastrado na empresa <br> {{ $licitacao->descricao }}</span>
     <button type="button" class="btn-close" id="fechar-mensagem" aria-label="Fechar"></button>
+    <br>
 </div>
 
 

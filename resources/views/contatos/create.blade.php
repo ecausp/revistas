@@ -32,46 +32,58 @@ $(document).ready(function() {
     $('.telefone9digitos').mask("(00) 90000-0000");
 });
 </script>
-
 <script type="text/javascript">
 var path = "{{ route('autocomplete') }}";
 
 $('#search').typeahead({
     source: function(query, process) {
-        return $.get("{{ route('autocomplete') }}", {
+        return $.get(path, {
             query: query
         }, function(data) {
             return process(data.map(function(item) {
                 return {
+                    id: item.id,
                     name: item.name,
                     email: item.email,
                     telefone: item.telefone,
-                    display: item.name + ' - ' + item
-                        .email // Apenas o que será mostrado
+                    empresa_id: item.empresa_id,
+                    razao_social: item.razao_social, // Pegando Razão Social
+                    cnpj: item.cnpj, // Pegando CNPJ
+                    display: item.name + ' - ' + item.email
                 };
             }));
         });
     },
     displayText: function(item) {
-        return item.display; // Mostra apenas "nome - email"
+        return item.display;
     },
     updater: function(item) {
-        $('#search').val(item.name); // Apenas o nome no campo de busca
-        $('#email').val(item.email).prop('readonly', true); // Preenche e-mail
-        $('#telefone').val(item.telefone).prop('readonly', true); // Preenche telefone
-        $('#cadastrar').prop('disabled', true); // Desabilita o botão "Salvar"
+        $('#search').val(item.name);
+        $('#email').val(item.email).prop('readonly', true);
+        $('#telefone').val(item.telefone).prop('readonly', true);
+        $('#cadastrar').prop('disabled', true);
 
-        $('#mensagem-usuario').fadeIn(); // Exibe a mensagem e só some se o usuário fechar
+        // Preencher o campo de empresa
+        $('#empresa_id').val(item.empresa_id).prop('readonly', true);
 
-        return item.name; // Retorna apenas o nome no campo de busca
+        // Atualizar e Exibir a Mensagem com os dados da empresa
+        $('#mensagem-texto').html(`
+            Este usuário já está cadastrado na empresa: <br>
+            <strong>${item.razao_social}</strong> <br>
+            CNPJ: <strong>${item.cnpj}</strong>
+        `);
+        $('#mensagem-usuario').fadeIn();
+
+        return item.name;
     }
 });
-</script>
-<script>
+
+// Fechar a mensagem ao clicar no botão "X"
 document.getElementById('fechar-mensagem').addEventListener('click', function() {
     document.getElementById('mensagem-usuario').style.display = 'none';
 });
 </script>
+
 
 <script type="text/javascript">
 $(document).ready(function() {

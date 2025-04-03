@@ -7,7 +7,7 @@ use Illuminate\Http\JsonResponse;
 use App\Models\Empresa;
 use App\Models\Contato;
 use App\Models\User;
-
+use Illuminate\Support\Facades\DB;
 class ContatoController extends Controller
 {
     public function create(Empresa $empresa)
@@ -51,16 +51,43 @@ class ContatoController extends Controller
         return view('searchDemo');
     }
     
-    public function autocomplete(Request $request)
-    {
-        $data = User::select( "name", "email", "telefone") // Pegando os dados necessários
-                    ->where('name', 'LIKE', '%'. $request->get('query'). '%')
-                    ->take(10)
-                    ->get();
+   
+public function autocomplete(Request $request)
+{
+    $query = $request->input('query');
+
+    $users = DB::table('users')
+        ->leftJoin('contatos', 'users.id', '=', 'contatos.user_id')
+        ->leftJoin('empresas', 'contatos.empresa_id', '=', 'empresas.id')
+        ->where('users.name', 'LIKE', "%{$query}%")
+        ->orWhere('users.email', 'LIKE', "%{$query}%")
+        ->select(
+            'users.id as user_id',
+            'users.name',
+            'users.email',
+            'users.telefone',
+            'empresas.id as empresa_id',
+            'empresas.razao_social',
+            'empresas.cnpj'
+        )
+        ->get();
+
+    return response()->json($users);
+}
+
     
-        // Retornar os dados como um array associativo para que o frontend possa processá-los corretamente
-        return response()->json($data);
-    }
+
+
+    // public function autocomplete(Request $request)
+    // {
+    //     $data = User::select( "name", "email", "telefone") // Pegando os dados necessários
+    //                 ->where('name', 'LIKE', '%'. $request->get('query'). '%')
+    //                 ->take(10)
+    //                 ->get();
+    
+    //     // Retornar os dados como um array associativo para que o frontend possa processá-los corretamente
+    //     return response()->json($data);
+    // }
     
  
 
