@@ -31,6 +31,9 @@
 @section('javascripts_bottom')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
 <script>
 $(document).ready(function() {
     // Formato cnpj
@@ -40,47 +43,10 @@ $(document).ready(function() {
 });
 </script>
 <script>
-$(document).ready(function() {
-    // Ativar Select2 nos selects que já existem
-    $('.servico-select').select2({
-        placeholder: "Selecione um serviço",
-        allowClear: true
-    });
-
-    $('#add-servico').on('click', function() {
-        let container = $('#servicos-container');
-
-        // Criar um novo div para o select e botão de remover
-        let novoCampo = $(`
-<div class="mb-3 d-flex align-items-center">
-                <div class="mr-1">
-                    <select class="form-select servico-select" name="servico_id" id="servico_id">
-                        <option value="" selected>Serviço...</option>
-                        @foreach ($servicos as $servico)
-                        <option value="{{ $servico->id }}">{{ $servico->descricao }} - {{ $servico->unidade_medida }}
-                        </option>
-                        @endforeach
-                    </select>
-                </div>
-                    <button type="button" class="btn btn-danger remove-servico">
-                        <i class="fas fa-minus"></i>
-                    </button>
-                </div>
-            `);
-
-        // Adicionar o novo campo ao container
-        container.append(novoCampo);
-
-        // Aplicar Select2 no novo select
-        novoCampo.find('.servico-select').select2({
-            placeholder: "Selecione um serviço",
-            allowClear: true
-        });
-
-        // Evento para remover o select
-        novoCampo.find('.remove-servico').on('click', function() {
-            novoCampo.remove();
-        });
+document.addEventListener("DOMContentLoaded", function() {
+    const modal = new bootstrap.Modal(document.getElementById('servicoModal'));
+    document.getElementById('servico-modal').addEventListener('click', () => {
+        modal.show();
     });
 });
 </script>

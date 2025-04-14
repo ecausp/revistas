@@ -53,13 +53,17 @@
                         @endforeach
                     </select>
                 </div>
-                <button type="button" class="btn btn-success" id="add-servico">
-                    <i class="fas fa-plus"></i>
+                <button type="button" class="btn btn-success" id="servico-modal">
+                    <i class="fas fa-plus"></i> Novo Serviço
                 </button>
             </div>
         </div>
     </div>
 </div>
+
+@include('empresas.partials.modal')
+
+
 
 
 <div class="container mt-5 col">
