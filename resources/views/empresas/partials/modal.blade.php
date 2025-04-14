@@ -1,21 +1,95 @@
 <!-- Modal -->
 <div class="modal fade" id="servicoModal" tabindex="-1" aria-labelledby="servicoModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
 
-            <div class="modal-header">
-                <h5 class="modal-title" id="servicoModalLabel">Criar novo servico</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            <div class="card">
+                <div class="modal-header card-header h5">
+                    Criar Novo Serviço
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body card-body">
+                    <form id="novoServicoForm" action="{{ route('servicos.store') }}" method="POST">
+                        @csrf
+                        <div class="mb-1">
+                            <label for="descricao" class="form-label">Descrição</label>
+                            <input type="text" class="form-control" name="descricao" id="descricao"
+                                placeholder="Descrição do Serviço..." required>
+                        </div>
+                        <div class="mb-1">
+                            <label for="quantidade" class="form-label">Quantidade</label>
+                            <input type="text" class="form-control numero" name="quantidade" id="quantidade"
+                                placeholder="Quantidade" required>
+                        </div>
+                        <div class="mb-1">
+                            <label for="valor_unitario" class="form-label">Valor Unitário</label>
+                            <input type="text" class="form-control money" name="valor_unitario" id="valor_unitario"
+                                placeholder="Valor Unitário" required>
+                        </div>
+                        <div class="mb-1">
+                            <label for="unidade_medida" class="form-label">Unidade de Medida</label>
+                            <select class="form-control select2" name="unidade_medida" id="unidade_medida" required>
+                                <option value="" selected>Selecione Unidade de Medida...</option>
+                                @foreach ($unidades_medida as $unidade)
+                                <option value="{{ $unidade }}">{{ $unidade }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Salvar</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                        </div>
+                    </form>
+                </div>
             </div>
-
-            <div class="modal-body">
-                Form para criar novo serviço;
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-            </div>
-
         </div>
     </div>
 </div>
+
+
+@section('javascripts_bottom')
+@parent
+<script>
+$(document).ready(function() {
+    // Formato número
+    $('.numero').mask('000.000.000.000.000', {
+        reverse: true
+    });
+    // Formato moeda
+    $('.money').mask('000.000.000.000.000,00', {
+        reverse: true
+    });
+});
+</script>
+
+<script>
+$('#novoServicoForm').on('submit', function(e) {
+    e.preventDefault(); // Evita que o formulário seja enviado de forma tradicional
+
+    var form = $(this);
+    var actionUrl = form.attr('action');
+
+    $.ajax({
+        url: actionUrl,
+        method: 'POST',
+        data: form.serialize(),
+        success: function(response) {
+            // Adicionar o novo serviço ao select2
+            var newOption = new Option(response.descricao, response.id, false, false);
+            $('#servico_id').append(newOption).trigger('change');
+
+            // Fechar o modal
+            $('#servicoModal').modal('hide');
+
+            // Opcional: Limpar o formulário
+            form[0].reset();
+        },
+        error: function(xhr) {
+            // Lidar com erros, se houver
+            alert('Erro ao cadastrar o serviço');
+        }
+    });
+});
+</script>
+
+@endsection

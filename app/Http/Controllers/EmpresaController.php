@@ -86,7 +86,9 @@ class EmpresaController extends Controller
         $this->authorize('admin');
         $licitacoes = Licitacao::orderBy('ano', 'desc')->orderBy('descricao')->get();
         $servicos = Servico::orderBy('descricao', 'desc')->get();
-        return view('empresas.edit', compact('empresa', 'licitacoes', 'servicos'));
+
+        $unidades_medida = $stringArray = explode(",", env('UNIDADES_MEDIDA'));
+        return view('empresas.edit', compact('empresa', 'licitacoes', 'servicos','unidades_medida'));
     }
     
     // Atualizar os dados de uma empresa
