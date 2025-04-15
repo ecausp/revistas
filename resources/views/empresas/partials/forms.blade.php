@@ -62,8 +62,6 @@
 </div>
 
 
-@include('empresas.partials.modal')
-
 
 
 
