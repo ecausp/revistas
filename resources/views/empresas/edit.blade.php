@@ -93,20 +93,15 @@ $(document).ready(function() {
 });
 </script>
 <script>
-document.addEventListener("DOMContentLoaded", function() {
+$(document).ready(function() {
     const modal = new bootstrap.Modal(document.getElementById('servicoModal'));
-    document.getElementById('servico-modal').addEventListener('click', () => {
+
+    $('#servico-modal').on('click', function() {
         modal.show();
     });
 });
 </script>
 
-
-
-@endsection
-
-@section('javascripts_bottom')
-@parent
 <script>
 $(document).ready(function() {
     // Formato número
@@ -121,33 +116,41 @@ $(document).ready(function() {
 </script>
 
 <script>
-$('#novoServicoForm').on('submit', function(e) {
-    e.preventDefault(); // Evita que o formulário seja enviado de forma tradicional
+$(document).ready(function() {
+    $('.select2').select2();
 
-    var form = $(this);
-    var actionUrl = form.attr('action');
+    $('#novoServicoForm').on('submit', function(e) {
+        e.preventDefault(); // Evita envio tradicional do form
 
-    $.ajax({
-        url: actionUrl,
-        method: 'POST',
-        data: form.serialize(),
-        success: function(response) {
-            // Adicionar o novo serviço ao select2
-            var newOption = new Option(response.descricao, response.id, false, false);
-            $('#servico_id').append(newOption).trigger('change');
+        var form = $(this);
+        var actionUrl = form.attr('action');
 
-            // Fechar o modal
-            $('#servicoModal').modal('hide');
+        $.ajax({
+            url: actionUrl,
+            method: 'POST',
+            data: form.serialize(),
+            success: function(response) {
+                console.log('Resposta do servidor:', response);
 
-            // Opcional: Limpar o formulário
-            form[0].reset();
-        },
-        error: function(xhr) {
-            // Lidar com erros, se houver
-            alert('Erro ao cadastrar o serviço');
-        }
+                const newOption = new Option(
+                    `${response.descricao} - ${response.unidade_medida}`,
+                    response.id,
+                    true,
+                    true
+                );
+
+                $('#servico_id').append(newOption).trigger('change');
+                $('#servicoModal').modal('hide');
+                $('#novoServicoForm')[0].reset();
+            },
+            error: function(xhr) {
+                alert('Erro ao cadastrar o serviço');
+                console.log(xhr.responseText);
+            }
+        });
     });
 });
 </script>
+
 
 @endsection

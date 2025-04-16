@@ -51,10 +51,19 @@ class ServicoController extends Controller
         // Adiciona o editor manualmente
         $validated['editor'] = $request->user()->id;
     
-        Servico::create($validated);
-    
+        $servico = Servico::create($validated);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'id' => $servico->id,
+                'descricao' => $servico->descricao,
+                'unidade_medida' => $servico->unidade_medida,
+            ]);
+        }
+        
         session()->flash('success', 'Cadastrado com sucesso!');
         return redirect()->route('servicos.index');
+        
     }
 
     /**
