@@ -46,7 +46,6 @@ class EmpresaController extends Controller
         $relacao->licitacao_id = $request->licitacao_id;
         $relacao->valor = 1000;
         $relacao->save();
-
         session()->flash('success', 'Cadastrado com sucesso!');
         return redirect()->route('empresas.index');
     }
@@ -86,35 +85,53 @@ class EmpresaController extends Controller
         $this->authorize('admin');
         $licitacoes = Licitacao::orderBy('ano', 'desc')->orderBy('descricao')->get();
         $servicos = Servico::orderBy('descricao', 'desc')->get();
-        return view('empresas.edit', compact('empresa', 'licitacoes', 'servicos'));
+
+        $unidades_medida = $stringArray = explode(",", env('UNIDADES_MEDIDA'));
+
+        // pega os serviços que estão associados a essa empresa;
+        $servicos_associados = $empresa->servicos->pluck('id')->toArray();
+        return view('empresas.edit', compact('empresa', 'licitacoes', 'servicos','unidades_medida', 'servicos_associados'));
     }
     
     // Atualizar os dados de uma empresa
     public function update(Request $request, Empresa $empresa)
-    {        
+    {
         $this->authorize('admin');
-    
+  
+        // Validação dos campos
         $request->validate([
             'cnpj' => 'required',
             'razao_social' => 'required',
         ]);
-
+        
+        // Dados para atualização da empresa
         $empresa_editada = [
             'editor' => $request->user()->id,
             "cnpj" => $request->cnpj,
             "razao_social" => $request->razao_social,
         ];
-
-
-        $relacao = new EmpresaServico();
-        $relacao->empresa_id = $empresa->id;
-        $relacao->servico_id = $request->servico_id;
-        $relacao->save();
-
+        
+        // Atualiza a empresa
         $empresa->update($empresa_editada);
+        
+        // Remove relações antigas entre empresa e serviços
+        EmpresaServico::where('empresa_id', $empresa->id)->delete();
+                
+        if ($request->has('servico_id')) {
+            foreach ($request->servico_id as $servicoId) {
+                EmpresaServico::create([
+                    'empresa_id' => $empresa->id,
+                    'servico_id' => $servicoId,
+                ]);
+            }
+        }
+
+        
         session()->flash('success', 'Atualizado com sucesso!');
         return redirect()->route('empresas.index');
     }
+    
+    
     
     public function destroy(Empresa $empresa)
     {

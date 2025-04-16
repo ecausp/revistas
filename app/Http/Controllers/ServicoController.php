@@ -41,26 +41,29 @@ class ServicoController extends Controller
         // Primeiro remove os pontos e depois troca a virgula por ponto
         $request['valor_unitario'] = str_replace(',', '.', str_replace('.', '', $request->valor_unitario));
 
-        $request->validate([
+        $validated = $request->validate([
             'descricao' => 'required',
             'quantidade' => 'required|numeric',
             'unidade_medida' => 'required',
             'valor_unitario' => 'required|numeric',
         ]);
+    
+        // Adiciona o editor manualmente
+        $validated['editor'] = $request->user()->id;
+    
+        $servico = Servico::create($validated);
 
-        $servico = new Servico();
-        $servico = [
-            'editor' => $request->user()->id,
-            "descricao" => $request->descricao,
-            "quantidade" => $request->quantidade,
-            "unidade_medida" => $request->unidade_medida,
-            "valor_unitario" => $request->valor_unitario,
-        ];
-
-
-        Servico::create($servico);
+        if ($request->ajax()) {
+            return response()->json([
+                'id' => $servico->id,
+                'descricao' => $servico->descricao,
+                'unidade_medida' => $servico->unidade_medida,
+            ]);
+        }
+        
         session()->flash('success', 'Cadastrado com sucesso!');
         return redirect()->route('servicos.index');
+        
     }
 
     /**

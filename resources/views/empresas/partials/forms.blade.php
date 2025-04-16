@@ -3,17 +3,17 @@
 <div class="row">
     <div class="col-md-6">
 
-        @endif
         <div class="mb-1">
             <label for="cnpj" class="form-label">CNPJ</label>
-            <input type="text" class="form-control cnpj" name="cnpj" id="cnpj" value="{{ old('cnpj', isset($empresa) ? $empresa->cnpj
-        : '') }}" placeholder="00.000.000/0000-00" required></input>
+            <input type="text" class="form-control cnpj" name="cnpj" id="cnpj"
+                value="{{ old('cnpj', isset($empresa) ? $empresa->cnpj : '') }}" placeholder="00.000.000/0000-00"
+                required>
         </div>
 
         <div class="mb-1">
             <label for="razao_social" class="form-label">Razão Social</label>
-            <input type="text" class="form-control" name="razao_social" id="razao_social" value="{{ old('razao_social', isset($empresa) ? $empresa->razao_social
-        : '') }}" required>
+            <input type="text" class="form-control" name="razao_social" id="razao_social"
+                value="{{ old('razao_social', isset($empresa) ? $empresa->razao_social : '') }}" required>
         </div>
 
         <div class="mb-1">
@@ -45,22 +45,22 @@
         <div id="servicos-container">
             <div class="mb-3 d-flex align-items-center">
                 <div class="mr-1">
-                    <select class="form-select select2" name="servico_id" id="servico_id">
-                        <option value="" selected>Serviço...</option>
+                    <select class="form-select select2" name="servico_id[]" id="servico_id" multiple="multiple">
                         @foreach ($servicos as $servico)
-                        <option value="{{ $servico->id }}">{{ $servico->descricao }} - {{ $servico->unidade_medida }}
+                        <option value="{{ $servico->id }}" @if(in_array($servico->id, $servicos_associados)) selected
+                            @endif>
+                            {{ $servico->descricao }} - {{ $servico->unidade_medida }}
                         </option>
                         @endforeach
                     </select>
                 </div>
-                <button type="button" class="btn btn-success" id="add-servico">
+                <button type="button" class="btn btn-success" id="servico-modal" title="Criar novo serviço">
                     <i class="fas fa-plus"></i>
                 </button>
             </div>
         </div>
     </div>
 </div>
-
 
 <div class="container mt-5 col">
     <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salvar</button>
@@ -70,7 +70,8 @@
         Contato(s)</a>
     @endif
 
-    <a href="{{ route('empresas.index') }}" class="btn btn-secondary"><i class="fas fa-chevron-left"></i>
-        Voltar</a>
+    <a href="{{ route('empresas.index') }}" class="btn btn-secondary"><i class="fas fa-chevron-left"></i> Voltar</a>
 
 </div>
+
+@endif
