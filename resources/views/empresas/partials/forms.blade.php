@@ -54,8 +54,8 @@
                         @endforeach
                     </select>
                 </div>
-                <button type="button" class="btn btn-success" id="servico-modal">
-                    <i class="fas fa-plus"></i> Novo Serviço
+                <button type="button" class="btn btn-success" id="servico-modal" title="Criar novo serviço">
+                    <i class="fas fa-plus"></i>
                 </button>
             </div>
         </div>
