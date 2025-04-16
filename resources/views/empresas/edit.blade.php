@@ -20,14 +20,14 @@
 </div>
 
 <!-- Modal precisa ficar aqui para evitar erros de carregamento atrasado do DOM -->
-<div class="modal fade" id="servicoModal" tabindex="-1" aria-labelledby="servicoModalLabel" aria-hidden="true">
+<div class="modal fade" id="servicoModal" tabindex="-1" aria-labelledby="servicoModalLabel" aria-hidden="true"
+    data-bs-backdrop="static">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
 
             <div class="card">
                 <div class="modal-header card-header h5">
                     Criar Novo Serviço
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
                 <div class="modal-body card-body">
                     <form id="novoServicoForm" action="{{ route('servicos.store') }}" method="POST">
