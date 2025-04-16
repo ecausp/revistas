@@ -87,7 +87,10 @@ class EmpresaController extends Controller
         $servicos = Servico::orderBy('descricao', 'desc')->get();
 
         $unidades_medida = $stringArray = explode(",", env('UNIDADES_MEDIDA'));
-        return view('empresas.edit', compact('empresa', 'licitacoes', 'servicos','unidades_medida'));
+
+        // pega os serviços que estão associados a essa empresa;
+        $servicos_associados = $empresa->servicos->pluck('id')->toArray();
+        return view('empresas.edit', compact('empresa', 'licitacoes', 'servicos','unidades_medida', 'servicos_associados'));
     }
     
     // Atualizar os dados de uma empresa
