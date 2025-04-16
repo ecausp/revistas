@@ -113,23 +113,15 @@ class EmpresaController extends Controller
         
         // Remove relações antigas entre empresa e serviços
         EmpresaServico::where('empresa_id', $empresa->id)->delete();
-        
-        // Verifica se serviços foram enviados no formulário
-        
-        
-if ($request->has('servico_id')) {
-    foreach ($request->servico_id as $servicoId) {
-        Log::debug('Salvando relação empresa-serviço', [
-            'empresa_id' => $empresa->id,
-            'servico_id' => $servicoId
-        ]);
-
-        EmpresaServico::create([
-            'empresa_id' => $empresa->id,
-            'servico_id' => $servicoId,
-        ]);
-    }
-}
+                
+        if ($request->has('servico_id')) {
+            foreach ($request->servico_id as $servicoId) {
+                EmpresaServico::create([
+                    'empresa_id' => $empresa->id,
+                    'servico_id' => $servicoId,
+                ]);
+            }
+        }
 
         
         session()->flash('success', 'Atualizado com sucesso!');

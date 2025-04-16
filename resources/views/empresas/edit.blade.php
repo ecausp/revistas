@@ -19,7 +19,7 @@
     @endcan
 </div>
 
-<!-- Modal -->
+<!-- Modal precisa ficar aqui para evitar erros de carregamento atrasado do DOM -->
 <div class="modal fade" id="servicoModal" tabindex="-1" aria-labelledby="servicoModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -92,7 +92,9 @@ $(document).ready(function() {
     });
 });
 </script>
+
 <script>
+// exibe o modal
 $(document).ready(function() {
     const modal = new bootstrap.Modal(document.getElementById('servicoModal'));
 
@@ -117,10 +119,11 @@ $(document).ready(function() {
 
 <script>
 $(document).ready(function() {
+    // evita o envio normal do form, salvando no banco de dados sem redirecionar para outra página;
     $('.select2').select2();
 
     $('#novoServicoForm').on('submit', function(e) {
-        e.preventDefault(); // Evita envio tradicional do form
+        e.preventDefault();
 
         var form = $(this);
         var actionUrl = form.attr('action');
