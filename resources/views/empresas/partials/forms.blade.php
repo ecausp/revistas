@@ -1,5 +1,3 @@
-@if (isset($empresa))
-
 <div class="row">
     <div class="col-md-6">
 
@@ -19,18 +17,18 @@
         <div class="mb-1">
             <label for="licitacao_id" class="form-label">Licitação</label>
 
+            <!-- se houver uma empresa associada, significa que é edição; então bloqueia a parte de licitacao; -->
             @if (isset($empresa))
             @php
             $licitacao_id = \App\Models\EmpresaLicitacao::all()->where('empresa_id', '=',
             $empresa->id)->first()->licitacao_id;
             $licitacao = \App\Models\Licitacao::find($licitacao_id);
             @endphp
-            <select class="form-control select2" name="licitacao_id" id="licitacao_id" disabled>
+            <select class="form-control select2" name="licitacao_id" id="licitacao_id">
                 <option value="{{ $licitacao->id }}" selected>{{ $licitacao->descricao }} - {{ $licitacao->ano }}
                 </option>
                 @else
                 <select class="form-control select2" name="licitacao_id" id="licitacao_id">
-                    <option value="" selected>Licitação...</option>
                     @endif
                     @foreach ($licitacoes as $licitacao)
                     <option value="{{ $licitacao->id }}">{{ $licitacao->descricao }} - {{ $licitacao->ano }}</option>
@@ -47,8 +45,9 @@
                 <div class="mr-1">
                     <select class="form-select select2" name="servico_id[]" id="servico_id" multiple="multiple">
                         @foreach ($servicos as $servico)
-                        <option value="{{ $servico->id }}" @if(in_array($servico->id, $servicos_associados)) selected
-                            @endif>
+                        <option value="{{ $servico->id }}" @if (isset($empresa))@if(in_array($servico->id,
+                            $servicos_associados)) selected
+                            @endif @endif>
                             {{ $servico->descricao }} - {{ $servico->unidade_medida }}
                         </option>
                         @endforeach
@@ -73,5 +72,3 @@
     <a href="{{ route('empresas.index') }}" class="btn btn-secondary"><i class="fas fa-chevron-left"></i> Voltar</a>
 
 </div>
-
-@endif

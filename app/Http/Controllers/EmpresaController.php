@@ -20,8 +20,12 @@ class EmpresaController extends Controller
         $this->authorize('admin');
         
         $licitacoes = Licitacao::orderBy('ano', 'desc')->orderBy('descricao')->get();
+        $servicos = Servico::orderBy('descricao', 'desc')->get();
+        $unidades_medida = $stringArray = explode(",", env('UNIDADES_MEDIDA'));
+        
         \UspTheme::activeUrl('empresas/create');
-        return view('empresas.create', compact('licitacoes'));
+        
+        return view('empresas.create', compact('licitacoes', 'servicos', 'unidades_medida'));
     }
     
     //armazenar a nova empresa
@@ -41,11 +45,20 @@ class EmpresaController extends Controller
         $empresa->razao_social = $request->razao_social;
         $empresa->save();
 
+                if ($request->has('servico_id')) {
+            foreach ($request->servico_id as $servicoId) {
+                EmpresaServico::create([
+                    'empresa_id' => $empresa->id,
+                    'servico_id' => $servicoId,
+                ]);
+            }
+        }
         $relacao = new EmpresaLicitacao();
         $relacao->empresa_id = $empresa->id;
         $relacao->licitacao_id = $request->licitacao_id;
         $relacao->valor = 1000;
         $relacao->save();
+        
         session()->flash('success', 'Cadastrado com sucesso!');
         return redirect()->route('empresas.index');
     }
