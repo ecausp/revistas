@@ -15,6 +15,7 @@ class ServicoController extends Controller
     {   
         $this->authorize('admin');
         $servicos = Servico::all();
+        \UspTheme::activeUrl('servicos');
         return view('servicos.index', compact('servicos'));
     }
 
@@ -25,7 +26,7 @@ class ServicoController extends Controller
     {
         $this->authorize('admin');
         $unidades_medida = $stringArray = explode(",", env('UNIDADES_MEDIDA'));
-
+        \UspTheme::activeUrl('servicos/create');
         return view('servicos.create', compact('unidades_medida'));
     }
 

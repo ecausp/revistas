@@ -16,6 +16,7 @@ class RevistaController extends Controller
     {   
         $this->authorize('admin');
         $revistas = Revista::all();
+        \UspTheme::activeUrl('revistas');
         return view('revistas.index', compact('revistas'));
     }
 
@@ -26,6 +27,7 @@ class RevistaController extends Controller
     {
         $this->authorize('admin');
         $centros_despesas = Financeiro::ListarCentrosDespesas();
+        \UspTheme::activeUrl('revistas/create');
         return view('revistas.create', compact('centros_despesas'));
     }
 
