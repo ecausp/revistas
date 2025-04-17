@@ -11,7 +11,6 @@ use App\Models\Licitacao;
 use App\Models\Servico;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use function Ramsey\Uuid\v1;
 
 class EmpresaController extends Controller
 {
@@ -21,6 +20,7 @@ class EmpresaController extends Controller
         $this->authorize('admin');
         
         $licitacoes = Licitacao::orderBy('ano', 'desc')->orderBy('descricao')->get();
+        \UspTheme::activeUrl('empresas/create');
         return view('empresas.create', compact('licitacoes'));
     }
     
@@ -55,6 +55,7 @@ class EmpresaController extends Controller
     {
         $this->authorize('admin');
         $empresas = Empresa::orderBy('updated_at', 'desc')->get();
+        \UspTheme::activeUrl('empresas');
         return view('empresas.index', compact('empresas'));
     }
     

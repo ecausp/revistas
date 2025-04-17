@@ -14,6 +14,7 @@ class LicitacaoController extends Controller
     public function create()
     {
         $this->authorize('admin');
+        \UspTheme::activeUrl('licitacoes/create');
         return view('licitacoes.create');
     }
 
@@ -49,6 +50,7 @@ class LicitacaoController extends Controller
     {
         $this->authorize('admin');
         $licitacoes = Licitacao::orderBy('ano', 'desc')->orderBy('descricao')->get();
+        \UspTheme::activeUrl('licitacoes');
         return view('licitacoes.index', compact('licitacoes'));
     }
 
