@@ -4,9 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Licitacao;
 use App\Models\User;
-use Illuminate\Http\Request;
 
-use function Ramsey\Uuid\v1;
+use Illuminate\Http\Request;
 
 class LicitacaoController extends Controller
 {
@@ -15,6 +14,7 @@ class LicitacaoController extends Controller
     {
         $this->authorize('admin');
         \UspTheme::activeUrl('licitacoes/create');
+
         return view('licitacoes.create');
     }
 
@@ -41,6 +41,7 @@ class LicitacaoController extends Controller
         ];
 
         Licitacao::create($licitacao);
+
         session()->flash('success', 'Cadastrado com sucesso!');
         return redirect()->route('licitacoes.index');
     }
@@ -49,8 +50,10 @@ class LicitacaoController extends Controller
     public function index()
     {
         $this->authorize('admin');
-        $licitacoes = Licitacao::orderBy('ano', 'desc')->orderBy('descricao')->get();
         \UspTheme::activeUrl('licitacoes');
+
+        $licitacoes = Licitacao::orderBy('ano', 'desc')->orderBy('descricao')->get();
+
         return view('licitacoes.index', compact('licitacoes'));
     }
 
@@ -58,8 +61,10 @@ class LicitacaoController extends Controller
     public function show(Licitacao $licitacao)
     {
         $this->authorize('admin');
+
         $editor = User::where('id', $licitacao->editor)->first();
         $updated_at = $licitacao->updated_at;
+
         return view('licitacoes.show', compact("licitacao", 'updated_at', "editor"));
     }
 
@@ -67,6 +72,7 @@ class LicitacaoController extends Controller
     public function edit(Licitacao $licitacao)
     {
         $this->authorize('admin');
+
         return view('licitacoes.edit', compact('licitacao'));
     }
 
@@ -92,6 +98,7 @@ class LicitacaoController extends Controller
         ];
         
         $licitacao->update($licitacao_editada);
+
         session()->flash('success', 'Atualizado com sucesso!');
         return redirect()->route('licitacoes.index');
     }
@@ -99,7 +106,9 @@ class LicitacaoController extends Controller
     public function destroy(Licitacao $licitacao)
     {
         $this->authorize('admin');
+
         $licitacao->delete();
+        
         session()->flash('danger', 'Licitação: ' . $licitacao->descricao . ' - ' . $licitacao->ano . ' removida!');
         return redirect()->route('licitacoes.index');
     }

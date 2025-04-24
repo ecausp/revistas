@@ -14,8 +14,10 @@ class ServicoController extends Controller
     public function index()
     {   
         $this->authorize('admin');
-        $servicos = Servico::all();
         \UspTheme::activeUrl('servicos');
+
+        $servicos = Servico::all();
+        
         return view('servicos.index', compact('servicos'));
     }
 
@@ -25,8 +27,10 @@ class ServicoController extends Controller
     public function create()
     {
         $this->authorize('admin');
-        $unidades_medida = $stringArray = explode(",", env('UNIDADES_MEDIDA'));
         \UspTheme::activeUrl('servicos/create');
+
+        $unidades_medida = $stringArray = explode(",", env('UNIDADES_MEDIDA'));
+
         return view('servicos.create', compact('unidades_medida'));
     }
 
@@ -73,8 +77,10 @@ class ServicoController extends Controller
     public function show(Servico $servico)
     {
         $this->authorize('admin');
+
         $editor = User::where('id', $servico->editor)->first();
         $updated_at = $servico->updated_at;
+
         return view('servicos.show', compact('servico', 'updated_at', 'editor'));
     }
 
@@ -127,7 +133,9 @@ class ServicoController extends Controller
     public function destroy(Servico $servico)
     {
         $this->authorize('admin');
+
         $servico->delete();
+        
         session()->flash('danger', 'Serviço: ' . $servico->descricao . ' removido!');
         return redirect()->route('servicos.index');
     }
