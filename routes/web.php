@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LimiteController;
 use App\Http\Middleware\EnsureUserIsLogged;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LicitacaoController;
@@ -37,6 +38,8 @@ Route::resource('licitacoes', LicitacaoController::class)->parameters(['licitaco
 Route::resource('empresas', EmpresaController::class);
 Route::resource('servicos', ServicoController::class);
 Route::resource('revistas', RevistaController::class);
+Route::resource('limites', LimiteController::class);
+
 
 # rota para conseguir pegar a empresa que está cadastrando esse contato;
 Route::get('/contatos/create/{empresa}', ContatoController::class . '@create')->name('contatos.create');
