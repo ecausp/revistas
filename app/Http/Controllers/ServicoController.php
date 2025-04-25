@@ -13,9 +13,11 @@ class ServicoController extends Controller
      */
     public function index()
     {   
-        $this->authorize('admin');
-        $servicos = Servico::all();
+        $this->authorize('servicos');
         \UspTheme::activeUrl('servicos');
+
+        $servicos = Servico::all();
+        
         return view('servicos.index', compact('servicos'));
     }
 
@@ -24,9 +26,11 @@ class ServicoController extends Controller
      */
     public function create()
     {
-        $this->authorize('admin');
-        $unidades_medida = $stringArray = explode(",", env('UNIDADES_MEDIDA'));
+        $this->authorize('servicos');
         \UspTheme::activeUrl('servicos/create');
+
+        $unidades_medida = $stringArray = explode(",", env('UNIDADES_MEDIDA'));
+
         return view('servicos.create', compact('unidades_medida'));
     }
 
@@ -35,7 +39,7 @@ class ServicoController extends Controller
      */
     public function store(Request $request)
     {
-        $this->authorize('admin');
+        $this->authorize('servicos');
 
         // Primeiro remove os pontos
         $request['quantidade'] = str_replace('.', '', $request->quantidade);       
@@ -72,9 +76,11 @@ class ServicoController extends Controller
      */
     public function show(Servico $servico)
     {
-        $this->authorize('admin');
+        $this->authorize('servicos');
+
         $editor = User::where('id', $servico->editor)->first();
         $updated_at = $servico->updated_at;
+
         return view('servicos.show', compact('servico', 'updated_at', 'editor'));
     }
 
@@ -83,7 +89,7 @@ class ServicoController extends Controller
      */
     public function edit(Servico $servico)
     {
-        $this->authorize('admin');
+        $this->authorize('servicos');
 
         $unidades_medida = $stringArray = explode(",", env('UNIDADES_MEDIDA'));
         return view('servicos.edit', compact('servico', 'unidades_medida'));
@@ -94,7 +100,7 @@ class ServicoController extends Controller
      */
     public function update(Request $request, Servico $servico)
     {
-        $this->authorize('admin');
+        $this->authorize('servicos');
 
         // Primeiro remove os pontos
         $request['quantidade'] = str_replace('.', '', $request->quantidade);       
@@ -126,8 +132,10 @@ class ServicoController extends Controller
      */
     public function destroy(Servico $servico)
     {
-        $this->authorize('admin');
+        $this->authorize('servicos');
+
         $servico->delete();
+        
         session()->flash('danger', 'Serviço: ' . $servico->descricao . ' removido!');
         return redirect()->route('servicos.index');
     }
