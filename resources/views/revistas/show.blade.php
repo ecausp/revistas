@@ -6,7 +6,7 @@
     <div class="card-header h5">
         Revista: {{ $revista->name }}
     </div>
-    @can('limites')
+    @can('revistas')
     <div class="card-body">
         <p><strong>Centro de Despesa: </strong>{{ $revista->centro_despesa }}</p>
 
