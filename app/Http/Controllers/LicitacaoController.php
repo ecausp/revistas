@@ -12,7 +12,7 @@ class LicitacaoController extends Controller
     //exibir o form para criar uma nova licitacao
     public function create()
     {
-        $this->authorize('admin');
+        $this->authorize('licitacoes');
         \UspTheme::activeUrl('licitacoes/create');
 
         return view('licitacoes.create');
@@ -21,7 +21,7 @@ class LicitacaoController extends Controller
     //armazenar a nova licitacao
     public function store(Request $request)
     {
-        $this->authorize('admin');
+        $this->authorize('licitacoes');
         
         // Primeiro remove os pontos e depois troca a virgula por ponto
         $request['valor_total'] = str_replace(',', '.', str_replace('.', '', $request->valor_total));
@@ -49,7 +49,7 @@ class LicitacaoController extends Controller
     // listar todas as licitacoes
     public function index()
     {
-        $this->authorize('admin');
+        $this->authorize('licitacoes');
         \UspTheme::activeUrl('licitacoes');
 
         $licitacoes = Licitacao::orderBy('ano', 'desc')->orderBy('descricao')->get();
@@ -60,7 +60,7 @@ class LicitacaoController extends Controller
     // Exibir os detalhes de uma licitação
     public function show(Licitacao $licitacao)
     {
-        $this->authorize('admin');
+        $this->authorize('licitacoes');
 
         $editor = User::where('id', $licitacao->editor)->first();
         $updated_at = $licitacao->updated_at;
@@ -71,7 +71,7 @@ class LicitacaoController extends Controller
     // Exibir o formulário para editar uma licitação
     public function edit(Licitacao $licitacao)
     {
-        $this->authorize('admin');
+        $this->authorize('licitacoes');
 
         return view('licitacoes.edit', compact('licitacao'));
     }
@@ -79,7 +79,7 @@ class LicitacaoController extends Controller
     // Atualizar os dados de uma licitação
     public function update(Request $request, Licitacao $licitacao)
     {
-        $this->authorize('admin');
+        $this->authorize('licitacoes');
 
         // Primeiro remove os pontos e depois troca a virgula por ponto
         $request['valor_total'] = str_replace(',', '.', str_replace('.', '', $request->valor_total));
@@ -105,7 +105,7 @@ class LicitacaoController extends Controller
 
     public function destroy(Licitacao $licitacao)
     {
-        $this->authorize('admin');
+        $this->authorize('licitacoes');
 
         $licitacao->delete();
         

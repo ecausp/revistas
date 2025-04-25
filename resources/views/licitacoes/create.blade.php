@@ -8,7 +8,7 @@
         Criar Licitação
     </div>
     <div class="card-body">
-        @can('admin')
+        @can('licitacoes')
         <form action="{{ route('licitacoes.store') }}" method="POST" class="needs-validation" novalidate>
             @csrf
             @include('licitacoes.partials.forms')

@@ -8,7 +8,7 @@
         Criar limite
     </div>
     <div class="card-body">
-        @can('admin')
+        @can('limites')
         <form action="{{ route('limites.store') }}" method="POST">
             @csrf
             @include('limites.partials.forms')

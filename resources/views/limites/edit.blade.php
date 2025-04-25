@@ -9,7 +9,7 @@
     </div>
     <div class="card-body">
 
-        @can('admin')
+        @can('limites')
         <form action="{{ route('limites.update', $limite) }}" method="POST">
             @csrf
             @method('PUT')
