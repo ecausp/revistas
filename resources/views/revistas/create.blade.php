@@ -8,7 +8,7 @@
         Criar Revista
     </div>
     <div class="card-body">
-        @can('revistas')
+        @can('revistas.revista')
         <form action="{{ route('revistas.store') }}" method="POST">
             @csrf
             @include('revistas.partials.forms')

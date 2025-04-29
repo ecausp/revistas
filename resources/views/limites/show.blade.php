@@ -6,7 +6,7 @@
     <div class="card-header h5">
         limite: {{ $limite->id }}
     </div>
-    @can('limites')
+    @can('revistas.financeiro')
     <div class="card-body">
         <p><strong>Licitação: </strong>{{ $limite->licitacao->descricao }} - {{ $limite->licitacao->ano }}</p>
         <p><strong>Revista: </strong>{{ $limite->revista->name }} - {{ $limite->revista->centro_despesa }}</p>

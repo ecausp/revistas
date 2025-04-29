@@ -13,7 +13,7 @@ class ServicoController extends Controller
      */
     public function index()
     {   
-        $this->authorize('servicos');
+        $this->authorize('revistas.financeiro');
         \UspTheme::activeUrl('servicos');
 
         $servicos = Servico::all();
@@ -26,7 +26,7 @@ class ServicoController extends Controller
      */
     public function create()
     {
-        $this->authorize('servicos');
+        $this->authorize('revistas.financeiro');
         \UspTheme::activeUrl('servicos/create');
 
         $unidades_medida = $stringArray = explode(",", env('UNIDADES_MEDIDA'));
@@ -39,7 +39,7 @@ class ServicoController extends Controller
      */
     public function store(Request $request)
     {
-        $this->authorize('servicos');
+        $this->authorize('revistas.financeiro');
 
         // Primeiro remove os pontos
         $request['quantidade'] = str_replace('.', '', $request->quantidade);       
@@ -76,7 +76,7 @@ class ServicoController extends Controller
      */
     public function show(Servico $servico)
     {
-        $this->authorize('servicos');
+        $this->authorize('revistas.financeiro');
 
         $editor = User::where('id', $servico->editor)->first();
         $updated_at = $servico->updated_at;
@@ -89,7 +89,7 @@ class ServicoController extends Controller
      */
     public function edit(Servico $servico)
     {
-        $this->authorize('servicos');
+        $this->authorize('revistas.financeiro');
 
         $unidades_medida = $stringArray = explode(",", env('UNIDADES_MEDIDA'));
         return view('servicos.edit', compact('servico', 'unidades_medida'));
@@ -100,7 +100,7 @@ class ServicoController extends Controller
      */
     public function update(Request $request, Servico $servico)
     {
-        $this->authorize('servicos');
+        $this->authorize('revistas.financeiro');
 
         // Primeiro remove os pontos
         $request['quantidade'] = str_replace('.', '', $request->quantidade);       
@@ -132,7 +132,7 @@ class ServicoController extends Controller
      */
     public function destroy(Servico $servico)
     {
-        $this->authorize('servicos');
+        $this->authorize('revistas.financeiro');
 
         $servico->delete();
         
