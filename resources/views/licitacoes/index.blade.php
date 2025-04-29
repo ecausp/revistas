@@ -10,7 +10,7 @@
         Licitações
     </div>
     <div class="card-body">
-        @can('licitacoes')
+        @can('revistas.financeiro')
         <a href="{{ route('licitacoes.create') }}" class="btn btn-primary mb-3"><i class="fas fa-plus"></i>
             Licitação</a>
         <table
