@@ -6,7 +6,7 @@
     <div class="card-header h5">
         Serviço: {{ $servico->descricao }}
     </div>
-    @can('servicos')
+    @can('revistas.financeiro')
     <div class="card-body">
         <p><strong>Quantidade: </strong>{{ number_format($servico->quantidade, 0, ',', '.') }}</p>
         <p><strong>Unidade de medida: </strong>{{ $servico->unidade_medida }}</p>
