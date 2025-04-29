@@ -14,7 +14,7 @@ class RevistaController extends Controller
      */
     public function index()
     {   
-        $this->authorize('revistas');
+        $this->authorize('revistas.revista');
         $revistas = Revista::all();
         \UspTheme::activeUrl('revistas');
         return view('revistas.index', compact('revistas'));
@@ -25,7 +25,7 @@ class RevistaController extends Controller
      */
     public function create()
     {
-        $this->authorize('revistas');
+        $this->authorize('revistas.revista');
         $centros_despesas = Financeiro::ListarCentrosDespesas();
         \UspTheme::activeUrl('revistas/create');
         return view('revistas.create', compact('centros_despesas'));
@@ -36,7 +36,7 @@ class RevistaController extends Controller
      */
     public function store(Request $request)
     {
-        $this->authorize('revistas');
+        $this->authorize('revistas.revista');
 
         $request->validate([
             'name' => 'required',
@@ -59,7 +59,7 @@ class RevistaController extends Controller
      */
     public function show(Revista $revista)
     {
-        $this->authorize('revistas');
+        $this->authorize('revistas.revista');
         $editor = User::where('id', $revista->editor)->first();
         $updated_at = $revista->updated_at;
         return view('revistas.show', compact('revista', 'updated_at','editor' ) );
@@ -70,7 +70,7 @@ class RevistaController extends Controller
      */
     public function edit(Revista $revista)
     {
-        $this->authorize('revistas');
+        $this->authorize('revistas.revista');
         $centros_despesas = Financeiro::ListarCentrosDespesas();
         return view('revistas.edit', compact('revista', 'centros_despesas'));
     }
@@ -80,7 +80,7 @@ class RevistaController extends Controller
      */
     public function update(Request $request, Revista $revista)
     {
-        $this->authorize('revistas');
+        $this->authorize('revistas.revista');
 
         $request->validate([
             'name' => 'required',
@@ -103,7 +103,7 @@ class RevistaController extends Controller
      */
     public function destroy(Revista $revista)
     {
-        $this->authorize('revistas');
+        $this->authorize('revistas.revista');
         $revista->delete();
         session()->flash('danger', 'Revista: ' . $revista->name . ' removida!');
         return redirect()->route('revistas.index');
