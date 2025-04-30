@@ -23,6 +23,11 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        $this->registerPolicies();
+
+        // para garantir que o menu do laravel-usp-theme seja visto por ambas as roles admin e revista;
+        Gate::define('admin-revista', function ($user) {
+            return $user->hasAnyRole(['admin', 'revista']);
+        });
     }
 }
