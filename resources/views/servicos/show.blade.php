@@ -8,7 +8,6 @@
     </div>
     @can('revistas.financeiro')
     <div class="card-body">
-        <p><strong>Quantidade: </strong>{{ number_format($servico->quantidade, 0, ',', '.') }}</p>
         <p><strong>Unidade de medida: </strong>{{ $servico->unidade_medida }}</p>
         <p><strong>Valor Unitário: </strong>{{ number_format($servico->valor_unitario, 2, ',', '.') }}</p>
 
