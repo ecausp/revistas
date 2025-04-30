@@ -7,7 +7,7 @@
 <div class="mb-1">
     <label for="quantidade" class="form-label">Quantidade </label>
     <input type="text" class="form-control numero" name="quantidade" id="quantidade" value="{{ old('quantidade', isset($servico) ? $servico->quantidade
-        : '') }}" placeholder="000" required></input>
+        : '') }}" placeholder="000"></input>
 </div>
 
 
