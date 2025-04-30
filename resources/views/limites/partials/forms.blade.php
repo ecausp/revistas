@@ -30,12 +30,15 @@
 
     <div class="mb-1">
         <label for="valor_unitario" class="form-label">Valor Unitário</label>
-        <input type="text" class="form-control money" name="valor_unitario" id="valor_unitario" readonly>
+        <input type="text" class="form-control money" name="valor_unitario" id="valor_unitario"
+            value="{{ old('valor_unitario', isset($limite) ? $limite->valor_unitario : '') }}" placeholder="0,00"
+            readonly>
+
 
     </div>
 
     <div class="mb-1">
-        <label for="quantidade" class="form-label">quantidade</label>
+        <label for="quantidade" class="form-label">Quantidade</label>
         <input type="text" class="form-control quantidade" name="quantidade" id="quantidade"
             value="{{ old('quantidade', isset($limite) ? $limite->quantidade : '') }}" placeholder="quantidade licitada"
             required>
