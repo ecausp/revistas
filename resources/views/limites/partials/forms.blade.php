@@ -40,17 +40,29 @@
     <div class="mb-1">
         <label for="quantidade" class="form-label">Quantidade</label>
         <input type="text" class="form-control quantidade" name="quantidade" id="quantidade"
-            value="{{ old('quantidade', isset($limite) ? $limite->quantidade : '') }}" placeholder="quantidade licitada"
+            value="{{ old('quantidade', isset($limite) ? $limite->quantidade : '') }}" placeholder="Quantidade licitada"
             required>
     </div>
 
 
+
     <div class="mb-1">
-        <label for="valor_total" class="form-label">Valor Total</label>
-        <input type="text" class="form-control money" name="valor_total" id="valor_total" placeholder="0,00" readonly>
+        <label for="valor_total_licitacao" class="form-label">Valor Total da Licitação</label>
+        <input type="text" class="form-control money" name="valor_total_licitacao" id="valor_total_licitacao"
+            placeholder="0,00" readonly>
     </div>
 
+    <div class="mb-1">
+        <label for="valor_total" class="form-label">Valor Total</label>
+        <input type="text" class="form-control money" name="valor_total_pedido" id="valor_total_pedido"
+            placeholder="0,00" readonly>
+    </div>
 
+    <div class="mb-1">
+        <label for="diferenca_valores" class="form-label">Diferença de Valores</label>
+        <input type="text" class="form-control money" name="diferenca_valores" id="diferenca_valores" placeholder="0,00"
+            readonly>
+    </div>
 
     <div class="container mt-5 col">
         <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salvar</button>

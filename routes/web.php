@@ -10,9 +10,7 @@ use App\Http\Controllers\ContatoController;
 use App\Http\Controllers\RevistaController;
 use App\Http\Controllers\AuthController;
 
-
-use Illuminate\Support\Facades\Mail;
-use App\Mail\TestMail;
+use App\Models\Licitacao;
 
 /*
 |--------------------------------------------------------------------------
@@ -61,3 +59,8 @@ Route::get('get-user-details', [ContatoController::class, 'getUserDetails'])->na
 
 // pra colocar o valor do servico no limite
 Route::get('/servicos/{id}/valor-unitario', [App\Http\Controllers\ServicoController::class, 'valorUnitario']);
+
+// pra pegar, na criação de limite, o valor total da licitacao
+Route::get('/licitacoes/{licitacao}/valor-total', function (App\Models\Licitacao $licitacao) {
+    return response()->json(['valor_total' => $licitacao->valor_total]);
+});

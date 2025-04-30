@@ -29,6 +29,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 @parent
+
 <script>
 $(document).ready(function() {
     // Função para carregar o valor unitário via AJAX
@@ -43,10 +44,7 @@ $(document).ready(function() {
                         maximumFractionDigits: 2
                     });
 
-                    // Definir o valor no campo e mantê-lo readonly
                     $('#valor_unitario').val(valorFormatado).prop('readonly', true);
-
-                    // Atualiza o valor total após carregar o valor unitário
                     atualizarValorTotal();
                 },
                 error: function() {
@@ -56,42 +54,92 @@ $(document).ready(function() {
         }
     }
 
-    // Função para calcular e atualizar o valor total
-    function atualizarValorTotal() {
-        let quantidade = parseFloat($('#quantidade').val().replace('.', '').replace(',', '.'));
-        let valorUnitario = parseFloat($('#valor_unitario').val().replace('.', '').replace(',', '.'));
-
-        // Verifica se o valor_unitario está preenchido antes de calcular o valor_total
-        if (!isNaN(valorUnitario) && !isNaN(quantidade)) {
-            let valorTotal = valorUnitario * quantidade;
-
-            // Formata o valor total para o padrão pt-BR (2 casas decimais)
-            let valorTotalFormatado = valorTotal.toLocaleString('pt-BR', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
+    // Função para carregar o valor da licitação
+    function carregarValorLicitacao(licitacaoId) {
+        if (licitacaoId) {
+            $.ajax({
+                url: `/licitacoes/${licitacaoId}/valor-total`,
+                type: 'GET',
+                success: function(data) {
+                    let valorFormatado = parseFloat(data.valor_total).toLocaleString('pt-BR', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+                    $('#valor_total_licitacao').val(valorFormatado);
+                    calcularDiferenca();
+                },
+                error: function() {
+                    alert('Erro ao buscar valor total da licitação.');
+                }
             });
+        }
+    }
 
-            // Atualiza o campo "valor_total" com o valor formatado
-            $('#valor_total').val(valorTotalFormatado);
+    // Função para calcular e atualizar o valor total do pedido
+    function atualizarValorTotal() {
+        let quantidade = parseFloat($('#quantidade').val().replace(/\./g, '').replace(',', '.') || 0);
+        let valorUnitario = parseFloat($('#valor_unitario').val().replace(/\./g, '').replace(',', '.') || 0);
+
+        let valorTotal = valorUnitario * quantidade;
+        let valorTotalFormatado = valorTotal.toLocaleString('pt-BR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+
+        $('#valor_total_pedido').val(valorTotalFormatado);
+        calcularDiferenca();
+    }
+
+    // Função para calcular a diferença entre os valores
+    function calcularDiferenca() {
+        // Pega os valores formatados
+        let valorLicitacao = $('#valor_total_licitacao').val();
+        let valorPedido = $('#valor_total_pedido').val();
+
+        // Converte para números (remove pontos, troca vírgula por ponto)
+        let valorLicitacaoNum = valorLicitacao ?
+            parseFloat(valorLicitacao.replace(/\./g, '').replace(',', '.')) : 0;
+        let valorPedidoNum = valorPedido ?
+            parseFloat(valorPedido.replace(/\./g, '').replace(',', '.')) : 0;
+
+        // Calcula a diferença
+        let diferenca = valorLicitacaoNum - valorPedidoNum;
+
+        // Formata o resultado
+        let diferencaFormatada = diferenca.toLocaleString('pt-BR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+
+        // Atualiza o campo
+        $('#diferenca_valores').val(diferencaFormatada);
+
+        // Muda a cor se a diferença for negativa
+        if (diferenca < 0) {
+            $('#diferenca_valores').addClass('text-danger');
         } else {
-            // Se algum dos campos não estiver preenchido, limpa o campo "valor_total"
-            $('#valor_total').val('');
+            $('#diferenca_valores').removeClass('text-danger');
         }
     }
 
     // Inicializa o Select2
     $('.select2').select2();
 
-    // Evento correto para capturar seleção com Select2
+    // Eventos
     $('#servico_id').on('select2:select', function(e) {
-        const servicoId = $(this).val();
-        carregarValorUnitario(servicoId); // Atualiza o valor unitário
+        carregarValorUnitario($(this).val());
     });
 
-    // Carrega o valor unitário automaticamente no modo edit
-    const servicoSelecionado = $('#servico_id').val();
-    if (servicoSelecionado) {
-        carregarValorUnitario(servicoSelecionado); // Atualiza o valor unitário
+    $('#licitacao_id').on('select2:select', function(e) {
+        carregarValorLicitacao($(this).val());
+    });
+
+    // Carrega valores iniciais se existirem
+    if ($('#servico_id').val()) {
+        carregarValorUnitario($('#servico_id').val());
+    }
+    if ($('#licitacao_id').val()) {
+        carregarValorLicitacao($('#licitacao_id').val());
     }
 
     // Máscara para campos monetários
@@ -99,22 +147,31 @@ $(document).ready(function() {
         reverse: true
     });
 
-    // Atualiza o valor total quando a quantidade ou valor unitário for alterado
+    // Atualiza cálculos quando valores mudam
     $('#quantidade, #valor_unitario').on('input', function() {
         atualizarValorTotal();
     });
 
-    // Ao enviar o form, limpa e converte o valor para o formato do Laravel
+    // Formata valores antes do submit
     $('form').on('submit', function() {
-        // Para o campo valor_unitario, limpa a máscara e converte para número
-        let valorComMascara = $('#valor_unitario').val();
-        let valorLimpo = valorComMascara.replace(/\./g, '').replace(',', '.');
-        $('#valor_unitario').val(valorLimpo);
+        // Converte valor_unitario
+        let valorUnitario = $('#valor_unitario').val();
+        if (valorUnitario) {
+            $('#valor_unitario').val(valorUnitario.replace(/\./g, '').replace(',', '.'));
+        }
 
-        // Para o campo valor_total, limpa a máscara e converte para número
-        let valorTotalComMascara = $('#valor_total').val();
-        let valorTotalLimpo = valorTotalComMascara.replace(/\./g, '').replace(',', '.');
-        $('#valor_total').val(valorTotalLimpo);
+        // Converte valor_total_pedido
+        let valorTotalPedido = $('#valor_total_pedido').val();
+        if (valorTotalPedido) {
+            $('#valor_total_pedido').val(valorTotalPedido.replace(/\./g, '').replace(',', '.'));
+        }
+
+        // Validação adicional (opcional)
+        let diferenca = parseFloat($('#diferenca_valores').val().replace(/\./g, '').replace(',', '.'));
+        if (diferenca < 0) {
+            alert('Atenção! O valor total do pedido excede o valor da licitação.');
+            return false;
+        }
     });
 });
 </script>
