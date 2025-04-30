@@ -45,7 +45,10 @@
     </div>
 
 
-
+    <div class="mb-1">
+        <label for="valor_total" class="form-label">Valor Total</label>
+        <input type="text" class="form-control money" name="valor_total" id="valor_total" placeholder="0,00" readonly>
+    </div>
 
 
 
