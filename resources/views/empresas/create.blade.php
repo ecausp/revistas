@@ -21,18 +21,31 @@
 
 @section('styles')
 @parent
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<style>
+.select2-container {
+    width: 100% !important;
+}
+</style>
 <link rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
 @endsection
 
 @section('javascripts_bottom')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 @parent
 <script>
 $(document).ready(function() {
     // Formato cnpj
     $('.cnpj').mask('00.000.000/0000-00', {
         reverse: true
+    });
+
+    // Inicializa o Select2 de forma responsiva para o campo SERVIÇO
+    $('#servico_id').select2({
+        width: '100%'
     });
 });
 </script>
