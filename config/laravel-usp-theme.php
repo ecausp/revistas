@@ -4,17 +4,17 @@ $submenu1 = [
     [
         'type' => 'header',
         'text' => '<i class="fa fa-shopping-cart" aria-hidden="true"></i> Licitações',
-        'can' => 'admin'
+        'can' => 'admin-revista'
     ],
     [
         'text' => '<i class="fas fa-plus-circle" aria-hidden="true"></i> Cadastrar',
         'url' => 'licitacoes/create',
-        'can' => 'admin'
+        'can' => 'admin-revista'
     ],
     [
         'text' => '<i class="fas fa-list-ul" aria-hidden="true"></i> Listar',
         'url' => 'licitacoes',
-        'can' => 'admin'
+        'can' => 'admin-revista'
     ],
     [
         'type' => 'divider',
@@ -22,17 +22,17 @@ $submenu1 = [
     [
         'type' => 'header',
         'text' => '<i class="fa fa-building" aria-hidden="true"></i> Empresas',
-        'can' => 'admin'
+        'can' => 'admin-revista'
     ],
     [
         'text' => '<i class="fas fa-plus-circle" aria-hidden="true"></i> Cadastrar',
         'url' => 'empresas/create',
-        'can' => 'admin'
+        'can' => 'admin-revista'
     ],
     [
         'text' => '<i class="fas fa-list-ul" aria-hidden="true"></i> Listar',
         'url' => 'empresas',
-        'can' => 'admin'
+        'can' => 'admin-revista'
     ],
     [
         'type' => 'divider',
@@ -40,17 +40,17 @@ $submenu1 = [
     [
         'type' => 'header',
         'text' => '<i class="fas fa-tasks" aria-hidden="true"></i> Serviços',
-        'can' => 'admin'
+        'can' => 'admin-revista'
     ],
     [
         'text' => '<i class="fas fa-plus-circle" aria-hidden="true"></i> Cadastrar',
         'url' => 'servicos/create',
-        'can' => 'admin'
+        'can' => 'admin-revista'
     ],
     [
         'text' => '<i class="fas fa-list-ul" aria-hidden="true"></i> Listar',
         'url' => 'servicos',
-        'can' => 'admin'
+        'can' => 'admin-revista'
     ],
     [
         'type' => 'divider',
@@ -58,17 +58,17 @@ $submenu1 = [
     [
         'type' => 'header',
         'text' => '<i class="fa fa-book" aria-hidden="true"></i> Revistas',
-        'can' => 'admin'
+        'can' => 'admin-revista'
     ],
     [
         'text' => '<i class="fas fa-plus-circle" aria-hidden="true"></i> Cadastrar',
         'url' => 'revistas/create',
-        'can' => 'admin'
+        'can' => 'admin-revista'
     ],
     [
         'text' => '<i class="fas fa-list-ul" aria-hidden="true"></i> Listar',
         'url' => 'revistas',
-        'can' => 'admin'
+        'can' => 'admin-revista'
     ],
     [
         'type' => 'divider',
@@ -76,17 +76,17 @@ $submenu1 = [
     [
         'type' => 'header',
         'text' => '<i class="fas fa-money-bill-alt" aria-hidden="true"></i> Limites',
-        'can' => 'admin'
+        'can' => 'admin-revista'
     ],
     [
         'text' => '<i class="fas fa-plus-circle" aria-hidden="true"></i> Cadastrar',
         'url' => 'limites/create',
-        'can' => 'admin'
+        'can' => 'admin-revista'
     ],
     [
         'text' => '<i class="fas fa-list-ul" aria-hidden="true"></i> Listar',
         'url' => 'limites',
-        'can' => 'admin'
+        'can' => 'admin-revista'
     ],
 ];
 
@@ -96,9 +96,9 @@ $menu = [
         'key' => 'menu_dinamico',
     ],
     [
-        'text' => '<i class="fas fa-tools"></i> Administração',
+        'text' => '<i class="fas fa-tools"></i> Financeiro',
         'submenu' => $submenu1,
-        'can' => 'admin',
+        'can' => 'admin-revista',
     ],
 ];
 
