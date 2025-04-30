@@ -132,4 +132,16 @@ class ServicoController extends Controller
         session()->flash('danger', 'Serviço: ' . $servico->descricao . ' removido!');
         return redirect()->route('servicos.index');
     }
+
+
+    // para preencher o valor no form do limite
+    public function valorUnitario($id)
+{
+    $servico = Servico::findOrFail($id);
+
+    return response()->json([
+        'valor_unitario' => $servico->valor_unitario,
+    ]);
+}
+
 }

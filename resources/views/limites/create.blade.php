@@ -28,4 +28,35 @@
 @section('javascripts_bottom')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 @parent
+<script>
+$(document).ready(function() {
+    $('#servico_id').on('change', function() {
+        let servicoId = $(this).val();
+
+        if (servicoId) {
+            $.ajax({
+                url: `/servicos/${servicoId}/valor-unitario`,
+                type: 'GET',
+                success: function(data) {
+                    // Formata com vírgula como separador decimal se necessário
+                    let valorFormatado = parseFloat(data.valor_unitario).toLocaleString(
+                        'pt-BR', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        });
+
+                    $('#valor_unitario').val(valorFormatado);
+                },
+                error: function() {
+                    alert('Erro ao buscar valor unitário do serviço.');
+                }
+            });
+        } else {
+            $('#valor_unitario').val('');
+        }
+    });
+});
+</script>
+
+
 @endsection
