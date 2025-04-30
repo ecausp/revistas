@@ -56,7 +56,8 @@ Route::get('/reset-password/{token}', [AuthController::class, 'showResetPassword
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 
 
-Route::get('demo-search', [ContatoController::class, 'index']);
 Route::get('autocomplete', [ContatoController::class, 'autocomplete'])->name('autocomplete');
 Route::get('get-user-details', [ContatoController::class, 'getUserDetails'])->name('get-user-details');
- 
+
+// pra colocar o valor do servico no limite
+Route::get('/servicos/{id}/valor-unitario', [App\Http\Controllers\ServicoController::class, 'valorUnitario']);

@@ -41,14 +41,11 @@ class ServicoController extends Controller
     {
         $this->authorize('revistas.financeiro');
 
-        // Primeiro remove os pontos
-        $request['quantidade'] = str_replace('.', '', $request->quantidade);       
         // Primeiro remove os pontos e depois troca a virgula por ponto
         $request['valor_unitario'] = str_replace(',', '.', str_replace('.', '', $request->valor_unitario));
 
         $validated = $request->validate([
             'descricao' => 'required',
-            'quantidade' => 'required|numeric',
             'unidade_medida' => 'required',
             'valor_unitario' => 'required|numeric',
         ]);
@@ -102,14 +99,11 @@ class ServicoController extends Controller
     {
         $this->authorize('revistas.financeiro');
 
-        // Primeiro remove os pontos
-        $request['quantidade'] = str_replace('.', '', $request->quantidade);       
         // Primeiro remove os pontos e depois troca a virgula por ponto
         $request['valor_unitario'] = str_replace(',', '.', str_replace('.', '', $request->valor_unitario));
 
         $request->validate([
             'descricao' => 'required',
-            'quantidade' => 'required|numeric',
             'unidade_medida' => 'required',
             'valor_unitario' => 'required|numeric',
         ]);
@@ -117,7 +111,6 @@ class ServicoController extends Controller
         $servico_editado = [
             'editor' => $request->user()->id,
             "descicao" => $request->descricao,
-            "quantidade" => $request->quantidade,
             "unidade_medida" => $request->unidade_medida,
             "valor_unitario" => $request->valor_unitario,
         ];
@@ -139,4 +132,16 @@ class ServicoController extends Controller
         session()->flash('danger', 'Serviço: ' . $servico->descricao . ' removido!');
         return redirect()->route('servicos.index');
     }
+
+
+    // para preencher o valor no form do limite
+    public function valorUnitario($id)
+{
+    $servico = Servico::findOrFail($id);
+
+    return response()->json([
+        'valor_unitario' => $servico->valor_unitario,
+    ]);
+}
+
 }

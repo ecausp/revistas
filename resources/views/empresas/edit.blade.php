@@ -38,11 +38,6 @@
                                 placeholder="Descrição do Serviço..." required>
                         </div>
                         <div class="mb-1">
-                            <label for="quantidade" class="form-label">Quantidade</label>
-                            <input type="text" class="form-control numero" name="quantidade" id="quantidade"
-                                placeholder="Quantidade" required>
-                        </div>
-                        <div class="mb-1">
                             <label for="valor_unitario" class="form-label">Valor Unitário</label>
                             <input type="text" class="form-control money" name="valor_unitario" id="valor_unitario"
                                 placeholder="Valor Unitário" required>

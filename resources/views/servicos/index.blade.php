@@ -17,7 +17,6 @@
             <thead>
                 <tr>
                     <th>Descrição</th>
-                    <th>Quantidade</th>
                     <th>Unidade de Medida</th>
                     <th>Valor Unitário</th>
                     <th>Ações</th>
@@ -27,7 +26,6 @@
                 @foreach ($servicos as $servico)
                 <tr>
                     <td>{{ $servico->descricao }}</td>
-                    <td class="text-right">{{ number_format($servico->quantidade, 0, ',', '.') }}</td>
                     <td>{{ $servico->unidade_medida }}</td>
                     <td class="text-right">{{ number_format($servico->valor_unitario, 2, ',', '.') }}</td>
                     <td>

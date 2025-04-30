@@ -5,13 +5,6 @@
 </div>
 
 <div class="mb-1">
-    <label for="quantidade" class="form-label">Quantidade </label>
-    <input type="text" class="form-control numero" name="quantidade" id="quantidade" value="{{ old('quantidade', isset($servico) ? $servico->quantidade
-        : '') }}" placeholder="000" required></input>
-</div>
-
-
-<div class="mb-1">
     <label for="valor_unitario" class="form-label">Valor Unitário</label>
     <input type="text" class="form-control money" name="valor_unitario" id="valor_unitario" value="{{ old('valor_unitario', isset($servico) ? $servico->valor_unitario
         : '') }}" placeholder="0,00" required></input>
