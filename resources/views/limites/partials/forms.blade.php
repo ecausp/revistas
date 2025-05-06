@@ -45,24 +45,40 @@
     </div>
 
 
+    <div class="mt-4">
+        <label for="quantidade" class="form-label">Valor Disponível</label>
 
-    <div class="mb-1">
-        <label for="valor_total_licitacao" class="form-label">Valor Total da Licitação</label>
-        <input type="text" class="form-control money" name="valor_total_licitacao" id="valor_total_licitacao"
-            placeholder="0,00" readonly>
+        <div class="border-start border-3 border-primary ps-3">
+            <!-- Linha 1: Total da Licitação -->
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="text-muted">Total da Licitação:</span>
+                <span class="fw-bold">
+                    <span id="valor_total_licitacao">0,00</span>
+                </span>
+            </div>
+
+            <!-- Linha 2: Total do Pedido (com sinal negativo) -->
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="text-muted">Total do Pedido:</span>
+                <span class="fw-bold text-danger">
+                    - <span id="valor_total_pedido">0,00</span>
+                </span>
+            </div>
+
+            <!-- Linha divisória -->
+            <hr class="my-2 border-primary opacity-25">
+
+            <!-- Linha 3: Diferença (resultado) -->
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="text-muted">Disponível:</span>
+                <span class="fs-5 fw-bold text-success">
+                    <span id="diferenca_valores">0,00</span>
+                </span>
+            </div>
+        </div>
     </div>
 
-    <div class="mb-1">
-        <label for="valor_total" class="form-label">Valor Total</label>
-        <input type="text" class="form-control money" name="valor_total_pedido" id="valor_total_pedido"
-            placeholder="0,00" readonly>
-    </div>
 
-    <div class="mb-1">
-        <label for="diferenca_valores" class="form-label">Diferença de Valores</label>
-        <input type="text" class="form-control money" name="diferenca_valores" id="diferenca_valores" placeholder="0,00"
-            readonly>
-    </div>
 
     <div class="container mt-5 col">
         <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salvar</button>
