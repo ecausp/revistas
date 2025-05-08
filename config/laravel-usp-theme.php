@@ -109,6 +109,15 @@ $right_menu = [
     [
         'key' => 'laravel-tools',
     ],
+    [
+        'text' => '<span class="badge badge-danger">Admin</span>',
+        'can' => 'admin',
+    ],
+    [
+        'text' => '<span class="badge badge-danger">Revista</span>',
+        'can' => 'revista',
+    ],
+
     // [
     //     'text' => '<i class="fas fa-cog" aria-hidden="true"></i>',
     //     'title' => 'Configurações',

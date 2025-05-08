@@ -29,5 +29,9 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('admin-revista', function ($user) {
             return $user->hasAnyRole(['admin', 'revista']);
         });
+
+        Gate::define('revista', function ($user) {
+            return $user->hasAnyRole(['revista']);
+        });
     }
 }
