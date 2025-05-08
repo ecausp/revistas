@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-
 
 use App\Models\Empresa;
 use App\Models\Contato;
@@ -84,6 +82,7 @@ class EmpresaController extends Controller
 
         $updated_at = $empresa->updated_at;
         $editor = User::where('id', $empresa->editor)->first();
+        $updated_at = $empresa->updated_at;
         $contatos = Contato::where('empresa_id', $empresa->id)->get();
       
         $users = [];
@@ -93,7 +92,7 @@ class EmpresaController extends Controller
             $i++;
         };
         
-        return view('empresas.show', compact('empresa','users'));
+        return view('empresas.show', compact('updated_at','empresa','users', 'editor'));
 
     }
     
