@@ -8,7 +8,7 @@
         Criar Serviço
     </div>
     <div class="card-body">
-        @can('revistas.financeiro')
+        @can('admin-revista')
         <form action="{{ route('servicos.store') }}" method="POST">
             @csrf
             @include('servicos.partials.forms')
