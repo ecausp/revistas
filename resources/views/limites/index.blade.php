@@ -17,7 +17,7 @@
             <thead>
                 <tr>
                     <th>Limite ID</th>
-                    <th>Valor Unitário</th>
+                    <th>Valor Unitário (R$)</th>
                     <th>Quantidade</th>
                     <th>Licitação</th>
                     <th>Revista</th>
