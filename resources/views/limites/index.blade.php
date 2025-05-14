@@ -29,8 +29,8 @@
                 @foreach ($limites as $limite)
                 <tr>
                     <td>{{ $limite->id }}</td>
-                    <td>{{ $limite->valor_unitario }}</td>
-                    <td>{{ $limite->quantidade }}</td>
+                    <td>R$ {{ number_format($limite->valor_unitario, 2, ',', '.') }}</td>
+                    <td>{{ number_format($limite->quantidade, 0, ',', '.') }}</td>
                     <td>{{ $limite->licitacao->descricao }}</td>
                     <td>{{ $limite->revista->name }}</td>
                     <td>{{ $limite->servico->descricao }}</td>

@@ -5,7 +5,7 @@
 
 <div class="card">
     <div class="card-header h5">
-        Editar Licitação
+        Editar Limite
     </div>
     <div class="card-body">
 
