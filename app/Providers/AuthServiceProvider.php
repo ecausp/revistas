@@ -26,12 +26,12 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         // para garantir que o menu do laravel-usp-theme seja visto por ambas as roles admin e revista;
-        Gate::define('admin-revista', function ($user) {
-            return $user->hasAnyRole(['admin', 'revista']);
+        Gate::define('admin-financeiro', function ($user) {
+            return $user->hasAnyRole(['admin', 'financeiro']);
         });
 
-        Gate::define('revista', function ($user) {
-            return $user->hasAnyRole(['revista']);
+        Gate::define('financeiro', function ($user) {
+            return $user->hasAnyRole(['financeiro']);
         });
     }
 }
