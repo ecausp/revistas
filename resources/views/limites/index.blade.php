@@ -16,24 +16,27 @@
             class="table datatable-simples dt-fixed-header dt-paging-50 responsive no-footer table-striped responsive">
             <thead>
                 <tr>
-                    <th>Limite ID</th>
-                    <th>Valor Unitário (R$)</th>
-                    <th>Quantidade</th>
                     <th>Licitação</th>
                     <th>Revista</th>
                     <th>Serviço</th>
+                    <th>Quantidade</th>
+                    <th>Valor Unitário (R$)</th>
+                    <th>Valor de Limite Total (R$)</th>
                     <th>Ações</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($limites as $limite)
                 <tr>
-                    <td>{{ $limite->id }}</td>
-                    <td>R$ {{ number_format($limite->valor_unitario, 2, ',', '.') }}</td>
-                    <td>{{ number_format($limite->quantidade, 0, ',', '.') }}</td>
                     <td>{{ $limite->licitacao->descricao }}</td>
                     <td>{{ $limite->revista->name }}</td>
                     <td>{{ $limite->servico->descricao }}</td>
+                    <td>{{ number_format($limite->quantidade, 0, ',', '.') }}</td>
+                    <td>R$ {{ number_format($limite->valor_unitario, 2, ',', '.') }}</td>
+                    <td>R$
+                        {{ number_format(($limite->licitacao->valor_total - ($limite->quantidade * $limite->valor_unitario)), 2, ',', '.') }}
+                    </td>
+
                     <td>
                         <a href="{{ route('limites.show', $limite) }}" class="btn btn-primary"><i
                                 class="fas fa-eye"></i> </a>
