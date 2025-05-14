@@ -42,7 +42,7 @@
         <label for="servico" class="form-label">Serviço</label>
         <div id="servicos-container">
             <div class="mb-3 d-flex align-items-center">
-                <div class="flex-grow-1">
+                <div class="w-75 mr-3">
                     <select class="form-control select2" name="servico_id[]" id="servico_id" multiple="multiple">
                         @foreach ($servicos as $servico)
                         <option value="{{ $servico->id }}" @if (isset($empresa))@if(in_array($servico->id,
@@ -53,7 +53,7 @@
                         @endforeach
                     </select>
                 </div>
-                <button type="button" class="btn btn-success ms-3" id="servico-modal" title="Criar novo serviço">
+                <button type="button" class="btn btn-success" id="servico-modal" title="Criar novo serviço">
                     <i class="fas fa-plus"></i>
                 </button>
             </div>
