@@ -117,6 +117,14 @@ $right_menu = [
         'text' => '<span class="badge badge-info">Financeiro</span>',
         'can' => 'financeiro',
     ],
+    [
+        'text' => '<span class="badge badge-success">Empresa</span>',
+        'can' => 'empresa',
+    ],
+    [
+        'text' => '<span class="badge badge-warning">Revista</span>',
+        'can' => 'revista',
+    ],
 
     // [
     //     'text' => '<i class="fas fa-cog" aria-hidden="true"></i>',
