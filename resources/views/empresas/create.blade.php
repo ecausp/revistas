@@ -8,7 +8,7 @@
         Criar Empresa
     </div>
     <div class="card-body">
-        @can('revistas.empresa')
+        @can('admin-revista')
         <form action="{{ route('empresas.store') }}" method="POST">
             @csrf
             @include('empresas.partials.forms')

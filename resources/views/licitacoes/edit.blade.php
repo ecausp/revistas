@@ -9,7 +9,7 @@
     </div>
     <div class="card-body">
 
-        @can('revistas.financeiro')
+        @can('admin-revista')
         <form action="{{ route('licitacoes.update', $licitacao) }}" method="POST">
             @csrf
             @method('PUT')

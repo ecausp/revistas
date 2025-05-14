@@ -6,7 +6,7 @@
     <div class="card-header h5">
         Licitação: {{ $licitacao->descricao }}
     </div>
-    @can('revistas.financeiro')
+    @can('admin-revista')
     <div class="card-body">
         <p><strong>Ano:</strong> {{ $licitacao->ano }}</p>
         <p><strong>Valor Total:</strong> {{ number_format($licitacao->valor_total, 2, ',', '.') }}</p>

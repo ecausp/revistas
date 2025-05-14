@@ -6,7 +6,7 @@
     <div class="card-header h5">
         Empresa: {{ $empresa->razao_social }}
     </div>
-    @can('revistas.empresa')
+    @can('admin-revista')
     <div class="card-body">
         <p><strong>CNPJ:</strong> {{ $empresa->cnpj }}</p>
 
