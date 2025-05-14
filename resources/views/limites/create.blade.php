@@ -6,7 +6,7 @@
         Criar limite
     </div>
     <div class="card-body">
-        @can('revistas.financeiro')
+        @can('admin-revista')
         <form action="{{ route('limites.store') }}" method="POST">
             @csrf
             @include('limites.partials.forms')

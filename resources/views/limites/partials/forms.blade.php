@@ -83,11 +83,6 @@
     <div class="container mt-5 col">
         <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salvar</button>
 
-        @if (isset($limite))
-        <a href="{{ route('contatos.create',  $limite)}}" class="btn btn-success"><i class="fas fa-user"></i>
-            Contato(s)</a>
-        @endif
-
         <a href="{{ route('limites.index') }}" class="btn btn-secondary"><i class="fas fa-chevron-left"></i>
             Voltar</a>
 

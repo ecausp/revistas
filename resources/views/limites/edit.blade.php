@@ -5,11 +5,11 @@
 
 <div class="card">
     <div class="card-header h5">
-        Editar Licitação
+        Editar Limite
     </div>
     <div class="card-body">
 
-        @can('revistas.financeiro')
+        @can('admin-revista')
         <form action="{{ route('limites.update', $limite) }}" method="POST">
             @csrf
             @method('PUT')

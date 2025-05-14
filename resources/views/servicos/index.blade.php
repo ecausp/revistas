@@ -10,7 +10,7 @@
         Serviços
     </div>
     <div class="card-body">
-        @can('revistas.financeiro')
+        @can('admin-revista')
         <a href="{{ route('servicos.create') }}" class="btn btn-primary mb-3"><i class="fas fa-plus"></i> Serviço</a>
         <table
             class="table datatable-simples dt-fixed-header dt-paging-50 responsive no-footer table-striped responsive">

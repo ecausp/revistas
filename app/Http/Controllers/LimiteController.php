@@ -13,7 +13,7 @@ class LimiteController extends Controller
     //lista os Limites
     public function index()
     {
-        $this->authorize('revistas.financeiro');
+        $this->authorize("admin-revista");
         \UspTheme::activeUrl('limites');
         
         $limites = Limite::all();
@@ -23,7 +23,7 @@ class LimiteController extends Controller
 
     public function create()
     {
-        $this->authorize('revistas.financeiro');
+        $this->authorize("admin-revista");
         \UspTheme::activeUrl('limites/create');
 
         $licitacoes = Licitacao::all();
@@ -35,7 +35,7 @@ class LimiteController extends Controller
 
     public function store(Request $request)
     {
-        $this->authorize('revistas.financeiro');
+        $this->authorize("admin-revista");
 
         $request->validate([
             'licitacao_id' => 'required|exists:licitacoes,id',
@@ -53,14 +53,14 @@ class LimiteController extends Controller
 
     public function show(Limite $limite)
     {
-        $this->authorize('revistas.financeiro');
+        $this->authorize("admin-revista");
 
         return view('limites.show', compact('limite'));
     }
 
     public function edit(Limite $limite)
     {
-        $this->authorize('revistas.financeiro');
+        $this->authorize("admin-revista");
         
         $licitacoes = Licitacao::all();
         $revistas = Revista::all();
@@ -71,7 +71,7 @@ class LimiteController extends Controller
 
     public function update(Request $request, Limite $limite)
     {
-        $this->authorize('revistas.financeiro');
+        $this->authorize("admin-revista");
 
         $request->validate([
             'licitacao_id' => 'required|exists:licitacoes,id',
@@ -88,7 +88,7 @@ class LimiteController extends Controller
 
     public function destroy(Limite $limite)
     {
-        $this->authorize('revistas.financeiro');
+        $this->authorize("admin-revista");
 
         $limite->delete();
 
