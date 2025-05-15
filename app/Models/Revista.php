@@ -13,5 +13,6 @@ class Revista extends Model
         "name",
         "centro_despesa",
         "editor",
+        "responsavel_centro_despesa",
     ];
 }

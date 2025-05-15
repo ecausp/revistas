@@ -6,6 +6,7 @@ use App\Models\Revista;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Uspdev\Replicado\Financeiro;
+use Uspdev\Replicado\Pessoa;
 
 class RevistaController extends Controller
 {
@@ -27,8 +28,9 @@ class RevistaController extends Controller
     {
         $this->authorize("admin-financeiro");
         $centros_despesas = Financeiro::ListarCentrosDespesas();
+        $responsaveis_centro_despesa = Pessoa::servidores();
         \UspTheme::activeUrl('revistas/create');
-        return view('revistas.create', compact('centros_despesas'));
+        return view('revistas.create', compact('centros_despesas', 'responsaveis_centro_despesa'));
     }
 
     /**
@@ -41,6 +43,7 @@ class RevistaController extends Controller
         $request->validate([
             'name' => 'required',
             'centro_despesa' => 'required',
+            'responsavel_centro_despesa' => 'required',
         ]);
 
         $Revista = new Revista();
@@ -48,6 +51,7 @@ class RevistaController extends Controller
             'editor' => $request->user()->id,
             "name" => $request->name,
             "centro_despesa" => $request->centro_despesa,
+            'responsavel_centro_despesa' => $request->responsavel_centro_despesa,
         ];
         Revista::create($revista);
         session()->flash('success', 'Cadastrado com sucesso!');
@@ -72,7 +76,8 @@ class RevistaController extends Controller
     {
         $this->authorize("admin-financeiro");
         $centros_despesas = Financeiro::ListarCentrosDespesas();
-        return view('revistas.edit', compact('revista', 'centros_despesas'));
+        $responsaveis_centro_despesa = Pessoa::servidores();
+        return view('revistas.edit', compact('revista', 'centros_despesas','responsaveis_centro_despesa'));
     }
 
     /**
@@ -85,12 +90,14 @@ class RevistaController extends Controller
         $request->validate([
             'name' => 'required',
             'centro_despesa' => 'required',
+            'responsavel_centro_despesa' => 'required',
         ]);
         
         $revista_editada = [
             "editor" => $request->user()->id,
             "name" => $request->name,
-            "centro_despesa" => $request->centro_despesa,  
+            "centro_despesa" => $request->centro_despesa,
+            "responsavel_centro_despesa" => $request->responsavel_centro_despesa,
         ];
         
         $revista->update($revista_editada);
