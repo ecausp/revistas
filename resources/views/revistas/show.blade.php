@@ -9,6 +9,7 @@
     @can("admin-financeiro")
     <div class="card-body">
         <p><strong>Centro de Despesa: </strong>{{ $revista->centro_despesa }}</p>
+        <p><strong>Responsável pelo Centro de Despesa: </strong>{{ $revista->responsavel_centro_despesa }}</p>
 
         @include('partials.editor')
 

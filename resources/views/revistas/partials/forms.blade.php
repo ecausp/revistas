@@ -7,16 +7,36 @@
 <div class="mb-1">
     <label for="centro_despesa" class="form-label">Centro de Despesa </label>
     @if (isset($revista))
-        <select class="form-control select2" name="centro_despesa" id="centro_despesa">
-            <option value="{{ $revista->centro_despesa }}" selected>{{ $revista->centro_despesa }}</option>
-            @else
-            <select class="form-control select2" name="centro_despesa" id="centro_despesa" placeholder="Centro de Despesa..." required>
-                <option value="" selected>Centro de despesa...</option>
-                @endif
-                @foreach ($centros_despesas as $centro_despesa)
-                    <option value="{{ $centro_despesa['etrhie'] }}">{{ $centro_despesa['etrhie'] }}</option>
-                @endforeach
-            </select>
+    <select class="form-control select2" name="centro_despesa" id="centro_despesa">
+        <option value="{{ $revista->centro_despesa }}" selected>{{ $revista->centro_despesa }}</option>
+        @else
+        <select class="form-control select2" name="centro_despesa" id="centro_despesa"
+            placeholder="Centro de Despesa..." required>
+            <option value="" selected>Centro de despesa...</option>
+            @endif
+            @foreach ($centros_despesas as $centro_despesa)
+            <option value="{{ $centro_despesa['etrhie'] }}">{{ $centro_despesa['etrhie'] }}</option>
+            @endforeach
+        </select>
+</div>
+
+<div class="mb-1">
+    <label for="responsavel_centro_despesa" class="form-label">Responsável pelo Centro de Despesa </label>
+    @if (isset($revista))
+    <select class="form-control select2" name="responsavel_centro_despesa" id="responsavel_centro_despesa">
+        <option value="{{ $revista->responsavel_centro_despesa }}" selected>{{ $revista->responsavel_centro_despesa }}
+        </option>
+        @else
+        <select class="form-control select2" name="responsavel_centro_despesa" id="responsavel_centro_despesa"
+            placeholder="Responsável pelo Centro de Despesa..." required>
+            <option value="" selected>Responsável pelo Centro de despesa...</option>
+            @endif
+            @foreach ($responsaveis_centro_despesa as $responsavel_centro_despesa)
+            <option value="{{ $responsavel_centro_despesa['nompesttd'] }}">
+                {{ $responsavel_centro_despesa['nompesttd'] }}
+            </option>
+            @endforeach
+        </select>
 </div>
 
 <div class="container mt-5 col">
