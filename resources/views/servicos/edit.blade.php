@@ -9,7 +9,8 @@
     </div>
     <div class="card-body">
 
-        @can('admin-revista')
+        @can("admin-financeiro")
+
         <form action="{{ route('servicos.update', $servico) }}" method="POST">
             @csrf
             @method('PUT')

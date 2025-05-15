@@ -13,7 +13,7 @@ class ServicoController extends Controller
      */
     public function index()
     {   
-        $this->authorize("admin-revista");
+                $this->authorize("admin-financeiro");
         \UspTheme::activeUrl('servicos');
 
         $servicos = Servico::all();
@@ -26,7 +26,7 @@ class ServicoController extends Controller
      */
     public function create()
     {
-        $this->authorize("admin-revista");
+                $this->authorize("admin-financeiro");
         \UspTheme::activeUrl('servicos/create');
 
         $unidades_medida = $stringArray = explode(",", env('UNIDADES_MEDIDA'));
@@ -39,7 +39,7 @@ class ServicoController extends Controller
      */
     public function store(Request $request)
     {
-        $this->authorize("admin-revista");
+                $this->authorize("admin-financeiro");
 
         // Primeiro remove os pontos e depois troca a virgula por ponto
         $request['valor_unitario'] = str_replace(',', '.', str_replace('.', '', $request->valor_unitario));
@@ -73,7 +73,7 @@ class ServicoController extends Controller
      */
     public function show(Servico $servico)
     {
-        $this->authorize("admin-revista");
+                $this->authorize("admin-financeiro");
 
         $editor = User::where('id', $servico->editor)->first();
         $updated_at = $servico->updated_at;
@@ -86,7 +86,7 @@ class ServicoController extends Controller
      */
     public function edit(Servico $servico)
     {
-        $this->authorize("admin-revista");
+                $this->authorize("admin-financeiro");
 
         $unidades_medida = $stringArray = explode(",", env('UNIDADES_MEDIDA'));
         return view('servicos.edit', compact('servico', 'unidades_medida'));
@@ -97,7 +97,7 @@ class ServicoController extends Controller
      */
     public function update(Request $request, Servico $servico)
     {
-        $this->authorize("admin-revista");
+                $this->authorize("admin-financeiro");
 
         // Primeiro remove os pontos e depois troca a virgula por ponto
         $request['valor_unitario'] = str_replace(',', '.', str_replace('.', '', $request->valor_unitario));
@@ -125,7 +125,7 @@ class ServicoController extends Controller
      */
     public function destroy(Servico $servico)
     {
-        $this->authorize("admin-revista");
+                $this->authorize("admin-financeiro");
 
         $servico->delete();
         
