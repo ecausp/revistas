@@ -21,7 +21,7 @@
                     <th>Serviço</th>
                     <th>Quantidade</th>
                     <th>Valor Unitário (R$)</th>
-                    <th>Valor de Limite Total (R$)</th>
+                    <th>Valor Total do Pedido (R$)</th>
                     <th>Ações</th>
                 </tr>
             </thead>
@@ -34,7 +34,7 @@
                     <td>{{ number_format($limite->quantidade, 0, ',', '.') }}</td>
                     <td>R$ {{ number_format($limite->valor_unitario, 2, ',', '.') }}</td>
                     <td>R$
-                        {{ number_format(($limite->licitacao->valor_total - ($limite->quantidade * $limite->valor_unitario)), 2, ',', '.') }}
+                        {{ number_format(($limite->quantidade * $limite->valor_unitario), 2, ',', '.') }}
                     </td>
 
                     <td>
