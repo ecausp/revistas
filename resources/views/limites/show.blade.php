@@ -9,6 +9,9 @@
     @can("admin-financeiro")
     <div class="card-body">
         <p><strong>Licitação: </strong>{{ $limite->licitacao->descricao }} - {{ $limite->licitacao->ano }}</p>
+
+        <p><strong>Empresa: </strong>{{ $limite->servico->empresas()->first()->razao_social }}</p>
+
         <p><strong>Revista: </strong>{{ $limite->revista->name }} - {{ $limite->revista->centro_despesa }}</p>
         <p><strong>Valor Unitário :</strong> R$ {{ number_format($limite->valor_unitario, 2, ',', '.') }}</p>
         <p><strong>Quantidade: </strong> {{ number_format($limite->quantidade, 0, ',', '.') }} </p>
