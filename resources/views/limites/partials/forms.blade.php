@@ -51,7 +51,7 @@
         <div class="border-start border-3 border-primary ps-3">
             <!-- Linha 1: Total da Licitação -->
             <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="text-muted">Total da Licitação:</span>
+                <span class="text-muted">Valor Total da Licitação:</span>
                 <span class="fw-bold">
                     <span id="valor_total_licitacao">0,00</span>
                 </span>
@@ -59,7 +59,7 @@
 
             <!-- Linha 2: Total do Pedido (com sinal negativo) -->
             <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="text-muted">Total do Pedido:</span>
+                <span class="text-muted">Valor de Limite Total:</span>
                 <span class="fw-bold text-danger">
                     - <span id="valor_total_pedido">0,00</span>
                 </span>
@@ -70,7 +70,7 @@
 
             <!-- Linha 3: Diferença (resultado) -->
             <div class="d-flex justify-content-between align-items-center">
-                <span class="text-muted">Disponível:</span>
+                <span class="text-muted">Valor Total Disponível:</span>
                 <span class="fs-5 fw-bold text-success">
                     <span id="diferenca_valores">0,00</span>
                 </span>
