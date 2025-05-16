@@ -6,6 +6,7 @@ use App\Models\Licitacao;
 use App\Models\Limite;
 use App\Models\Revista;
 use App\Models\Servico;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class LimiteController extends Controller
@@ -64,8 +65,10 @@ class LimiteController extends Controller
     public function show(Limite $limite)
     {
         $this->authorize("admin-financeiro");
+        $editor = User::where('id', $limite->editor)->first();
+        $updated_at = $limite->updated_at;
 
-        return view('limites.show', compact('limite'));
+        return view('limites.show', compact('limite','editor', 'updated_at'));
     }
 
     public function edit(Limite $limite)

@@ -19,6 +19,8 @@
             {{ number_format(($limite->licitacao->valor_total - ($limite->quantidade * $limite->valor_unitario)), 2, ',', '.') }}
         </p>
 
+        @include('partials.editor')
+
         <div class="container mt-5 col">
             <a href="{{ route('limites.edit', $limite) }}" class="btn btn-primary"><i class="fas fa-edit"></i>
                 Editar</a>
