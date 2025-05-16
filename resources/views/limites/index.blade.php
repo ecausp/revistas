@@ -18,10 +18,11 @@
                 <tr>
                     <th>Licitação</th>
                     <th>Revista</th>
+                    <th>Empresa</th>
                     <th>Serviço</th>
                     <th>Quantidade</th>
                     <th>Valor Unitário (R$)</th>
-                    <th>Valor Total do Pedido (R$)</th>
+                    <th>Valor Total de Limite (R$)</th>
                     <th>Ações</th>
                 </tr>
             </thead>
@@ -30,6 +31,7 @@
                 <tr>
                     <td>{{ $limite->licitacao->descricao }}</td>
                     <td>{{ $limite->revista->name }}</td>
+                    <td>{{ $limite->servico->empresas()->first()->razao_social }}</td>
                     <td>{{ $limite->servico->descricao }}</td>
                     <td>{{ number_format($limite->quantidade, 0, ',', '.') }}</td>
                     <td>R$ {{ number_format($limite->valor_unitario, 2, ',', '.') }}</td>

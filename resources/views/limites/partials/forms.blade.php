@@ -59,7 +59,7 @@
 
             <!-- Linha 2: Total do Pedido (com sinal negativo) -->
             <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="text-muted">Valor de Limite Total:</span>
+                <span class="text-muted">Valor Total de Limite:</span>
                 <span class="fw-bold text-danger">
                     - <span id="valor_total_pedido">0,00</span>
                 </span>
