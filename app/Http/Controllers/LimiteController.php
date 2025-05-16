@@ -44,8 +44,18 @@ class LimiteController extends Controller
             'quantidade' => 'required|integer|min:1',
             'valor_unitario' => 'required|numeric|min:0',
         ]);
+        
+        $limite = new Limite();
+        $limite = [
+            'editor' => $request->user()->id,
+            'licitacao_id' => $request->licitacao_id,
+            'revista_id' => $request->revista_id,
+            'servico_id' => $request->servico_id,
+            'quantidade' => $request->quantidade,
+            'valor_unitario' => $request->valor_unitario,
+        ];
 
-        Limite::create($request->all());
+        Limite::create($limite);
 
         session()->flash('success', 'Cadastrado com sucesso!');
         return redirect()->route('limites.index');
@@ -80,7 +90,17 @@ class LimiteController extends Controller
             'quantidade' => 'required|integer|min:1',
             'valor_unitario' => 'required|numeric|min:0',
         ]);
-        $limite->update($request->all());
+
+        $limite_editado = [
+            'editor' => $request->user()->id,
+            'licitacao_id' => $request->licitacao_id,
+            'revista_id' => $request->revista_id,
+            'servico_id' => $request->servico_id,
+            'quantidade' => $request->quantidade,
+            'valor_unitario' => $request->valor_unitario,
+        ];
+
+        $limite->update($limite_editado);
 
         session()->flash('success', 'Atualizado com sucesso!');
         return redirect()->route('limites.index');
