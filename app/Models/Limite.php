@@ -22,6 +22,7 @@ class Limite extends Model
         'servico_id',
         'quantidade',
         'valor_unitario',
+        'editor',
     ];
 
     // Relação com Licitação
