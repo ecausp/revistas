@@ -47,13 +47,14 @@ class LimiteController extends Controller
         ]);
         
         $limite = new Limite();
+
         $limite = [
-            'editor' => $request->user()->id,
             'licitacao_id' => $request->licitacao_id,
             'revista_id' => $request->revista_id,
             'servico_id' => $request->servico_id,
             'quantidade' => $request->quantidade,
             'valor_unitario' => $request->valor_unitario,
+            'editor' => $request->user()->id,
         ];
 
         Limite::create($limite);
@@ -95,12 +96,12 @@ class LimiteController extends Controller
         ]);
 
         $limite_editado = [
-            'editor' => $request->user()->id,
             'licitacao_id' => $request->licitacao_id,
             'revista_id' => $request->revista_id,
             'servico_id' => $request->servico_id,
             'quantidade' => $request->quantidade,
             'valor_unitario' => $request->valor_unitario,
+            'editor' => $request->user()->id,
         ];
 
         $limite->update($limite_editado);

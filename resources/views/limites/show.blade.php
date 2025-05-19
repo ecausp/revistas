@@ -19,6 +19,7 @@
             {{ number_format(($limite->quantidade * $limite->valor_unitario), 2, ',', '.') }}
         </p>
 
+
         @include('partials.editor')
 
         <div class="container mt-5 col">
