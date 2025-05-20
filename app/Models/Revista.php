@@ -15,4 +15,11 @@ class Revista extends Model
         "editor",
         "responsavel_centro_despesa",
     ];
+
+    public function solicitantes()
+    {
+
+        return $this->hasMany(Solicitante::class);
+
+    }
 }
