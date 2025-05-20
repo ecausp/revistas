@@ -1,6 +1,6 @@
 <div class="mb-1">
     <label for="name" class="form-label">Nome</label>
-    <input type="text" class="typeahead form-control" name="name" id="search" type="text">
+    <input type="text" class="form-control" name="name" id="search" type="text">
 </div>
 
 <div id="mensagem-usuario" class="alert alert-danger alert-dismissible fade show mt-3" role="alert"
@@ -8,6 +8,11 @@
     <span id="mensagem-texto">Este solicitante já está cadastrado na revista <br> {{ $revista->name }}</span>
     <button type="button" class="btn-close" id="fechar-mensagem" aria-label="Fechar"></button>
     <br>
+</div>
+
+
+<div id="info-usuario" class="mt-2 text-sm text-gray-700">
+    <!-- Aqui vai aparecer o e-mail e codpes -->
 </div>
 
 

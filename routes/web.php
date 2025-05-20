@@ -70,3 +70,28 @@ Route::get('/servicos/{id}/valor-unitario', [App\Http\Controllers\ServicoControl
 Route::get('/licitacoes/{licitacao}/valor-total', function (App\Models\Licitacao $licitacao) {
     return response()->json(['valor_total' => $licitacao->valor_total]);
 });
+
+
+
+// ROTA PARA TESTE!
+use App\Models\User;
+use Illuminate\Http\Request;
+
+Route::get('/buscar-usuario', function (Request $request) {
+    $nome = $request->query('nome');
+
+    $user = User::whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($nome) . '%'])->first();
+
+
+    if ($user) {
+        return response()->json([
+            'email' => $user->email,
+            'codpes' => $user->codpes,
+        ]);
+    } else {
+        return response()->json([
+            'email' => null,
+            'codpes' => null,
+        ]);
+    }
+});
