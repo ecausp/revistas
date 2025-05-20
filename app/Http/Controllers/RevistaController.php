@@ -66,6 +66,8 @@ class RevistaController extends Controller
         $this->authorize("admin-financeiro");
         $editor = User::where('id', $revista->editor)->first();
         $updated_at = $revista->updated_at;
+        $revista->solicitantes->load('user');
+
         return view('revistas.show', compact('revista', 'updated_at','editor' ) );
     }
 

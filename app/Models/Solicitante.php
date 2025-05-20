@@ -16,10 +16,16 @@ class Solicitante extends Model
         "revista_id",
     ];
 
-    public function post()
+    public function revista()
     {
 
         return $this->belongsTo(Revista::class);
 
     }
+
+    public function user()
+{
+    return $this->belongsTo(User::class);
+}
+
 }
