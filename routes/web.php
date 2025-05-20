@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\LimiteController;
+use App\Http\Controllers\SolicitanteController;
 use App\Http\Middleware\EnsureUserIsLogged;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LicitacaoController;
@@ -10,6 +11,8 @@ use App\Http\Controllers\ContatoController;
 use App\Http\Controllers\RevistaController;
 use App\Http\Controllers\AuthController;
 
+use App\Models\User;
+use Illuminate\Http\Request;
 use App\Models\Licitacao;
 
 /*
@@ -44,6 +47,11 @@ Route::get('/contatos/create/{empresa}', ContatoController::class . '@create')->
 // adds a post to the database
 Route::post('/contatos', ContatoController::class .'@store')->name('contatos.store');
 
+# rota para conseguir pegar a revista que está cadastrando esse solicitante;
+Route::get('/solicitantes/create/{revista}', SolicitanteController::class . '@create')->name('solicitantes.create');
+// adds a post to the database
+Route::post('/solicitantes', SolicitanteController::class .'@store')->name('solicitantes.store');
+
 // logon
 Route::get('/login_empresa', [AuthController::class, 'showLogin'])->name('login')->middleware(EnsureUserIsLogged::class);
 Route::post('/login_empresa', [AuthController::class, 'login'])->name('login')->middleware(EnsureUserIsLogged::class);
@@ -63,4 +71,27 @@ Route::get('/servicos/{id}/valor-unitario', [App\Http\Controllers\ServicoControl
 // pra pegar, na criação de limite, o valor total da licitacao
 Route::get('/licitacoes/{licitacao}/valor-total', function (App\Models\Licitacao $licitacao) {
     return response()->json(['valor_total' => $licitacao->valor_total]);
+});
+
+
+
+// Rota para pegar os users do banco de dados de acordo com o nome buscado
+Route::get('/buscar-usuario', function (Request $request) {
+    $nome = $request->query('nome');
+
+    $user = User::whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($nome) . '%'])->first();
+
+    if ($user) {
+        return response()->json([
+            'email' => $user->email,
+            'codpes' => $user->codpes,
+            'id' => $user->id,
+        ]);
+    } else {
+        return response()->json([
+            'email' => null,
+            'codpes' => null,
+            'id' => null,
+        ]);
+    }
 });

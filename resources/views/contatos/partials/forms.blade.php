@@ -3,7 +3,6 @@ $licitacao_id = \App\Models\EmpresaLicitacao::all()->where('empresa_id', '=', $e
 $licitacao = \App\Models\Licitacao::find($licitacao_id);
 @endphp
 
-
 <div class="mb-1">
     <label for="name" class="form-label">Nome</label>
     <input type="text" class="typeahead form-control" name="name" id="search" type="text">
@@ -15,8 +14,6 @@ $licitacao = \App\Models\Licitacao::find($licitacao_id);
     <button type="button" class="btn-close" id="fechar-mensagem" aria-label="Fechar"></button>
     <br>
 </div>
-
-
 
 <div class="mb-1">
     <label for="email" class="form-label">Email</label>
@@ -33,7 +30,6 @@ $licitacao = \App\Models\Licitacao::find($licitacao_id);
     <input type="hidden" class="form-control" name="empresa_id" id="empresa_id"
         placeholder="{{ $empresa->razao_social }}" value="{{ $empresa->id }}">
 </div>
-
 
 <div class="container mt-5 ml-0 col">
     <button type="submit" id="cadastrar" class="btn btn-primary"><i class="fas fa-save"></i> Cadastrar</button>
