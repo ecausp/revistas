@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\LimiteController;
+use App\Http\Controllers\SolicitanteController;
 use App\Http\Middleware\EnsureUserIsLogged;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LicitacaoController;
@@ -43,6 +44,11 @@ Route::resource('limites', LimiteController::class);
 Route::get('/contatos/create/{empresa}', ContatoController::class . '@create')->name('contatos.create');
 // adds a post to the database
 Route::post('/contatos', ContatoController::class .'@store')->name('contatos.store');
+
+# rota para conseguir pegar a revista que está cadastrando esse solicitante;
+Route::get('/solicitantes/create/{revista}', SolicitanteController::class . '@create')->name('solicitantes.create');
+// adds a post to the database
+Route::post('/solicitantes', SolicitanteController::class .'@store')->name('solicitantes.store');
 
 // logon
 Route::get('/login_empresa', [AuthController::class, 'showLogin'])->name('login')->middleware(EnsureUserIsLogged::class);
