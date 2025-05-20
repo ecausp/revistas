@@ -22,7 +22,6 @@ class SolicitanteController extends Controller
      */
     public function store(Request $request)
     {
-        // tbd;
     }
     
    // faz o autocomplete no nome do usuário quando tenta cadastrar um novo;
