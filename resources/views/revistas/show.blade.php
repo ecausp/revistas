@@ -11,8 +11,9 @@
         <p><strong>Centro de Despesa: </strong>{{ $revista->centro_despesa }}</p>
         <p><strong>Responsável pelo Centro de Despesa: </strong>{{ $revista->responsavel_centro_despesa }}</p>
 
-        <h5 class="mt-4">Solicitantes</h5>
         @if(!$revista->solicitantes->isEmpty())
+        <h5 class="mt-4">Solicitantes</h5>
+
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -33,9 +34,6 @@
         </table>
         @endif
 
-
-
-
         @include('partials.editor')
 
         <div class="container mt-5 col">
@@ -46,7 +44,6 @@
 
             <a href="{{ route('revistas.index') }}" class="btn btn-secondary"><i class="fas fa-chevron-left"></i>
                 Voltar</a>
-
         </div>
     </div>
     @endcan
