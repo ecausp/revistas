@@ -15,9 +15,16 @@
     <!-- Aqui vai aparecer o e-mail e codpes -->
 </div>
 
+<div class="mb-1">
+    <input type="hidden" class="form-control" name="revista_id" id="revista_id" placeholder="{{ $revista->name }}"
+        value="{{ $revista->id }}">
+</div>
+
+<input type="hidden" name="user_id" id="user_id" value="">
+
 
 <div class="container mt-5 ml-0 col">
     <button type="submit" id="cadastrar" class="btn btn-primary"><i class="fas fa-save"></i> Cadastrar</button>
-    <a href="{{ route('empresas.index') }}" class="btn btn-secondary"><i class="fas fa-chevron-left"></i>
+    <a href="{{ route('revistas.index') }}" class="btn btn-secondary"><i class="fas fa-chevron-left"></i>
         Voltar</a>
 </div>

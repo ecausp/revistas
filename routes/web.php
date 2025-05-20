@@ -11,6 +11,8 @@ use App\Http\Controllers\ContatoController;
 use App\Http\Controllers\RevistaController;
 use App\Http\Controllers\AuthController;
 
+use App\Models\User;
+use Illuminate\Http\Request;
 use App\Models\Licitacao;
 
 /*
@@ -73,25 +75,23 @@ Route::get('/licitacoes/{licitacao}/valor-total', function (App\Models\Licitacao
 
 
 
-// ROTA PARA TESTE!
-use App\Models\User;
-use Illuminate\Http\Request;
-
+// Rota para pegar os users do banco de dados de acordo com o nome buscado
 Route::get('/buscar-usuario', function (Request $request) {
     $nome = $request->query('nome');
 
     $user = User::whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($nome) . '%'])->first();
 
-
     if ($user) {
         return response()->json([
             'email' => $user->email,
             'codpes' => $user->codpes,
+            'id' => $user->id,
         ]);
     } else {
         return response()->json([
             'email' => null,
             'codpes' => null,
+            'id' => null,
         ]);
     }
 });

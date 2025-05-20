@@ -31,6 +31,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const input = document.getElementById('search');
     const infoDiv = document.getElementById('info-usuario');
+    const userIdInput = document.getElementById('user_id');
 
     input.addEventListener('input', function() {
         const nome = this.value.trim();
@@ -39,23 +40,25 @@ document.addEventListener('DOMContentLoaded', function() {
             fetch(`/buscar-usuario?nome=${encodeURIComponent(nome)}`)
                 .then(response => response.json())
                 .then(data => {
-                    if (data.email && data.codpes) {
+                    if (data && data.id && data.email && data.codpes) {
                         infoDiv.innerHTML = `
-                                <br>
-                                <p><strong>Confirme as informações do Solicitante para adicioná-lo:</strong><br>
-                                <strong>Email:</strong> ${data.email}<br>
-                                <strong>Codpes:</strong> ${data.codpes}</p>
-                            `;
+                            <strong>Email:</strong> ${data.email}<br>
+                            <strong>Codpes:</strong> ${data.codpes}
+                        `;
+                        userIdInput.value = data.id;
                     } else {
                         infoDiv.innerHTML = `<em>Usuário não encontrado</em>`;
+                        userIdInput.value = '';
                     }
                 })
                 .catch(error => {
                     console.error('Erro na busca:', error);
                     infoDiv.innerHTML = `<em>Erro ao buscar usuário</em>`;
+                    userIdInput.value = '';
                 });
         } else {
             infoDiv.innerHTML = '';
+            userIdInput.value = '';
         }
     });
 });

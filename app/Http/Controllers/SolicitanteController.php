@@ -22,27 +22,14 @@ class SolicitanteController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('admin');
+        
+        $solicitante = new Solicitante();
+        $solicitante->user_id = $request->user_id;
+        $solicitante->revista_id = $request->revista_id;
+        $solicitante->save();
+
+        session()->flash('success', 'Cadastrado com sucesso!');
+        return redirect()->route('revistas.index');
     }
-    
-   // faz o autocomplete no nome do usuário quando tenta cadastrar um novo;
-    public function autocomplete(Request $request)
-    {
-        $query = $request->input('query');
-
-        $users = DB::table('users')
-            ->leftJoin('solicitantes', 'users.id', '=', 'solicitantes.user_id')
-            ->leftJoin('revistas', 'solicitantes.revista_id', '=', 'revistas.id')
-            ->where('users.name', 'LIKE', "%{$query}%")
-            ->orWhere('users.email', 'LIKE', "%{$query}%")
-            ->select(
-            'users.id as user_id',
-                'users.name',
-                'users.email',
-                'users.telefone',
-                'revistas.id as revista_id',
-                'revistas.nome'
-            )->get();
-
-    return response()->json($users);
-}
 }
