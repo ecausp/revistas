@@ -18,6 +18,7 @@
                 <tr>
                     <th>Nome</th>
                     <th>Centro de Despesas</th>
+                    <th>Responsável pelo Centro de Despesas</th>
                     <th>Ações</th>
                 </tr>
             </thead>
@@ -26,6 +27,7 @@
                 <tr>
                     <td>{{ $revista->name }}</td>
                     <td>{{ $revista->centro_despesa }}</td>
+                    <td>{{ $revista->responsavel_centro_despesa }}</td>
                     <td>
                         <a href="{{ route('revistas.show', $revista) }}" class="btn btn-primary"><i
                                 class="fas fa-eye"></i> </a>
