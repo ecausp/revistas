@@ -22,12 +22,11 @@ class ContatoController extends Controller
      */
     public function store(Request $request)
     {
-        $this->authorize('admin');
-        
         $request->validate([
             'name' => 'required',
             'email' => 'required',
             'telefone' => 'required',
+            'empresa_id' => 'required|exists:empresas,id', 
         ]);
 
         $user = new User();

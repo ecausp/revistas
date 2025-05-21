@@ -23,14 +23,24 @@
 
 
 @section('javascripts_bottom')
+<!-- JQUERY - sempre primeiro -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>
 
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
+
+<!-- Depois disso, seus scripts -->
 <script>
 $(document).ready(function() {
-    // Formato cnpj
+    console.log('Valor inicial:', $('#empresa_id').val());
     $('.telefone9digitos').mask("(00) 90000-0000");
+    $('#data').datepicker(); // Exemplo se você usa o datepicker
 });
+</script>
+
 </script>
 <script type="text/javascript">
 var path = "{{ route('autocomplete') }}";

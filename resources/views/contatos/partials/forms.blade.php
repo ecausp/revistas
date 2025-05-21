@@ -27,8 +27,7 @@ $licitacao = \App\Models\Licitacao::find($licitacao_id);
 </div>
 
 <div class="mb-1">
-    <input type="hidden" class="form-control" name="empresa_id" id="empresa_id"
-        placeholder="{{ $empresa->razao_social }}" value="{{ $empresa->id }}">
+    <input type="hidden" class="form-control" name="empresa_id" id="empresa_id" value="{{ $empresa->id }}">
 </div>
 
 <div class="container mt-5 ml-0 col">
