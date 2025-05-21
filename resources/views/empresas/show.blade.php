@@ -10,9 +10,9 @@
     <div class="card-body">
         <p><strong>CNPJ:</strong> {{ $empresa->cnpj }}</p>
 
-        @include('empresas.partials.contatos')
         @include('empresas.partials.licitacoes')
         @include('empresas.partials.servicos')
+        @include('empresas.partials.contatos')
 
         @include('partials.editor')
         <div class="container mt-5 col">
