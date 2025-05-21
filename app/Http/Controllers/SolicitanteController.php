@@ -13,7 +13,6 @@ class SolicitanteController extends Controller
 {
     public function create(Revista $revista)
     {
-        $this->authorize('admin');
         return view('solicitantes.create', compact('revista'));
     }
 
@@ -22,8 +21,6 @@ class SolicitanteController extends Controller
      */
     public function store(Request $request)
     {
-        $this->authorize('admin');
-        
         $solicitante = new Solicitante();
         $solicitante->user_id = $request->user_id;
         $solicitante->revista_id = $request->revista_id;
