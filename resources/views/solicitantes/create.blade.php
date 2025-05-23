@@ -23,6 +23,7 @@
 
 @section('javascripts_bottom')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
@@ -63,6 +64,59 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const route = '/buscar-usuario';
+
+    $('#search').typeahead({
+        minLength: 3,
+        autoSelect: true,
+        source: function(query, process) {
+            return $.get(route, {
+                nome: query
+            }, function(data) {
+                if (Array.isArray(data)) {
+                    return process(data.map(item => ({
+                        ...item,
+                        display: `${item.name} (${item.email})`
+                    })));
+                } else {
+                    return process([]);
+                }
+            });
+        },
+        displayText: function(item) {
+            return item.display;
+        },
+        afterSelect: function(item) {
+            $('#email').val(item.email);
+            $('#codpes').val(item.codpes);
+            $('#user_id').val(item.id);
+
+            if (item.ja_cadastrado) {
+                $('#mensagem-texto').html(
+                    `Este solicitante já está cadastrado na revista <br><strong>${$('#revista_id option:selected').text() || ''}</strong>`
+                    );
+                $('#mensagem-usuario').fadeIn();
+                $('#cadastrar').prop('disabled', true);
+            } else {
+                $('#mensagem-usuario').hide();
+                $('#cadastrar').prop('disabled', false);
+            }
+        }
+    });
+
+    // Botão fechar da mensagem
+    $('#fechar-mensagem').on('click', function() {
+        $('#mensagem-usuario').hide();
+        $('#cadastrar').prop('disabled', false);
+    });
+});
+</script>
+
 
 
 

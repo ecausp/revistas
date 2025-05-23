@@ -1,13 +1,15 @@
 @if(!$revista->solicitantes->isEmpty())
-<h5 class="mt-4">Solicitantes</h5>
 
 <div class="card mt-2 mb-3">
     <table class="table table-striped">
-        <thead colspan="3">
+        <thead>
+            <tr>
+                <th colspan="3">Solicitantes</th>
+            </tr>
             <tr>
                 <th>Nome</th>
                 <th>Email</th>
-                <th>Codpes</th>
+                <th>CODPES</th>
             </tr>
         </thead>
         <tbody>

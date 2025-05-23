@@ -76,22 +76,4 @@ Route::get('/licitacoes/{licitacao}/valor-total', function (App\Models\Licitacao
 
 
 // Rota para pegar os users do banco de dados de acordo com o nome buscado
-Route::get('/buscar-usuario', function (Request $request) {
-    $nome = $request->query('nome');
-
-    $user = User::whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($nome) . '%'])->first();
-
-    if ($user) {
-        return response()->json([
-            'email' => $user->email,
-            'codpes' => $user->codpes,
-            'id' => $user->id,
-        ]);
-    } else {
-        return response()->json([
-            'email' => null,
-            'codpes' => null,
-            'id' => null,
-        ]);
-    }
-});
+Route::get('/buscar-usuario', [SolicitanteController::class, 'buscarUsuario']);

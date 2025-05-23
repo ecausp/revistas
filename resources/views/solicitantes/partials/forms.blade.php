@@ -11,9 +11,16 @@
 </div>
 
 
-<div id="info-usuario" class="mt-2 text-sm text-gray-700">
-    <!-- Aqui vai aparecer o e-mail e codpes -->
+<div class="mb-1">
+    <label for="email" class="form-label">Email</label>
+    <input type="email" class="form-control" name="email" id="email" placeholder="email@exemplo.com" readonly>
 </div>
+
+<div class="mb-1">
+    <label for="codpes" class="form-label">Codpes</label>
+    <input type="text" class="form-control" name="codpes" id="codpes" readonly>
+</div>
+
 
 <div class="mb-1">
     <input type="hidden" class="form-control" name="revista_id" id="revista_id" placeholder="{{ $revista->name }}"
