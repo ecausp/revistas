@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Uspdev\Replicado\Financeiro;
 use Uspdev\Replicado\Pessoa;
+use App\Util\ReplicadoTemp;
 
 class RevistaController extends Controller
 {
@@ -28,7 +29,11 @@ class RevistaController extends Controller
     {
         $this->authorize("admin-financeiro");
         $centros_despesas = Financeiro::ListarCentrosDespesas();
-        $responsaveis_centro_despesa = Pessoa::servidores();
+        $servidores =  Pessoa::listarServidores([
+                'LOCALIZAPESSOA.tipvinext' => 'Servidor',
+        ]);
+        $responsaveis_centro_despesa =  ReplicadoTemp::listarServidoresEDocentes();
+        
         \UspTheme::activeUrl('revistas/create');
         return view('revistas.create', compact('centros_despesas', 'responsaveis_centro_despesa'));
     }
