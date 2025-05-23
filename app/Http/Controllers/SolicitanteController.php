@@ -29,4 +29,39 @@ class SolicitanteController extends Controller
         session()->flash('success', 'Cadastrado com sucesso!');
         return redirect()->route('revistas.index');
     }
+
+
+public function buscarUsuario(Request $request)
+{
+    $nome = $request->get('nome');
+    $revistaId = $request->get('revista_id');
+
+    if (!$nome) {
+        return response()->json([]);
+    }
+
+    $usuarios = User::whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($nome) . '%'])
+        ->limit(10)
+        ->get();
+
+    $resposta = $usuarios->map(function ($usuario) use ($revistaId) {
+        $jaCadastrado = false;
+
+        if ($revistaId) {
+            $jaCadastrado = Solicitante::where('user_id', $usuario->id)
+                ->where('revista_id', $revistaId)
+                ->exists();
+        }
+
+        return [
+            'id' => $usuario->id,
+            'name' => $usuario->name,
+            'email' => $usuario->email,
+            'codpes' => $usuario->codpes ?? '',
+            'ja_cadastrado' => $jaCadastrado,
+        ];
+    });
+
+    return response()->json($resposta);
+}
 }

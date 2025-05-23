@@ -23,26 +23,30 @@
 
 
 @section('javascripts_bottom')
-<!-- JQUERY - sempre primeiro -->
+<!-- JQUERY -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-
+<!-- DataTables -->
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<!-- Select2 para selects com busca -->
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<!-- Typeahead (autocomplete para inputs de texto) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
+<!-- jQuery Mask (para formatar inputs como telefone, CPF, etc.) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+<!-- jQuery UI (datepicker, etc.) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
 
-<!-- Depois disso, seus scripts -->
+
 <script>
+//mask do telefone
 $(document).ready(function() {
-    console.log('Valor inicial:', $('#empresa_id').val());
     $('.telefone9digitos').mask("(00) 90000-0000");
-    $('#data').datepicker(); // Exemplo se você usa o datepicker
 });
 </script>
 
-</script>
+
 <script type="text/javascript">
+// script para o autocomplete pra pegar o user
 var path = "{{ route('autocomplete') }}";
 
 $('#search').typeahead({
@@ -50,6 +54,7 @@ $('#search').typeahead({
         return $.get(path, {
             query: query
         }, function(data) {
+            // Mapeia os dados retornados para o formato necessário
             return process(data.map(function(item) {
                 return {
                     id: item.id,
@@ -57,20 +62,23 @@ $('#search').typeahead({
                     email: item.email,
                     telefone: item.telefone,
                     empresa_id: item.empresa_id,
-                    razao_social: item.razao_social, // Pegando Razão Social
-                    cnpj: item.cnpj, // Pegando CNPJ
+                    razao_social: item.razao_social,
+                    cnpj: item.cnpj,
                     display: item.name + ' - ' + item.email
                 };
             }));
         });
     },
     displayText: function(item) {
+        // O texto exibido na lista de sugestões
         return item.display;
     },
     updater: function(item) {
+        // Ao selecionar um item:
         $('#search').val(item.name);
         $('#email').val(item.email).prop('readonly', true);
         $('#telefone').val(item.telefone).prop('readonly', true);
+        // desabilita o botão de cadastrar
         $('#cadastrar').prop('disabled', true);
 
         // Preencher o campo de empresa

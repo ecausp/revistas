@@ -11,28 +11,7 @@
         <p><strong>Centro de Despesa: </strong>{{ $revista->centro_despesa }}</p>
         <p><strong>Responsável pelo Centro de Despesa: </strong>{{ $revista->responsavel_centro_despesa }}</p>
 
-        @if(!$revista->solicitantes->isEmpty())
-        <h5 class="mt-4">Solicitantes</h5>
-
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Nome</th>
-                    <th>Email</th>
-                    <th>Codpes</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($revista->solicitantes as $solicitante)
-                <tr>
-                    <td>{{ $solicitante->user->name ?? 'N/A' }}</td>
-                    <td>{{ $solicitante->user->email ?? 'N/A' }}</td>
-                    <td>{{ $solicitante->user->codpes ?? 'N/A' }}</td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-        @endif
+        @include('revistas.partials.solicitantes')
 
         @include('partials.editor')
 
