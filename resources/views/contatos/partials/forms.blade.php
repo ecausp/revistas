@@ -17,7 +17,7 @@ $licitacao = \App\Models\Licitacao::find($licitacao_id);
 
 <div class="mb-1">
     <label for="email" class="form-label">E-mail</label>
-    <input type="email" class="form-control" name="email" id="email" placeholder="email@exemplo.com" readonly>
+    <input type="email" class="form-control" name="email" id="email" readonly>
 </div>
 
 <div class="mb-1">
