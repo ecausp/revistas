@@ -30,7 +30,7 @@ class RevistaController extends Controller
         $this->authorize("admin-financeiro");
         
         $centros_despesas = Financeiro::ListarCentrosDespesas();
-        $responsaveis_centro_despesa =  ReplicadoTemp::listarServidoresEDocentes();
+        $responsaveis_centro_despesa =  ReplicadoTemp::listarServidoresDocentes();
         
         \UspTheme::activeUrl('revistas/create');
         return view('revistas.create', compact('centros_despesas', 'responsaveis_centro_despesa'));

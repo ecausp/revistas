@@ -8,7 +8,13 @@ use Uspdev\Replicado\Pessoa;
 class ReplicadoTemp
 {
     
-    public static function listarServidoresEDocentes(){
+    /**
+     * Método que lista docentes e servidores de uma unidade;
+     *
+     * @return Array lista de docentes e servidores com dados como nompesttd (nome social) e codpes (numero USP)
+     *
+     */
+    public static function listarServidoresDocentes(){
 
         $codundclg = getenv('REPLICADO_CODUNDCLG');
 
@@ -16,7 +22,7 @@ class ReplicadoTemp
                     FROM PESSOA P
                     INNER JOIN LOCALIZAPESSOA L ON L.codpes = P.codpes
                     WHERE L.codundclg IN (:codundclg)
-                    AND L.sitatl IN ('A')
+                    AND L.sitatl IN ('A', 'P')
                     AND EXISTS (
                         SELECT 1
                         FROM LOCALIZAPESSOA V
