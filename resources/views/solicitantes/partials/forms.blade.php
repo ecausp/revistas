@@ -1,6 +1,6 @@
 <div class="mb-1">
     <label for="name" class="form-label">Nome</label>
-    <input type="text" class="form-control" name="name" id="search" type="text">
+    <input type="text" class="form-control" name="name" id="search" type="text" autocomplete="off">
 </div>
 
 <div id="mensagem-usuario" class="alert alert-danger alert-dismissible fade show mt-3" role="alert"
