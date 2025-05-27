@@ -28,10 +28,8 @@ class RevistaController extends Controller
     public function create()
     {
         $this->authorize("admin-financeiro");
+        
         $centros_despesas = Financeiro::ListarCentrosDespesas();
-        $servidores =  Pessoa::listarServidores([
-                'LOCALIZAPESSOA.tipvinext' => 'Servidor',
-        ]);
         $responsaveis_centro_despesa =  ReplicadoTemp::listarServidoresEDocentes();
         
         \UspTheme::activeUrl('revistas/create');
