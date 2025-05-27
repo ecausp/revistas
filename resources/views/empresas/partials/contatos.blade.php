@@ -7,7 +7,7 @@
             </tr>
             <tr>
                 <th>Nome</th>
-                <th>Email</th>
+                <th>E-mail</th>
                 <th>Telefone</th>
             </tr>
         </thead>
