@@ -17,24 +17,17 @@ class ReplicadoTemp
     public static function listarServidoresDocentes(){
 
         $codundclg = getenv('REPLICADO_CODUNDCLG');
-
-        $query = "SELECT DISTINCT P.codpes, P.nompesttd
-                    FROM PESSOA P
-                    INNER JOIN LOCALIZAPESSOA L ON L.codpes = P.codpes
-                    WHERE L.codundclg IN (:codundclg)
-                    AND L.sitatl IN ('A', 'P')
-                    AND EXISTS (
-                        SELECT 1
-                        FROM LOCALIZAPESSOA V
-                        WHERE V.codpes = P.codpes
-                        AND V.tipvinext IN ('Servidor', 'Docente')
-                    )
-                    ORDER BY P.nompesttd ASC";
-
         $param = [
             'codundclg' => $codundclg,
         ];
         
+        $query = "SELECT L.*, P.* 
+                    FROM LOCALIZAPESSOA L INNER JOIN PESSOA P ON (L.codpes = P.codpes)
+                    WHERE L.codundclg IN (:codundclg) AND L.sitatl = 'A' AND L.codfncetr = 0 
+                    AND L.tipvinext IN ('Servidor', 'Docente') 
+                    ORDER BY P.nompesttd";
+
+
         return DB::fetchAll($query, $param);
     }
  
