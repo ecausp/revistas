@@ -7,6 +7,7 @@ use Uspdev\Replicado\Pessoa;
 
 class ReplicadoTemp
 {
+    
     public static function listarServidoresEDocentes(){
 
         $codundclg = getenv('REPLICADO_CODUNDCLG');
@@ -15,7 +16,7 @@ class ReplicadoTemp
                     FROM PESSOA P
                     INNER JOIN LOCALIZAPESSOA L ON L.codpes = P.codpes
                     WHERE L.codundclg IN (:codundclg)
-                    AND L.sitatl IN ('A', 'P')
+                    AND L.sitatl IN ('A')
                     AND EXISTS (
                         SELECT 1
                         FROM LOCALIZAPESSOA V
@@ -27,7 +28,7 @@ class ReplicadoTemp
         $param = [
             'codundclg' => $codundclg,
         ];
-
+        
         return DB::fetchAll($query, $param);
     }
  
