@@ -8,8 +8,8 @@
             </tr>
             <tr>
                 <th>Nome</th>
-                <th>Email</th>
-                <th>CODPES</th>
+                <th>E-mail</th>
+                <th>Nº USP</th>
             </tr>
         </thead>
         <tbody>

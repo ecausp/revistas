@@ -12,12 +12,12 @@
 
 
 <div class="mb-1">
-    <label for="email" class="form-label">Email</label>
-    <input type="email" class="form-control" name="email" id="email" placeholder="email@exemplo.com" readonly>
+    <label for="email" class="form-label">E-mail</label>
+    <input type="email" class="form-control" name="email" id="email" readonly>
 </div>
 
 <div class="mb-1">
-    <label for="codpes" class="form-label">Codpes</label>
+    <label for="codpes" class="form-label">Nº USP</label>
     <input type="text" class="form-control" name="codpes" id="codpes" readonly>
 </div>
 
