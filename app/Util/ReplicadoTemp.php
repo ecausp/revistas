@@ -9,9 +9,9 @@ class ReplicadoTemp
 {
     
     /**
-     * Método que lista docentes e servidores de uma unidade;
+     * Método que lista docentes e servidores ativos de uma unidade;
      *
-     * @return Array lista de docentes e servidores com dados como nompesttd (nome social) e codpes (numero USP)
+     * @return Array lista de docentes e servidores ativos com os dados de nompesttd (nome social) e codpes (numero USP)
      *
      */
     public static function listarServidoresDocentes(){

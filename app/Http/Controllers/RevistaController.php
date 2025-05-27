@@ -11,19 +11,26 @@ use App\Util\ReplicadoTemp;
 
 class RevistaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
+    /*
+     * Exibe um index com todas as revistas;
+     * Tabela com as colunas [Nome, Centro de Despesas, Responsável pelo Centro de Despesas, Ações]
+     * Acesso exclusivo para usuários com a permissão 'admin-financeiro'
      */
     public function index()
     {   
         $this->authorize("admin-financeiro");
+
         $revistas = Revista::all();
         \UspTheme::activeUrl('revistas');
+        
         return view('revistas.index', compact('revistas'));
     }
 
-    /**
-     * Show the form for creating a new resource.
+    /*
+     * Exibe um formulario para cadastro de uma nova Revista
+     * Traz do Replicado uma lista com todos centros de despesas
+     * Traz do ReplicadoTemp uma lista com todos os servidores e docentes ativos de uma unidade específica
+     * Acesso exclusivo para usuários com a permissão 'admin-financeiro'
      */
     public function create()
     {
@@ -37,7 +44,8 @@ class RevistaController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Salva a nova Revista no banco de dados
+     * Acesso exclusivo para usuários com a permissão 'admin-financeiro'
      */
     public function store(Request $request)
     {
@@ -61,12 +69,17 @@ class RevistaController extends Controller
         return redirect()->route('revistas.index');
     }
 
-    /**
-     * Display the specified resource.
+    /*
+     * Exibe os dados de uma Revista
+     * Os dados exibidos são: Centro de Despesas, Responsável pelo Centro de Despesas e uma tabela de Solicitantes
+     * A tabela de Solicitantes tem as seguintes colunas: [Nome, E-mail, Número USP]
+     * Traz informacoes do usuario que criou/editou essa revista por ultimo e a data da criacao/edicao
+     * Acesso exclusivo para usuários com a permissão 'admin-financeiro'
      */
     public function show(Revista $revista)
     {
         $this->authorize("admin-financeiro");
+
         $editor = User::where('id', $revista->editor)->first();
         $updated_at = $revista->updated_at;
         $revista->solicitantes->load('user');
@@ -75,18 +88,24 @@ class RevistaController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Carrega o formulário de edição de uma Revista
+     * Traz os dados de centros de despesas do Replicado
+     * Traz os dados de servidores e docentes do ReplicadoTemp
+     * Acesso exclusivo para usuários com a permissão 'admin-financeiro'
      */
     public function edit(Revista $revista)
     {
         $this->authorize("admin-financeiro");
+
         $centros_despesas = Financeiro::ListarCentrosDespesas();
-        $responsaveis_centro_despesa = Pessoa::servidores();
+        $responsaveis_centro_despesa =  ReplicadoTemp::listarServidoresDocentes();
+        
         return view('revistas.edit', compact('revista', 'centros_despesas','responsaveis_centro_despesa'));
     }
 
-    /**
-     * Update the specified resource in storage.
+    /*
+     * Atualiza no banco de dados as informacoes editadas de uma Revista
+     * Acesso exclusivo para usuários com a permissão 'admin-financeiro'
      */
     public function update(Request $request, Revista $revista)
     {
@@ -106,18 +125,22 @@ class RevistaController extends Controller
         ];
         
         $revista->update($revista_editada);
+        
         session()->flash('success', 'Atualizado com sucesso!');
         return redirect()->route('revistas.index');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove uma revista do banco de dados.
+     * Acesso exclusivo para usuários com a permissão 'admin-financeiro'
      */
     public function destroy(Revista $revista)
     {
         $this->authorize("admin-financeiro");
+        
         $revista->delete();
         session()->flash('danger', 'Revista: ' . $revista->name . ' removida!');
+        
         return redirect()->route('revistas.index');
     }
 }
