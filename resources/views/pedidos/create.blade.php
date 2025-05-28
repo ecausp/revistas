@@ -5,13 +5,131 @@
 
 <div class="card">
     <div class="card-header h5">
-        Criar Pedido para {{ $solicitante }}
+        Criar Pedido
     </div>
     <div class="card-body">
         @can("admin-financeiro")
         @include('pedidos.partials.cabecalho')
+
+        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalServicos">
+            + Serviço(s)
+        </button>
+
+        <div id="tabela-servicos-selecionados" class="mt-3"></div>
+
         @endcan
     </div>
 
 </div>
+@endsection
+
+<!-- Modal -->
+<div class="modal fade" id="modalServicos" tabindex="-1" aria-labelledby="modalServicosLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalServicosLabel">Selecionar Serviço</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="servico" class="form-label">Serviços</label>
+                        <select id="servico" class="form-select select2" multiple style="width: 100%">
+                            @foreach($servicos as $servico)
+                            <option value="{{ $servico->id }}" data-descricao="{{ $servico->descricao }}"
+                                data-unidade="{{ $servico->unidade_medida }}"
+                                data-valor="{{ number_format($servico->valor_unitario, 2, ',', '.') }}"
+                                data-empresa="{{ $servico->empresas->first()->razao_social ?? '-' }}">
+                                {{ $servico->descricao }}
+                            </option>
+
+                            @endforeach
+                        </select>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section('javascripts_bottom')
+@parent
+
+<!-- jQuery -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<!-- Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<!-- Script de inicialização -->
+<script>
+$(document).ready(function() {
+    $('.select2').select2({
+        dropdownParent: $('#modalServicos') // isso é importante pra funcionar no modal
+    });
+});
+
+function atualizarTabelaServicosSelecionados() {
+    const selecionados = $('#servico').val(); // array de IDs selecionados
+    let html = '';
+
+    if (selecionados && selecionados.length > 0) {
+        html += '<table class="table table-bordered">';
+        html +=
+            '<thead><tr><th>Empresa</th><th>Descrição</th><th>Unidade</th><th>Qtd</th><th>Valor Unitário</th><th>Valor Total</th></tr></thead><tbody>';
+
+        selecionados.forEach(id => {
+            const option = $('#servico').find('option[value="' + id + '"]');
+            const empresa = option.data('empresa');
+            const descricao = option.data('descricao');
+            const unidade = option.data('unidade');
+            const valor = parseFloat(option.data('valor').replace(',', '.')).toFixed(2);
+
+            html += `<tr data-id="${id}">
+                        <td>${empresa}</td>
+                        <td>${descricao}</td>
+                        <td>${unidade}</td>
+                        <td>
+                            <input type="number" class="form-control quantidade-input" min="0" value="0" data-id="${id}" />
+                        </td>
+                        <td>R$ ${valor}</td>
+                        <td class="valor-total" data-id="${id}">R$ 0,00</td>
+                    </tr>`;
+        });
+
+        html += '</tbody></table>';
+    } else {
+        html = '<p>Nenhum serviço selecionado.</p>';
+    }
+
+    $('#tabela-servicos-selecionados').html(html);
+}
+
+$(document).on('input', '.quantidade-input', function() {
+    const id = $(this).data('id');
+    const qtd = parseFloat($(this).val()) || 0;
+    const option = $('#servico').find(`option[value="${id}"]`);
+    const valorUnitario = parseFloat(option.data('valor').replace(',', '.')) || 0;
+    const total = qtd * valorUnitario;
+
+    $(`.valor-total[data-id="${id}"]`).text(`R$ ${total.toFixed(2).replace('.', ',')}`);
+});
+
+$('#servico').on('change', function() {
+    atualizarTabelaServicosSelecionados();
+});
+
+$('#modalServicos').on('hidden.bs.modal', function() {
+    atualizarTabelaServicosSelecionados();
+});
+</script>
+
 @endsection

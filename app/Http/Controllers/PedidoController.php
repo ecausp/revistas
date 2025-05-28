@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pedido;
+use App\Models\Servico;
 use App\Models\Solicitante;
 use Illuminate\Http\Request;
 
@@ -16,7 +17,7 @@ class PedidoController extends Controller
         $this->authorize("admin-financeiro");
         \UspTheme::activeUrl('pedidos');
 
-        $pedidos = Pedido::get();
+        $pedidos = Pedido::all();
 
         return view('pedidos.index', compact('pedidos'));
     
@@ -30,9 +31,10 @@ class PedidoController extends Controller
         $this->authorize("admin-financeiro");
     
         $solicitante = Solicitante::where('user_id', auth()->user()->id)->first();
+        $servicos = Servico::all();
         \UspTheme::activeUrl('pedidos/create');
 
-        return view('pedidos.create', compact('solicitante'));
+        return view('pedidos.create', compact('solicitante','servicos'));
     }
 
     /**
