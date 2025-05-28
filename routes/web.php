@@ -10,6 +10,8 @@ use App\Http\Controllers\ServicoController;
 use App\Http\Controllers\ContatoController;
 use App\Http\Controllers\RevistaController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PedidoController;
+
 
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -40,7 +42,7 @@ Route::resource('empresas', EmpresaController::class);
 Route::resource('servicos', ServicoController::class);
 Route::resource('revistas', RevistaController::class);
 Route::resource('limites', LimiteController::class);
-
+Route::resource('pedidos', PedidoController::class);
 
 # rota para conseguir pegar a empresa que está cadastrando esse contato;
 Route::get('/contatos/create/{empresa}', ContatoController::class . '@create')->name('contatos.create');
