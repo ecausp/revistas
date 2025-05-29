@@ -80,11 +80,12 @@ $(document).ready(function() {
 function atualizarTabelaServicosSelecionados() {
     const selecionados = $('#servico').val(); // array de IDs selecionados
     let html = '';
+    let somaTotal = 0;
 
     if (selecionados && selecionados.length > 0) {
         html += '<table class="table table-bordered">';
         html +=
-            '<thead><tr><th>Empresa</th><th>Descrição</th><th>Unidade</th><th>Qtd</th><th>Valor Unitário</th><th>Valor Total</th></tr></thead><tbody>';
+            '<thead><tr><th>Empresa</th><th>Descrição</th><th>Unidade</th><th>Qtd</th><th>Valor Unitário</th><th>Valor Total</th><th></th></tr></thead><tbody>';
 
         selecionados.forEach(id => {
             const option = $('#servico').find('option[value="' + id + '"]');
@@ -100,10 +101,24 @@ function atualizarTabelaServicosSelecionados() {
                         <td>
                             <input type="number" class="form-control quantidade-input" min="0" value="0" data-id="${id}" />
                         </td>
-                        <td>R$ ${valor}</td>
+                        <td>R$ ${valor.replace('.', ',')}</td>
                         <td class="valor-total" data-id="${id}">R$ 0,00</td>
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-danger remover-servico" data-id="${id}">
+                                &times;
+                            </button>
+                        </td>
                     </tr>`;
         });
+
+        // Linha de total será adicionada depois do fechamento do loop
+
+        html += `<tr style="background-color: #f8f9fa;">
+                    <td colspan="4"></td>
+                    <td><strong>Total do Pedido</strong></td>
+                    <td id="soma-total" style="font-weight: bold;">R$ 0,00</td>
+                    <td></td>
+                 </tr>`;
 
         html += '</tbody></table>';
     } else {
@@ -113,15 +128,24 @@ function atualizarTabelaServicosSelecionados() {
     $('#tabela-servicos-selecionados').html(html);
 }
 
-$(document).on('input', '.quantidade-input', function() {
-    const id = $(this).data('id');
-    const qtd = parseFloat($(this).val()) || 0;
-    const option = $('#servico').find(`option[value="${id}"]`);
-    const valorUnitario = parseFloat(option.data('valor').replace(',', '.')) || 0;
-    const total = qtd * valorUnitario;
 
-    $(`.valor-total[data-id="${id}"]`).text(`R$ ${total.toFixed(2).replace('.', ',')}`);
+$(document).on('input', '.quantidade-input', function() {
+    let somaTotal = 0;
+
+    $('.quantidade-input').each(function() {
+        const id = $(this).data('id');
+        const qtd = parseFloat($(this).val()) || 0;
+        const option = $('#servico').find(`option[value="${id}"]`);
+        const valorUnitario = parseFloat(option.data('valor').replace(',', '.')) || 0;
+        const total = qtd * valorUnitario;
+
+        $(`.valor-total[data-id="${id}"]`).text(`R$ ${total.toFixed(2).replace('.', ',')}`);
+        somaTotal += total;
+    });
+
+    $('#soma-total').text(`R$ ${somaTotal.toFixed(2).replace('.', ',')}`);
 });
+
 
 $('#servico').on('change', function() {
     atualizarTabelaServicosSelecionados();
@@ -129,6 +153,17 @@ $('#servico').on('change', function() {
 
 $('#modalServicos').on('hidden.bs.modal', function() {
     atualizarTabelaServicosSelecionados();
+});
+
+$(document).on('click', '.remover-servico', function() {
+    const id = $(this).data('id');
+    let selecionados = $('#servico').val(); // array de valores selecionados
+
+    // Remove o ID da lista de selecionados
+    selecionados = selecionados.filter(val => val != id);
+
+    // Atualiza o select2
+    $('#servico').val(selecionados).trigger('change');
 });
 </script>
 
