@@ -10,48 +10,16 @@
     <div class="card-body">
         @can("admin-financeiro")
         @include('pedidos.partials.cabecalho')
-
-        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalServicos">
-            + Serviço(s)
-        </button>
-
-        <div id="tabela-servicos-selecionados" class="mt-3"></div>
-
+        <form action="{{ route('pedidos.store') }}" method="POST">
+            @csrf
+            @include('pedidos.partials.forms')
+        </form>
         @endcan
     </div>
-
 </div>
+
+
 @endsection
-
-<!-- Modal -->
-<div class="modal fade" id="modalServicos" tabindex="-1" aria-labelledby="modalServicosLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalServicosLabel">Selecionar Serviço</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-            </div>
-            <div class="modal-body">
-                <form>
-                    <div class="mb-3">
-                        <label for="servico" class="form-label">Serviços</label>
-                        <select id="servico" class="form-select select2" multiple style="width: 100%">
-                            @foreach($servicos as $servico)
-                            <option value="{{ $servico->id }}" data-descricao="{{ $servico->descricao }}"
-                                data-unidade="{{ $servico->unidade_medida }}"
-                                data-valor="{{ number_format($servico->valor_unitario, 2, ',', '.') }}"
-                                data-empresa="{{ $servico->empresas->first()->razao_social ?? '-' }}">
-                                {{ $servico->descricao }}
-                            </option>
-
-                            @endforeach
-                        </select>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 
 @section('javascripts_bottom')
 @parent
@@ -72,13 +40,11 @@
 <!-- Script de inicialização -->
 <script>
 $(document).ready(function() {
-    $('.select2').select2({
-        dropdownParent: $('#modalServicos') // isso é importante pra funcionar no modal
-    });
+    $('.select2').select2();
 });
 
 function atualizarTabelaServicosSelecionados() {
-    const selecionados = $('#servico').val(); // array de IDs selecionados
+    const selecionados = $('#servico_id').val(); // array de IDs selecionados
     let html = '';
     let somaTotal = 0;
 
@@ -88,7 +54,7 @@ function atualizarTabelaServicosSelecionados() {
             '<thead><tr><th>Empresa</th><th>Descrição</th><th>Unidade</th><th>Qtd</th><th>Valor Unitário</th><th>Valor Total</th><th></th></tr></thead><tbody>';
 
         selecionados.forEach(id => {
-            const option = $('#servico').find('option[value="' + id + '"]');
+            const option = $('#servico_id').find('option[value="' + id + '"]');
             const empresa = option.data('empresa');
             const descricao = option.data('descricao');
             const unidade = option.data('unidade');
@@ -135,7 +101,7 @@ $(document).on('input', '.quantidade-input', function() {
     $('.quantidade-input').each(function() {
         const id = $(this).data('id');
         const qtd = parseFloat($(this).val()) || 0;
-        const option = $('#servico').find(`option[value="${id}"]`);
+        const option = $('#servico_id').find(`option[value="${id}"]`);
         const valorUnitario = parseFloat(option.data('valor').replace(',', '.')) || 0;
         const total = qtd * valorUnitario;
 
@@ -147,7 +113,7 @@ $(document).on('input', '.quantidade-input', function() {
 });
 
 
-$('#servico').on('change', function() {
+$('#servico_id').on('change', function() {
     atualizarTabelaServicosSelecionados();
 });
 
@@ -157,13 +123,13 @@ $('#modalServicos').on('hidden.bs.modal', function() {
 
 $(document).on('click', '.remover-servico', function() {
     const id = $(this).data('id');
-    let selecionados = $('#servico').val(); // array de valores selecionados
+    let selecionados = $('#servico_id').val(); // array de valores selecionados
 
     // Remove o ID da lista de selecionados
     selecionados = selecionados.filter(val => val != id);
 
     // Atualiza o select2
-    $('#servico').val(selecionados).trigger('change');
+    $('#servico_id').val(selecionados).trigger('change');
 });
 </script>
 
