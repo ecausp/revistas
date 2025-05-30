@@ -42,7 +42,7 @@ class PedidoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+            dd($request->all()); // aqui vai mostrar tudo que chegou
     }
 
     /**

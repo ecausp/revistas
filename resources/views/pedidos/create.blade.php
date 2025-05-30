@@ -58,7 +58,10 @@ function atualizarTabelaServicosSelecionados() {
             const empresa = option.data('empresa');
             const descricao = option.data('descricao');
             const unidade = option.data('unidade');
-            const valor = parseFloat(option.data('valor').replace(',', '.')).toFixed(2);
+            const valorBr = option.attr('data-valor') || '0,00';
+
+            const valor = parseFloat(valorBr.replace('.', '').replace(',', '.')) || 0;
+
 
             html += `<tr data-id="${id}">
                         <td>${empresa}</td>
@@ -67,7 +70,7 @@ function atualizarTabelaServicosSelecionados() {
                         <td>
                             <input type="number" class="form-control quantidade-input" min="0" value="0" data-id="${id}" />
                         </td>
-                        <td>R$ ${valor.replace('.', ',')}</td>
+                        <td>R$ ${valor.toFixed(2).replace('.', ',')}</td>
                         <td class="valor-total" data-id="${id}">R$ 0,00</td>
                         <td class="text-center">
                             <button class="btn btn-sm btn-danger remover-servico" data-id="${id}">
@@ -102,7 +105,9 @@ $(document).on('input', '.quantidade-input', function() {
         const id = $(this).data('id');
         const qtd = parseFloat($(this).val()) || 0;
         const option = $('#servico_id').find(`option[value="${id}"]`);
-        const valorUnitario = parseFloat(option.data('valor').replace(',', '.')) || 0;
+        const valorBr = option.attr('data-valor') || '0,00';
+        const valorUnitario = parseFloat(valorBr.replace('.', '').replace(',', '.')) || 0;
+
         const total = qtd * valorUnitario;
 
         $(`.valor-total[data-id="${id}"]`).text(`R$ ${total.toFixed(2).replace('.', ',')}`);
