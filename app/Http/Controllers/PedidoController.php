@@ -88,7 +88,11 @@ public function store(Request $request)
      */
     public function show(Pedido $pedido)
     {
-        //
+        $this->authorize("revista");
+        $licitacao = $pedido->licitacao;
+        $solicitante = $pedido->solicitante;
+
+        return view('pedidos.show', compact('pedido', 'licitacao', 'solicitante'));
     }
 
     /**

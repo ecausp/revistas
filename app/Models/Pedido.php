@@ -27,6 +27,11 @@ class Pedido extends Model
         return $this->belongsTo(Revista::class);
     }
 
+    public function solicitante()
+    {
+        return $this->belongsTo(Solicitante::class);
+    }
+
     public function licitacao()
     {
         return $this->belongsTo(Licitacao::class);
