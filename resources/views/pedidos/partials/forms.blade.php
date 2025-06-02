@@ -35,6 +35,10 @@
             value="{{ $solicitante->id }}">
     </div>
 
+    <div class="mb-1">
+        <input type="hidden" class="form-control" name="licitacao_id" id="licitacao_id" value="{{ $licitacao->id }}">
+    </div>
+
     <div class="mt-5">
         <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salvar</button>
 

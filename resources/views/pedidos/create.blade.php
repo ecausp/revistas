@@ -8,11 +8,6 @@
         Criar Pedido
     </div>
 
-    @foreach ($licitacoes as $licitacao)
-    <p><strong>{{ $licitacao->id }} - {{ $licitacao->descricao }}</strong></p>
-    @endforeach
-
-
     <div class="card-body">
         @can("admin-financeiro")
         @include('pedidos.partials.cabecalho')

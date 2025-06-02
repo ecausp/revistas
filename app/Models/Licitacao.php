@@ -22,4 +22,9 @@ class Licitacao extends Model
     {
         return $this->belongsToMany(Empresa::class, 'empresa-licitacao');
     }
+
+    public function pedido()
+    {
+        return $this->hasOne(Pedido::class);
+    }
 }

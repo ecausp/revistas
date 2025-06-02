@@ -8,6 +8,7 @@ use App\Models\Solicitante;
 use App\Models\Licitacao;
 use Illuminate\Http\Request;
 
+
 class PedidoController extends Controller
 {
     /**
@@ -32,13 +33,13 @@ class PedidoController extends Controller
         $this->authorize("admin-financeiro");
         
         $anoAtual = date('Y');
-        $licitacoes = Licitacao::where('ano', $anoAtual)->get();
+        $licitacao = Licitacao::where('ano', $anoAtual)->first();
 
         $solicitante = Solicitante::where('user_id', auth()->user()->id)->first();
         $servicos = Servico::all();
         \UspTheme::activeUrl('pedidos/create');
 
-        return view('pedidos.create', compact('solicitante','servicos', 'licitacoes'));
+        return view('pedidos.create', compact('solicitante','servicos', 'licitacao'));
     }
 
     /**
