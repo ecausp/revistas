@@ -16,11 +16,6 @@ class Pedido extends Model
 
     }
 
-    public function servicos()
-    {
-        return $this->hasMany(Servico::class);
-    }
-
     public function revista()
     {
         return $this->belongsTo(Revista::class);
@@ -31,4 +26,8 @@ class Pedido extends Model
         return $this->belongsTo(Licitacao::class);
     }
 
+    public function servicos()
+{
+    return $this->belongsToMany(Servico::class, 'pedido_servico')->withPivot('quantidade')->withTimestamps();
+}
 }
