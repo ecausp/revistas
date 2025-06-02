@@ -16,7 +16,7 @@ class PedidoController extends Controller
      */
     public function index()
     {
-        $this->authorize("admin-financeiro");
+        $this->authorize("revista");
         \UspTheme::activeUrl('pedidos');
 
         $pedidos = Pedido::all();
@@ -30,7 +30,7 @@ class PedidoController extends Controller
      */
     public function create()
     {
-        $this->authorize("admin-financeiro");
+        $this->authorize("revista");
         
         $anoAtual = date('Y');
         $licitacao = Licitacao::where('ano', $anoAtual)->first();
@@ -47,7 +47,7 @@ class PedidoController extends Controller
      */
 public function store(Request $request)
 {
-    $this->authorize("admin-financeiro");
+    $this->authorize("revista");
 
     // Validação básica
     $validated = $request->validate([

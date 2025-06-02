@@ -9,7 +9,7 @@
     </div>
 
     <div class="card-body">
-        @can("admin-financeiro")
+        @can("revista")
         @include('pedidos.partials.cabecalho')
         <form action="{{ route('pedidos.store') }}" method="POST">
             @csrf
