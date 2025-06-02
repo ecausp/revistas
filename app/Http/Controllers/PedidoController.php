@@ -20,7 +20,7 @@ class PedidoController extends Controller
         \UspTheme::activeUrl('pedidos');
 
         $pedidos = Pedido::all();
-
+        
         return view('pedidos.index', compact('pedidos'));
     
     }
@@ -45,10 +45,43 @@ class PedidoController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-            dd($request->all()); // aqui vai mostrar tudo que chegou
+public function store(Request $request)
+{
+    $this->authorize("admin-financeiro");
+
+    // Validação básica
+    $validated = $request->validate([
+        'solicitante_id' => 'required|exists:solicitantes,id',
+        'revista_id' => 'required|exists:revistas,id',
+        'licitacao_id' => 'required|exists:licitacoes,id',
+        'observacoes' => 'nullable|string',
+        'servicos' => 'required|array',
+        'servicos.*' => 'exists:servicos,id',
+        'quantidades' => 'required|array',
+        'quantidades.*' => 'numeric|min:1',
+    ]);
+
+    // Criando o pedido
+    $pedido = Pedido::create([
+        'licitacao_id' => $validated['licitacao_id'],
+        'solicitante_id' => $validated['solicitante_id'],
+        'revista_id' => $validated['revista_id'],
+        'observacoes' => $validated['observacoes'],
+    ]);
+
+    // Relacionando serviços e quantidades
+    $dadosParaSync = [];
+    foreach ($validated['servicos'] as $servicoId) {
+        $qtd = $validated['quantidades'][$servicoId] ?? 1;
+        $dadosParaSync[$servicoId] = ['quantidade' => $qtd];
     }
+
+    $pedido->servicos()->sync($dadosParaSync);
+
+    session()->flash('success', 'Pedido cadastrado com sucesso!');
+    return redirect()->route('pedidos.index');
+}
+
 
     /**
      * Display the specified resource.

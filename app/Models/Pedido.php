@@ -9,6 +9,12 @@ class Pedido extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+    'solicitante_id',
+    'revista_id',
+    'licitacao_id',
+    'observacoes',
+];
     public function arquivos()
     {
 

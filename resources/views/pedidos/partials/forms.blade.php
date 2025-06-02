@@ -3,7 +3,7 @@
     <div class="mb-1">
         <label for="servico" class="form-label">Serviços</label>
 
-        <select class="form-control select2" id="servico_id" multiple="multiple">
+        <select class="form-control select2" id="servico_id" name="servicos[]" multiple="multiple">
             @foreach ($servicos as $servico)
             <option value="{{ $servico->id }}" data-empresa="{{ $servico->empresa->nome ?? '' }}"
                 data-descricao="{{ $servico->descricao }}" data-unidade="{{ $servico->unidade_medida }}"
