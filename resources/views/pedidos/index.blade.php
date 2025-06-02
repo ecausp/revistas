@@ -17,8 +17,7 @@
             <thead>
                 <tr>
                     <th>Revista</th>
-                    <th>Serviços</th>
-                    <th>Arquivos</th>
+                    <th>Licitação</th>
                     <th>Observações</th>
                     <th>Ações</th>
                 </tr>
@@ -26,9 +25,8 @@
             <tbody>
                 @foreach ($pedidos as $pedido)
                 <tr>
-                    <td>{{ $pedido->revista->nome }}</td>
-                    <td>{{ $pedido->serviços }}</td>
-                    <td>{{ $pedido->arquivos }}</td>
+                    <td>{{ $pedido->revista->name }}</td>
+                    <td>{{ $pedido->licitacao->descricao }} - {{ $pedido->licitacao->ano }}</td>
                     <td>{{ $pedido->observacoes }}</td>
                     <td>
                         <a href="{{ route('pedidos.show', $pedido) }}" class="btn btn-primary"><i
