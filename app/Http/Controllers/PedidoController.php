@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Pedido;
 use App\Models\Servico;
 use App\Models\Solicitante;
+use App\Models\Licitacao;
 use Illuminate\Http\Request;
 
 class PedidoController extends Controller
@@ -29,12 +30,15 @@ class PedidoController extends Controller
     public function create()
     {
         $this->authorize("admin-financeiro");
-    
+        
+        $anoAtual = date('Y');
+        $licitacoes = Licitacao::where('ano', $anoAtual)->get();
+
         $solicitante = Solicitante::where('user_id', auth()->user()->id)->first();
         $servicos = Servico::all();
         \UspTheme::activeUrl('pedidos/create');
 
-        return view('pedidos.create', compact('solicitante','servicos'));
+        return view('pedidos.create', compact('solicitante','servicos', 'licitacoes'));
     }
 
     /**

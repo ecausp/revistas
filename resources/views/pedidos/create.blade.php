@@ -7,6 +7,12 @@
     <div class="card-header h5">
         Criar Pedido
     </div>
+
+    @foreach ($licitacoes as $licitacao)
+    <p><strong>{{ $licitacao->id }} - {{ $licitacao->descricao }}</strong></p>
+    @endforeach
+
+
     <div class="card-body">
         @can("admin-financeiro")
         @include('pedidos.partials.cabecalho')
@@ -68,8 +74,9 @@ function atualizarTabelaServicosSelecionados() {
                         <td>${descricao}</td>
                         <td>${unidade}</td>
                         <td>
-                            <input type="number" class="form-control quantidade-input" min="0" value="0" data-id="${id}" />
+                            <input type="number" name="quantidades[${id}]" class="form-control quantidade-input" min="0" value="0" data-id="${id}" />
                         </td>
+
                         <td>R$ ${valor.toFixed(2).replace('.', ',')}</td>
                         <td class="valor-total" data-id="${id}">R$ 0,00</td>
                         <td class="text-center">
