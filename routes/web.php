@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ArquivoController;
 use App\Http\Controllers\LimiteController;
 use App\Http\Controllers\SolicitanteController;
 use App\Http\Middleware\EnsureUserIsLogged;
@@ -43,6 +44,7 @@ Route::resource('servicos', ServicoController::class);
 Route::resource('revistas', RevistaController::class);
 Route::resource('limites', LimiteController::class);
 Route::resource('pedidos', PedidoController::class);
+Route::resource('arquivos', ArquivoController::class);
 
 # rota para conseguir pegar a empresa que está cadastrando esse contato;
 Route::get('/contatos/create/{empresa}', ContatoController::class . '@create')->name('contatos.create');

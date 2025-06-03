@@ -7,59 +7,31 @@ use Illuminate\Http\Request;
 
 class ArquivoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'pedido_id' => 'required|exists:pedidos,id',
+            'descricao' => 'required|string|max:255',
+            'arquivo' => 'required|file|mimes:pdf,jpg,jpeg,png,svg,tiff|max:3072', // 3MB
+        ]);
+
+        $file = $request->file('arquivo');
+        $fileName = time() . '_' . $file->getClientOriginalName();
+        $path = $file->storeAs('arquivos', $fileName, 'public');
+
+        Arquivo::create([
+            'pedido_id' => $request->pedido_id,
+            'nome' => $fileName,
+            'descricao' => $request->descricao,
+        ]);
+
+        return redirect()->back()->with('success', 'Arquivo adicionado com sucesso.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Arquivo $arquivo)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Arquivo $arquivo)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Arquivo $arquivo)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Arquivo $arquivo)
     {
-        //
+        $arquivo->delete();
+        return redirect()->back()->with('success', 'Arquivo excluído com sucesso.');
     }
+
 }

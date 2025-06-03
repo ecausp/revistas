@@ -34,7 +34,7 @@ class PedidoController extends Controller
         
         $anoAtual = date('Y');
         $licitacao = Licitacao::where('ano', $anoAtual)->first();
-
+        
         $solicitante = Solicitante::where('user_id', auth()->user()->id)->first();
         $servicos = Servico::all();
         \UspTheme::activeUrl('pedidos/create');
