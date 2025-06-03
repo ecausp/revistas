@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Arquivo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ArquivoController extends Controller
 {
@@ -30,6 +31,7 @@ class ArquivoController extends Controller
 
     public function destroy(Arquivo $arquivo)
     {
+        Storage::disk('public')->delete('arquivos/' . $arquivo->nome);
         $arquivo->delete();
         return redirect()->back()->with('success', 'Arquivo excluído com sucesso.');
     }

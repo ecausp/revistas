@@ -45,7 +45,8 @@
                             onsubmit="return confirm('Tem certeza que deseja excluir este arquivo?')">
                             @csrf
                             @method('DELETE')
-                            <button class="btn btn-danger btn-sm">Excluir</button>
+                            <button class="btn btn-danger btn-sm"><i class="fa fa-times"
+                                    aria-hidden="true"></i></button>
                         </form>
                     </td>
                 </tr>
