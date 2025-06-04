@@ -100,22 +100,50 @@ public function store(Request $request)
      */
     public function edit(Pedido $pedido)
     {
-        //
+        $servicos = Servico::all();
+        return view('pedidos.edit', compact('pedido', 'servicos'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Pedido $pedido)
-    {
-        //
+public function update(Request $request, Pedido $pedido)
+{
+    // Valide se quiser:
+    $request->validate([
+        'servicos' => 'array',
+        'quantidades' => 'array',
+    ]);
+
+    // Atualiza dados simples
+    $pedido->observacoes = $request->observacoes;
+    $pedido->revista_id = $request->revista_id;
+    $pedido->solicitante_id = $request->solicitante_id;
+    $pedido->licitacao_id = $request->licitacao_id;
+    $pedido->save();
+
+    // Sincroniza os serviços com a tabela pivot e quantidades
+    $syncData = [];
+
+    foreach ($request->servicos ?? [] as $id) {
+        $syncData[$id] = ['quantidade' => $request->quantidades[$id] ?? 1];
     }
+
+    $pedido->servicos()->sync($syncData); 
+
+    return redirect()->route('pedidos.index')->with('success', 'Pedido atualizado com sucesso!');
+}
+
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(Pedido $pedido)
-    {
-        //
-    }
+    {   
+        $this->authorize("revista");
+
+        $pedido->delete();
+        
+        session()->flash('danger', 'Pedido da Revista: ' . $pedido->revista->name . ' para a Licitação: ' . $pedido->licitacao->descricao . ' removido!');
+        return redirect()->route('pedidos.index');}
 }

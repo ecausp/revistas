@@ -11,6 +11,7 @@
     <div class="card-body">
         @can("revista")
         @include('pedidos.partials.cabecalho')
+
         <form action="{{ route('pedidos.store') }}" method="POST">
             @csrf
             @include('pedidos.partials.forms')

@@ -125,7 +125,7 @@ class ServicoController extends Controller
      */
     public function destroy(Servico $servico)
     {
-                $this->authorize("admin-financeiro");
+        $this->authorize("admin-financeiro");
 
         $servico->delete();
         
