@@ -53,7 +53,7 @@ function atualizarTabelaServicosSelecionados() {
     if (selecionados && selecionados.length > 0) {
         html += '<table class="table table-bordered">';
         html +=
-            '<thead><tr><th>Empresa</th><th>Descrição</th><th>Unidade</th><th>Qtd</th><th>Valor Unitário</th><th>Valor Total</th><th></th></tr></thead><tbody>';
+            '<thead><tr><th>Empresa</th><th>Descrição</th><th>Unidade</th><th>Quantidade</th><th>Valor Unitário</th><th>Valor Total</th><th></th></tr></thead><tbody>';
 
         selecionados.forEach(id => {
             const option = $('#servico_id').find('option[value="' + id + '"]');
@@ -106,12 +106,12 @@ $(document).on('input', '.quantidade-input', function() {
 
     $('.quantidade-input').each(function() {
         const id = $(this).data('id');
-        const qtd = parseFloat($(this).val()) || 0;
+        const quantidade = parseFloat($(this).val()) || 0;
         const option = $('#servico_id').find(`option[value="${id}"]`);
         const valorBr = option.attr('data-valor') || '0,00';
         const valorUnitario = parseFloat(valorBr.replace('.', '').replace(',', '.')) || 0;
 
-        const total = qtd * valorUnitario;
+        const total = quantidade * valorUnitario;
 
         $(`.valor-total[data-id="${id}"]`).text(`R$ ${total.toFixed(2).replace('.', ',')}`);
         somaTotal += total;
