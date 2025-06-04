@@ -4,7 +4,7 @@
 @section('content')
 <div class="card">
     <div class="card-header h5">
-        Pedido da Revista {{ $pedido->revista->name }} para a Licitação {{ $pedido->licitacao->descricao }}
+        Pedido {{ $pedido->id }}
     </div>
     @can("revista")
     <div class="card-body">
