@@ -22,4 +22,11 @@ class Revista extends Model
         return $this->hasMany(Solicitante::class);
 
     }
+    public function pedidos()
+    {
+
+        return $this->hasMany(Pedido::class);
+
+    }
+    
 }

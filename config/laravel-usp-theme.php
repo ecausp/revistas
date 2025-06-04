@@ -1,4 +1,21 @@
 <?php
+$submenuPedidos = [
+        [
+        'type' => 'header',
+        'text' => '<i class="fa fa-shopping-cart" aria-hidden="true"></i> Pedidos',
+        'can' => 'revista'
+    ],
+    [
+        'text' => '<i class="fas fa-plus-circle" aria-hidden="true"></i> Cadastrar',
+        'url' => 'pedidos/create',
+        'can' => 'revista'
+    ],
+    [
+        'text' => '<i class="fas fa-list-ul" aria-hidden="true"></i> Listar',
+        'url' => 'pedidos',
+        'can' => 'revista'
+    ]
+];
 
 $submenu1 = [
     [
@@ -99,6 +116,11 @@ $menu = [
         'text' => '<i class="fas fa-tools"></i> Financeiro',
         'submenu' => $submenu1,
         'can' => 'admin-financeiro',
+    ],
+    [
+        'text' => '<i class="fas fa-tools"></i> Pedidos',
+        'submenu' => $submenuPedidos,
+        'can' => 'revista',
     ],
 ];
 

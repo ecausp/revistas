@@ -22,4 +22,10 @@ class Servico extends Model
     {
         return $this->belongsToMany(Empresa::class, 'empresa_servico');
     }
+
+    public function pedidos()
+    {
+        return $this->belongsToMany(Pedido::class, 'pedido_servico')->withPivot('quantidade')->withTimestamps();
+    }
+
 }
