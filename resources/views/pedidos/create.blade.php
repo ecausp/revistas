@@ -38,6 +38,13 @@
 
 <!-- Script de inicialização -->
 <script>
+
+function formatarMilhares(numero) {
+    return numero.toFixed(2)
+        .replace('.', ',')                    // vírgula para centavos
+        .replace(/\B(?=(\d{3})+(?!\d))/g, '.'); // ponto a cada milhar
+}
+
 $(document).ready(function() {
     $('.select2').select2();
 });
@@ -50,7 +57,7 @@ function atualizarTabelaServicosSelecionados() {
     if (selecionados && selecionados.length > 0) {
         html += '<table class="table table-bordered">';
         html +=
-            '<thead><tr><th>Empresa</th><th>Descrição</th><th>Unidade</th><th>Quantidade</th><th>Valor Unitário</th><th>Valor Total</th><th></th></tr></thead><tbody>';
+            '<thead><tr><th>Empresa</th><th>Descrição</th><th>Unidade</th><th>Quantidade</th><th>Valor Unitário (R$)</th><th>Valor Total (R$)</th><th></th></tr></thead><tbody>';
 
         selecionados.forEach(id => {
             const option = $('#servico_id').find('option[value="' + id + '"]');
@@ -67,11 +74,11 @@ function atualizarTabelaServicosSelecionados() {
                         <td>${descricao}</td>
                         <td>${unidade}</td>
                         <td>
-                            <input type="text" name="quantidades[${id}]" class="form-control quantidade-input quantidade-mask" min="0" value="0" step="1" data-id="${id}" />
+                            <input type="text" name="quantidades[${id}]" class="form-control quantidade-input milhares-mask" min="0" value="0" step="1" data-id="${id}" />
                         </td>
 
-                        <td>R$ ${valor.toFixed(2).replace('.', ',')}</td>
-                        <td class="valor-total" data-id="${id}">R$ 0,00</td>
+                        <td>${valor.toFixed(2).replace('.', ',')}</td>
+                        <td class="valor-total" data-id="${id}">0,00</td>
                         <td class="text-center">
                             <button class="btn btn-sm btn-danger remover-servico" data-id="${id}">
                                 &times;
@@ -85,7 +92,7 @@ function atualizarTabelaServicosSelecionados() {
         html += `<tr style="background-color: #f8f9fa;">
                     <td colspan="4"></td>
                     <td><strong>Total do Pedido</strong></td>
-                    <td id="soma-total" style="font-weight: bold;">R$ 0,00</td>
+                    <td id="soma-total" style="font-weight: bold;">0,00</td>
                     <td></td>
                  </tr>`;
 
@@ -96,7 +103,7 @@ function atualizarTabelaServicosSelecionados() {
 
     $('#tabela-servicos-selecionados').html(html);
 
-    $('.quantidade-mask').mask('000.000.000.000.000', {
+    $('.milhares-mask').mask('000.000.000.000.000', {
     reverse: true
     });
     
@@ -115,11 +122,11 @@ $(document).on('input', '.quantidade-input', function() {
 
         const total = quantidade * valorUnitario;
 
-        $(`.valor-total[data-id="${id}"]`).text(`R$ ${total.toFixed(2).replace('.', ',')}`);
+        $(`.valor-total[data-id="${id}"]`).text(formatarMilhares(total));
         somaTotal += total;
     });
 
-    $('#soma-total').text(`R$ ${somaTotal.toFixed(2).replace('.', ',')}`);
+    $('#soma-total').text(formatarMilhares(somaTotal));
 });
 
 
