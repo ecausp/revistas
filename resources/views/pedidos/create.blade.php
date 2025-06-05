@@ -26,17 +26,14 @@
 @section('javascripts_bottom')
 @parent
 
-<!-- jQuery -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<!-- Bootstrap CSS -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<!-- Select2 CSS -->
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-<!-- Select2 JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <!-- Script de inicialização -->
@@ -70,7 +67,7 @@ function atualizarTabelaServicosSelecionados() {
                         <td>${descricao}</td>
                         <td>${unidade}</td>
                         <td>
-                            <input type="number" name="quantidades[${id}]" class="form-control quantidade-input" min="0" value="0" step="1" data-id="${id}" />
+                            <input type="text" name="quantidades[${id}]" class="form-control quantidade-input quantidade-mask" min="0" value="0" step="1" data-id="${id}" />
                         </td>
 
                         <td>R$ ${valor.toFixed(2).replace('.', ',')}</td>
@@ -98,6 +95,11 @@ function atualizarTabelaServicosSelecionados() {
     }
 
     $('#tabela-servicos-selecionados').html(html);
+
+    $('.quantidade-mask').mask('000.000.000.000.000', {
+    reverse: true
+    });
+    
 }
 
 
@@ -106,7 +108,7 @@ $(document).on('input', '.quantidade-input', function() {
 
     $('.quantidade-input').each(function() {
         const id = $(this).data('id');
-        const quantidade = parseFloat($(this).val()) || 0;
+        const quantidade = parseFloat($(this).val().replace(/\./g, '').replace(',', '.')) || 0;
         const option = $('#servico_id').find(`option[value="${id}"]`);
         const valorBr = option.attr('data-valor') || '0,00';
         const valorUnitario = parseFloat(valorBr.replace('.', '').replace(',', '.')) || 0;
@@ -139,6 +141,7 @@ $(document).on('click', '.remover-servico', function() {
     // Atualiza o select2
     $('#servico_id').val(selecionados).trigger('change');
 });
+
 </script>
 
 @endsection
