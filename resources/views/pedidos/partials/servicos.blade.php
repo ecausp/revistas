@@ -11,7 +11,6 @@
                 <th>Valor Unitário (R$)</th>
                 <th>Quantidade</th>
                 <th>Valor Total (R$)</th>
-                <th>Ações</th>
             </tr>
         </thead>
         <tbody>
@@ -29,11 +28,7 @@
                 <td>{{ number_format($servico->valor_unitario, 2, ',', '.') }}</td>
                 <td>{{ number_format($servico->pivot->quantidade, 0, ',', '.') }}</td>
                 <td>{{ number_format($valorTotalServico, 2, ',', '.') }}</td>
-                <td>
-                    <a href="{{ route('servicos.show', $servico) }}" class="btn btn-primary">
-                        <i class="fas fa-eye"></i>
-                    </a>
-                </td>
+
             </tr>
             @endforeach
         </tbody>
