@@ -121,7 +121,7 @@ function atualizarTabelaServicosSelecionados() {
                         <td>${descricao}</td>
                         <td>${unidade}</td>
                         <td>
-                            <input type="number" name="quantidades[${id}]" class="form-control quantidade-input" min="0" value="${quantidade}" data-id="${id}" />
+                            <input type="number" name="quantidades[${id}]" class="form-control quantidade-input" min="0" value="${quantidade}" step="1" data-id="${id}" />
                         </td>
                         <td>R$ ${valor.toFixed(2).replace('.', ',')}</td>
                         <td class="valor-total" data-id="${id}">R$ ${valorTotal.toFixed(2).replace('.', ',')}</td>
