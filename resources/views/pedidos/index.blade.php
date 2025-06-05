@@ -18,7 +18,6 @@
                 <tr>
                     <th>Revista</th>
                     <th>Licitação</th>
-                    <th>Observações</th>
                     <th>Ações</th>
                 </tr>
             </thead>
@@ -27,7 +26,6 @@
                 <tr>
                     <td>{{ $pedido->revista->name }}</td>
                     <td>{{ $pedido->licitacao->descricao }} - {{ $pedido->licitacao->ano }}</td>
-                    <td>{{ $pedido->observacoes }}</td>
                     <td>
                         <a href="{{ route('pedidos.show', $pedido) }}" class="btn btn-primary"><i
                                 class="fas fa-eye"></i> </a>
