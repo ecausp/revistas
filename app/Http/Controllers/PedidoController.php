@@ -71,7 +71,7 @@ public function store(Request $request)
         'servicos' => 'required|array',
         'servicos.*' => 'exists:servicos,id',
         'quantidades' => 'required|array',
-        'quantidades.*' => 'numeric|min:1',
+        'quantidades.*' => 'integer|min:1',
     ]);
 
     // Criando o pedido

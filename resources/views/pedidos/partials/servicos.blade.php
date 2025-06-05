@@ -3,7 +3,7 @@
     <table class="table table-striped">
         <thead>
             <tr>
-                <th colspan="6">Serviços</th>
+                <th colspan="5">Serviços</th>
             </tr>
             <tr>
                 <th>Descrição</th>
@@ -37,7 +37,6 @@
                 <td colspan="3"></td>
                 <td><strong>Valor total do pedido: </strong></td>
                 <td>{{ number_format($valorTotalPedido, 2, ',', '.') }}</td>
-                <td></td>
             </tr>
         </tfoot>
     </table>
