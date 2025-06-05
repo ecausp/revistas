@@ -21,8 +21,14 @@ class PedidoController extends Controller
 
         $pedidos = Pedido::all();
         
-        return view('pedidos.index', compact('pedidos'));
-    
+        if(Solicitante::where('user_id', auth()->id())->exists())
+            return view('pedidos.index', compact('pedidos'));
+        else
+        {
+            session()->flash('danger', 'Usuário não cadastrado como solicitante. Favor contatar financeiro.');
+            return redirect()->route('home');
+
+        }
     }
 
     /**
@@ -38,8 +44,15 @@ class PedidoController extends Controller
         $solicitante = Solicitante::where('user_id', auth()->user()->id)->first();
         $servicos = Servico::all();
         \UspTheme::activeUrl('pedidos/create');
+        
+        if(Solicitante::where('user_id', auth()->id())->exists())
+            return view('pedidos.create', compact('solicitante','servicos', 'licitacao'));
+        else
+        {
+            session()->flash('danger', 'Usuário não cadastrado como solicitante. Favor contatar financeiro.');
+            return redirect()->route('home');
 
-        return view('pedidos.create', compact('solicitante','servicos', 'licitacao'));
+        }
     }
 
     /**
@@ -77,9 +90,18 @@ public function store(Request $request)
     }
 
     $pedido->servicos()->sync($dadosParaSync);
+    
+    if(Solicitante::where('user_id', auth()->id())->exists())
+    {
+        session()->flash('success', 'Pedido cadastrado com sucesso!');
+        return redirect()->route('pedidos.index');
+    }
+    else
+    {
+        session()->flash('danger', 'Usuário não cadastrado como solicitante. Favor contatar financeiro.');
+        return redirect()->route('home');
 
-    session()->flash('success', 'Pedido cadastrado com sucesso!');
-    return redirect()->route('pedidos.index');
+    }
 }
 
 
@@ -91,8 +113,15 @@ public function store(Request $request)
         $this->authorize("revista");
         $licitacao = $pedido->licitacao;
         $solicitante = $pedido->solicitante;
+        
+        if(Solicitante::where('user_id', auth()->id())->exists())
+            return view('pedidos.show', compact('pedido', 'licitacao', 'solicitante'));
+        else
+        {
+            session()->flash('danger', 'Usuário não cadastrado como solicitante. Favor contatar financeiro.');
+            return redirect()->route('home');
 
-        return view('pedidos.show', compact('pedido', 'licitacao', 'solicitante'));
+        }
     }
 
     /**
@@ -101,7 +130,15 @@ public function store(Request $request)
     public function edit(Pedido $pedido)
     {
         $servicos = Servico::all();
-        return view('pedidos.edit', compact('pedido', 'servicos'));
+        if(Solicitante::where('user_id', auth()->id())->exists())
+            return view('pedidos.edit', compact('pedido', 'servicos'));
+
+        else
+        {
+            session()->flash('danger', 'Usuário não cadastrado como solicitante. Favor contatar financeiro.');
+            return redirect()->route('home');
+
+        }
     }
 
     /**
@@ -130,8 +167,14 @@ public function update(Request $request, Pedido $pedido)
     }
 
     $pedido->servicos()->sync($syncData); 
+    if(Solicitante::where('user_id', auth()->id())->exists())
+        return redirect()->route('pedidos.index')->with('success', 'Pedido atualizado com sucesso!');
+    else
+    {
+        session()->flash('danger', 'Usuário não cadastrado como solicitante. Favor contatar financeiro.');
+        return redirect()->route('home');
 
-    return redirect()->route('pedidos.index')->with('success', 'Pedido atualizado com sucesso!');
+    }
 }
 
 
@@ -144,6 +187,15 @@ public function update(Request $request, Pedido $pedido)
 
         $pedido->delete();
         
-        session()->flash('danger', 'Pedido da Revista: ' . $pedido->revista->name . ' para a Licitação: ' . $pedido->licitacao->descricao . ' removido!');
-        return redirect()->route('pedidos.index');}
+        if(Solicitante::where('user_id', auth()->id())->exists())        
+        {
+            session()->flash('danger', 'Pedido da Revista: ' . $pedido->revista->name . ' para a Licitação: ' . $pedido->licitacao->descricao . ' removido!');
+            return redirect()->route('pedidos.index');
+        }
+        else
+        {
+            session()->flash('danger', 'Usuário não cadastrado como solicitante. Favor contatar financeiro.');
+            return redirect()->route('home');
+        }
+    }
 }
