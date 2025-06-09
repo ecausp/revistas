@@ -15,50 +15,44 @@
         @include('pedidos.partials.servicos')
     </div>
 
-    <!-- Botão que abre o modal -->
-    <div class="mb-4 ml-4">
-        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#adicionarArquivoModal"
-            style="width: auto;">
-            <i class="fas fa-paperclip"></i> Arquivo(s)
-        </button>
-    </div>
+
 
 
     @if ($pedido->arquivos->count() > 0)
     <div class="card mt-4">
-        <div class="card-header h5">Arquivos Anexados</div>
+        <div class="card-header h5">Arquivos Anexados @include('pedidos.partials.botao')</div>
         <table class="table table-bordered mb-0">
-            <thead>
-                <tr>
-                    <th>Arquivo</th>
-                    <th>Descrição</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($pedido->arquivos as $arquivo)
-                <tr>
-                    <td>
-                        {{ $arquivo->nome }}
-                    </td>
-                    <td>{{ $arquivo->descricao }}</td>
-                    <td class="d-flex gap-2">
-                        <a href="{{ asset('storage/' . $arquivo->path) }}" target="_blank" class="btn btn-primary d-flex align-items-center ml-1 mr-1 justify-content-center">
-                            <i class="fas fa-eye"></i>
-                        </a>
-    
-                        <form action="{{ route('arquivos.destroy', $arquivo) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir este arquivo?')">
-                            @csrf
-                            @method('DELETE')
-                            <button class="btn btn-danger d-flex align-items-center justify-content-center">
-                                <i class="fa fa-times"></i>
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+    <thead>
+        <tr>
+            <th style="width: 33%;">Arquivo</th>
+            <th style="width: 33%;">Descrição</th>
+            <th style="width: 33%;">Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach ($pedido->arquivos as $arquivo)
+        <tr>
+            <td>{{ $arquivo->nome }}</td>
+            <td>{{ $arquivo->descricao }}</td>
+            <td class="d-flex gap-2">
+                <a href="{{ asset('storage/' . $arquivo->path) }}" target="_blank"
+                    class="btn btn-primary d-flex align-items-center mr-2 ml-2 justify-content-center">
+                    <i class="fas fa-eye"></i>
+                </a>
+                <form action="{{ route('arquivos.destroy', $arquivo) }}" method="POST"
+                    onsubmit="return confirm('Tem certeza que deseja excluir este arquivo?')">
+                    @csrf
+                    @method('DELETE')
+                    <button class="btn btn-danger d-flex align-items-center justify-content-center">
+                        <i class="fa fa-times"></i>
+                    </button>
+                </form>
+            </td>
+        </tr>
+        @endforeach
+    </tbody>
+</table>
+
     </div>
     @endif
 
