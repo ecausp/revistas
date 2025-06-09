@@ -10,9 +10,10 @@ class Arquivo extends Model
     use HasFactory;
 
     protected $fillable = [
-        'pedido_id',       // ID do pedido relacionado
-        'nome',    // Nome do arquivo salvo no storage
-        'descricao',       // Descrição inserida pelo usuário
+        'pedido_id',
+        'nome',
+        'descricao',
+        'path'
     ];
     public function pedido()
     {

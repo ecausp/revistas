@@ -40,6 +40,7 @@ Route::fallback(function(){
 
 Route::resource('licitacoes', LicitacaoController::class)->parameters(['licitacoes' => 'licitacao']);
 Route::resource('empresas', EmpresaController::class);
+
 Route::resource('servicos', ServicoController::class);
 Route::resource('revistas', RevistaController::class);
 Route::resource('limites', LimiteController::class);
@@ -81,3 +82,6 @@ Route::get('/licitacoes/{licitacao}/valor-total', function (App\Models\Licitacao
 
 // Rota para pegar os users do banco de dados de acordo com o nome buscado
 Route::get('/buscar-usuario', [SolicitanteController::class, 'buscarUsuario']);
+
+Route::get('/arquivos/{id}/download', [ArquivoController::class, 'download'])->name('arquivos.download');
+Route::get('/arquivos/{id}/ver', [ArquivoController::class, 'view'])->name('arquivos.visualizar');
