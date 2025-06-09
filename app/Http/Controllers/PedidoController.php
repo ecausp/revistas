@@ -46,8 +46,13 @@ class PedidoController extends Controller
         $servicos = Servico::all();
         \UspTheme::activeUrl('pedidos/create');
         
-        if(Solicitante::where('user_id', auth()->id())->exists()|| auth()->user()->hasRole('admin'))
+        if(Solicitante::where('user_id', auth()->id())->exists())
             return view('pedidos.create', compact('solicitante','servicos', 'licitacao'));
+        else if(auth()->user()->hasRole('admin'))
+        {
+            session()->flash('danger', 'Esse admin não está cadastrado como solicitante e não pode criar pedidos.');
+            return redirect()->route('pedidos.index');
+        }
         else
         {
             session()->flash('danger', 'Usuário não cadastrado como solicitante. Favor contatar financeiro.');

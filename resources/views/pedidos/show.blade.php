@@ -6,7 +6,7 @@
     <div class="card-header h5">
         Pedido {{ $pedido->id }}
     </div>
-    @can("revista")
+    @can("acesso-revista")
     <div class="card-body">
         @include('pedidos.partials.cabecalho')
 
