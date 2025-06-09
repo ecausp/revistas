@@ -80,9 +80,7 @@ function atualizarTabelaServicosSelecionados() {
                         <td>${valor.toFixed(2).replace('.', ',')}</td>
                         <td class="valor-total" data-id="${id}">0,00</td>
                         <td class="text-center">
-                            <button class="btn btn-sm btn-danger remover-servico" data-id="${id}">
-                                &times;
-                            </button>
+                            <button class="btn btn-sm btn-danger remover-servico" data-id="1"><i class="fa fa-times" aria-hidden="true"></i></button>
                         </td>
                     </tr>`;
         });
