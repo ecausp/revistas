@@ -32,18 +32,30 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         // para mostrar a badge de quem tem a role 'financeiro'
-        Gate::define('financeiro', function ($user) {
+        Gate::define('badge-financeiro', function ($user) {
             return $user->hasAnyRole(['financeiro']);
         });
 
         // para mostrar a badge de quem tem a permission 'revistas.empresa', mas que não é 'financeiro' nem 'admin'
-        Gate::define('empresa', function ($user) {
+        Gate::define('badge-empresa', function ($user) {
             return $user->hasAnyPermission(['revistas.empresa']) && $user->roles->isEmpty();;
         });
 
         // para mostrar a badge de quem tem a permission 'revistas.revista', mas que não é 'financeiro' nem 'admin'
-        Gate::define('revista', function ($user) {
+        Gate::define('badge-revista', function ($user) {
             return $user->hasAnyPermission(['revistas.revista']) && $user->roles->isEmpty();;
         });
+
+        // para garantir acesso aos usuarios tem acesso as rotas de empresa (revistas.empresa e admin)
+        Gate::define('acesso-empresa', function ($user) {
+            return $user->hasAnyPermission(['revistas.empresa']);
+        });
+
+        // para garantir acesso aos usuarios tem acesso as rotas de revista (revistas.revista e admin)
+        Gate::define('acesso-revista', function ($user) {
+            return $user->hasAnyPermission(['revistas.revista']);
+        });
+
+
     }
 }

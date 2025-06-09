@@ -3,17 +3,17 @@ $submenuPedidos = [
         [
         'type' => 'header',
         'text' => '<i class="fa fa-shopping-cart" aria-hidden="true"></i> Pedidos',
-        'can' => 'revista'
+        'can' => 'acesso-revista'
     ],
     [
         'text' => '<i class="fas fa-plus-circle" aria-hidden="true"></i> Cadastrar',
         'url' => 'pedidos/create',
-        'can' => 'revista'
+        'can' => 'acesso-revista'
     ],
     [
         'text' => '<i class="fas fa-list-ul" aria-hidden="true"></i> Listar',
         'url' => 'pedidos',
-        'can' => 'revista'
+        'can' => 'acesso-revista'
     ]
 ];
 
@@ -120,7 +120,7 @@ $menu = [
     [
         'text' => '<i class="fas fa-tools"></i> Pedidos',
         'submenu' => $submenuPedidos,
-        'can' => 'revista',
+        'can' => 'acesso-revista',
     ],
 ];
 
@@ -137,15 +137,15 @@ $right_menu = [
     ],
     [
         'text' => '<span class="badge badge-info">Financeiro</span>',
-        'can' => 'financeiro',
+        'can' => 'badge-financeiro',
     ],
     [
         'text' => '<span class="badge badge-success">Empresa</span>',
-        'can' => 'empresa',
+        'can' => 'badge-empresa',
     ],
     [
         'text' => '<span class="badge badge-warning">Revista</span>',
-        'can' => 'revista',
+        'can' => 'badge-revista',
     ],
 
     // [

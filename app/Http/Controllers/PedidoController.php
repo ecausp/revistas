@@ -6,6 +6,7 @@ use App\Models\Pedido;
 use App\Models\Servico;
 use App\Models\Solicitante;
 use App\Models\Licitacao;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 
@@ -16,12 +17,12 @@ class PedidoController extends Controller
      */
     public function index()
     {
-        $this->authorize("revista");
+        $this->authorize("acesso-revista");
         \UspTheme::activeUrl('pedidos');
 
         $pedidos = Pedido::all();
         
-        if(Solicitante::where('user_id', auth()->id())->exists())
+        if(Solicitante::where('user_id', auth()->id())->exists() || auth()->user()->hasRole('admin'))
             return view('pedidos.index', compact('pedidos'));
         else
         {
@@ -36,7 +37,7 @@ class PedidoController extends Controller
      */
     public function create()
     {
-        $this->authorize("revista");
+        $this->authorize("acesso-revista");
         
         $anoAtual = date('Y');
         $licitacao = Licitacao::where('ano', $anoAtual)->first();
@@ -60,7 +61,7 @@ class PedidoController extends Controller
      */
 public function store(Request $request)
 {
-    $this->authorize("revista");
+    $this->authorize("acesso-revista");
 
     // Validação básica
     $validated = $request->validate([
@@ -110,7 +111,7 @@ public function store(Request $request)
      */
     public function show(Pedido $pedido)
     {
-        $this->authorize("revista");
+        $this->authorize("acesso-revista");
         $licitacao = $pedido->licitacao;
         $solicitante = $pedido->solicitante;
         
@@ -183,7 +184,7 @@ public function update(Request $request, Pedido $pedido)
      */
     public function destroy(Pedido $pedido)
     {   
-        $this->authorize("revista");
+        $this->authorize("acesso-revista");
 
         $pedido->delete();
         
