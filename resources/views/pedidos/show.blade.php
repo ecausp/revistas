@@ -38,7 +38,11 @@
             <tbody>
                 @foreach ($pedido->arquivos as $arquivo)
                 <tr>
-                    <td>{{ $arquivo->nome }}</td>
+                    <td>
+                        <a href="{{ asset('storage/' . $arquivo->path) }}" target="_blank">
+                            {{ $arquivo->nome }}
+                        </a>
+                    </td>
                     <td>{{ $arquivo->descricao }}</td>
                     <td>
                         <form action="{{ route('arquivos.destroy', $arquivo) }}" method="POST"

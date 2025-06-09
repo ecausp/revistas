@@ -20,10 +20,12 @@ class ArquivoController extends Controller
         $fileName = time() . '_' . $file->getClientOriginalName();
         $path = $file->storeAs('arquivos', $fileName, 'public');
 
+
         Arquivo::create([
             'pedido_id' => $request->pedido_id,
             'nome' => $fileName,
             'descricao' => $request->descricao,
+            'path' => $path,
         ]);
 
         return redirect()->back()->with('success', 'Arquivo adicionado com sucesso.');
@@ -35,5 +37,6 @@ class ArquivoController extends Controller
         $arquivo->delete();
         return redirect()->back()->with('success', 'Arquivo excluído com sucesso.');
     }
+    
 
 }
