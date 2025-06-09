@@ -6,6 +6,7 @@ use App\Models\Pedido;
 use App\Models\Servico;
 use App\Models\Solicitante;
 use App\Models\Licitacao;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 
@@ -16,12 +17,12 @@ class PedidoController extends Controller
      */
     public function index()
     {
-        $this->authorize("revista");
+        $this->authorize("acesso-revista");
         \UspTheme::activeUrl('pedidos');
 
         $pedidos = Pedido::all();
         
-        if(Solicitante::where('user_id', auth()->id())->exists())
+        if(Solicitante::where('user_id', auth()->id())->exists() || auth()->user()->hasRole('admin'))
             return view('pedidos.index', compact('pedidos'));
         else
         {
@@ -36,7 +37,7 @@ class PedidoController extends Controller
      */
     public function create()
     {
-        $this->authorize("revista");
+        $this->authorize("acesso-revista");
         
         $anoAtual = date('Y');
         $licitacao = Licitacao::where('ano', $anoAtual)->first();
@@ -47,6 +48,11 @@ class PedidoController extends Controller
         
         if(Solicitante::where('user_id', auth()->id())->exists())
             return view('pedidos.create', compact('solicitante','servicos', 'licitacao'));
+        else if(auth()->user()->hasRole('admin'))
+        {
+            session()->flash('danger', 'Esse admin não está cadastrado como solicitante e não pode criar pedidos.');
+            return redirect()->route('pedidos.index');
+        }
         else
         {
             session()->flash('danger', 'Usuário não cadastrado como solicitante. Favor contatar financeiro.');
@@ -60,7 +66,7 @@ class PedidoController extends Controller
      */
 public function store(Request $request)
 {
-    $this->authorize("revista");
+    $this->authorize("acesso-revista");
 
     // Validação básica
     $validated = $request->validate([
@@ -91,7 +97,7 @@ public function store(Request $request)
 
     $pedido->servicos()->sync($dadosParaSync);
     
-    if(Solicitante::where('user_id', auth()->id())->exists())
+    if(Solicitante::where('user_id', auth()->id())->exists()|| auth()->user()->hasRole('admin'))
     {
         session()->flash('success', 'Pedido cadastrado com sucesso!');
         return redirect()->route('pedidos.index');
@@ -110,11 +116,11 @@ public function store(Request $request)
      */
     public function show(Pedido $pedido)
     {
-        $this->authorize("revista");
+        $this->authorize("acesso-revista");
         $licitacao = $pedido->licitacao;
         $solicitante = $pedido->solicitante;
         
-        if(Solicitante::where('user_id', auth()->id())->exists())
+        if(Solicitante::where('user_id', auth()->id())->exists()|| auth()->user()->hasRole('admin'))
             return view('pedidos.show', compact('pedido', 'licitacao', 'solicitante'));
         else
         {
@@ -130,7 +136,7 @@ public function store(Request $request)
     public function edit(Pedido $pedido)
     {
         $servicos = Servico::all();
-        if(Solicitante::where('user_id', auth()->id())->exists())
+        if(Solicitante::where('user_id', auth()->id())->exists()|| auth()->user()->hasRole('admin'))
             return view('pedidos.edit', compact('pedido', 'servicos'));
 
         else
@@ -167,7 +173,7 @@ public function update(Request $request, Pedido $pedido)
     }
 
     $pedido->servicos()->sync($syncData); 
-    if(Solicitante::where('user_id', auth()->id())->exists())
+    if(Solicitante::where('user_id', auth()->id())->exists()|| auth()->user()->hasRole('admin'))
         return redirect()->route('pedidos.index')->with('success', 'Pedido atualizado com sucesso!');
     else
     {
@@ -183,11 +189,11 @@ public function update(Request $request, Pedido $pedido)
      */
     public function destroy(Pedido $pedido)
     {   
-        $this->authorize("revista");
+        $this->authorize("acesso-revista");
 
         $pedido->delete();
         
-        if(Solicitante::where('user_id', auth()->id())->exists())        
+        if(Solicitante::where('user_id', auth()->id())->exists()|| auth()->user()->hasRole('admin'))        
         {
             session()->flash('danger', 'Pedido da Revista: ' . $pedido->revista->name . ' para a Licitação: ' . $pedido->licitacao->descricao . ' removido!');
             return redirect()->route('pedidos.index');
