@@ -35,8 +35,8 @@
         <tfoot>
             <tr>
                 <td colspan="3"></td>
-                <td><strong>Valor total do pedido: </strong></td>
-                <td>{{ number_format($valorTotalPedido, 2, ',', '.') }}</td>
+                <td class="text-right"><strong>Valor total do pedido: </strong></td>
+                <td class="text-right"><strong>{{ number_format($valorTotalPedido, 2, ',', '.') }}</strong></td>
             </tr>
         </tfoot>
     </table>
