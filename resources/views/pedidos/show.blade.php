@@ -39,18 +39,20 @@
                 @foreach ($pedido->arquivos as $arquivo)
                 <tr>
                     <td>
-                        <a href="{{ asset('storage/' . $arquivo->path) }}" target="_blank">
-                            {{ $arquivo->nome }}
-                        </a>
+                        {{ $arquivo->nome }}
                     </td>
                     <td>{{ $arquivo->descricao }}</td>
-                    <td>
-                        <form action="{{ route('arquivos.destroy', $arquivo) }}" method="POST"
-                            onsubmit="return confirm('Tem certeza que deseja excluir este arquivo?')">
+                    <td class="d-flex gap-2">
+                        <a href="{{ asset('storage/' . $arquivo->path) }}" target="_blank" class="btn btn-primary d-flex align-items-center ml-1 mr-1 justify-content-center">
+                            <i class="fas fa-eye"></i>
+                        </a>
+    
+                        <form action="{{ route('arquivos.destroy', $arquivo) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir este arquivo?')">
                             @csrf
                             @method('DELETE')
-                            <button class="btn btn-danger btn-sm"><i class="fa fa-times"
-                                    aria-hidden="true"></i></button>
+                            <button class="btn btn-danger d-flex align-items-center justify-content-center">
+                                <i class="fa fa-times"></i>
+                            </button>
                         </form>
                     </td>
                 </tr>
