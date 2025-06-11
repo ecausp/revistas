@@ -77,15 +77,13 @@
 
 @section('javascripts_bottom')
 @parent
-
-<!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<!-- Bootstrap Bundle (JS + Popper) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-<!-- Select2 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
@@ -102,7 +100,7 @@ function atualizarTabelaServicosSelecionados() {
     let somaTotal = 0;
 
     if (selecionados && selecionados.length > 0) {
-        html += '<table class="table table-bordered">';
+        html += '<table class="table datatable-simples dt-fixed-header dt-paging-50 responsive no-footer table-striped responsive mb-0">';
         html += '<thead><tr><th>Empresa</th><th>Descrição</th><th>Unidade</th><th>Quantidade</th><th>Valor Unitário</th><th>Valor Total</th><th></th></tr></thead><tbody>';
 
         selecionados.forEach(id => {
@@ -121,12 +119,12 @@ function atualizarTabelaServicosSelecionados() {
                         <td>${descricao}</td>
                         <td>${unidade}</td>
                         <td>
-                            <input type="number" name="quantidades[${id}]" class="form-control quantidade-input" min="0" value="${quantidade}" step="1" data-id="${id}" />
+                            <input type="text" name="quantidades[${id}]" class="form-control quantidade-input milhares-mask" min="0" value="${quantidade}" step="1" data-id="${id}" />
                         </td>
-                        <td>R$ ${valor.toFixed(2).replace('.', ',')}</td>
-                        <td class="valor-total" data-id="${id}">R$ ${valorTotal.toFixed(2).replace('.', ',')}</td>
+                        <td class="text-right">R$ ${valor.toFixed(2).replace('.', ',')}</td>
+                        <td class="valor-total text-right" data-id="${id}">${valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
                         <td class="text-center">
-                            <button class="btn btn-sm btn-danger remover-servico" data-id="1"><i class="fa fa-times" aria-hidden="true"></i></button>
+                            <button class="btn btn-sm btn-danger remover-servico" data-id="{{ $servico->id }}"><i class="fa fa-times" aria-hidden="true"></i></button>
                         </td>
                     </tr>`;
 
@@ -135,8 +133,8 @@ function atualizarTabelaServicosSelecionados() {
 
         html += `<tr style="background-color: #f8f9fa;">
                     <td colspan="4"></td>
-                    <td><strong>Total do Pedido</strong></td>
-                    <td id="soma-total" style="font-weight: bold;">R$ ${somaTotal.toFixed(2).replace('.', ',')}</td>
+                    <td class="text-right"><strong>Total do Pedido</strong></td>
+                    <td id="soma-total" class="text-right" style="font-weight: bold;">${somaTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
                     <td></td>
                  </tr>`;
 
@@ -146,6 +144,10 @@ function atualizarTabelaServicosSelecionados() {
     }
 
     $('#tabela-servicos-selecionados').html(html);
+
+    $('.milhares-mask').mask('000.000.000.000.000', {
+        reverse: true
+    });
 }
 
 // Quando altera a quantidade manualmente
@@ -154,17 +156,32 @@ $(document).on('input', '.quantidade-input', function() {
 
     $('.quantidade-input').each(function() {
         const id = $(this).data('id');
-        const quantidade = parseFloat($(this).val()) || 0;
+
+        let quantidadeBr = $(this).val() || '0';
+        quantidadeBr = quantidadeBr.replace(/\./g, '').replace(',', '.');
+        const quantidade = parseFloat(quantidadeBr) || 0;
+
         const option = $('#servico_id').find(`option[value="${id}"]`);
         const valorBr = option.attr('data-valor') || '0,00';
         const valorUnitario = parseFloat(valorBr.replace('.', '').replace(',', '.')) || 0;
 
         const total = quantidade * valorUnitario;
-        $(`.valor-total[data-id="${id}"]`).text(`R$ ${total.toFixed(2).replace('.', ',')}`);
+
+
+        const totalFormatado = total.toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+        });
+
+    $(`.valor-total[data-id="${id}"]`).text(totalFormatado);
+
         somaTotal += total;
     });
 
-    $('#soma-total').text(`R$ ${somaTotal.toFixed(2).replace('.', ',')}`);
+    $('#soma-total').text(somaTotal.toLocaleString('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+    }));
 });
 
 // Ao trocar o select2
