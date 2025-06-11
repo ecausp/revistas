@@ -1,10 +1,12 @@
 @if ($pedido->servicos->count() > 0)
 <div class="card mt-2 mb-3">
+    <div class="card-header">
+    <div class="d-flex align-items-center">
+        <h5 class="mb-0 me-2 mr-5">Serviços</h5>
+    </div>
+</div>
     <table class="table table-striped">
         <thead>
-            <tr>
-                <th colspan="5">Serviços</th>
-            </tr>
             <tr>
                 <th>Descrição</th>
                 <th>Unidade de Medida</th>
@@ -25,9 +27,9 @@
             <tr>
                 <td>{{ $servico->descricao }}</td>
                 <td>{{ $servico->unidade_medida }}</td>
-                <td>{{ number_format($servico->valor_unitario, 2, ',', '.') }}</td>
-                <td>{{ number_format($servico->pivot->quantidade, 0, ',', '.') }}</td>
-                <td>{{ number_format($valorTotalServico, 2, ',', '.') }}</td>
+                <td class="text-right">{{ number_format($servico->valor_unitario, 2, ',', '.') }}</td>
+                <td class="text-right">{{ number_format($servico->pivot->quantidade, 0, ',', '.') }}</td>
+                <td class="text-right">{{ number_format($valorTotalServico, 2, ',', '.') }}</td>
             </tr>
             @endforeach
         </tbody>
