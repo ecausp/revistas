@@ -119,10 +119,10 @@ function atualizarTabelaServicosSelecionados() {
                         <td>${descricao}</td>
                         <td>${unidade}</td>
                         <td>
-                            <input type="text" name="quantidades[${id}]" class="form-control quantidade-input milhares-mask" min="0" value="${quantidade}" step="1" data-id="${id}" />
+                            <input type="text" name="quantidades[${id}]" class="form-control quantidade-input milhares-mask text-right" min="0" value="${quantidade}" step="1" data-id="${id}" />
                         </td>
-                        <td>R$ ${valor.toFixed(2).replace('.', ',')}</td>
-                        <td class="valor-total" data-id="${id}">${valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                        <td class="text-right">R$ ${valor.toFixed(2).replace('.', ',')}</td>
+                        <td class="valor-total text-right" data-id="${id}">${valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
                         <td class="text-center">
                             <button class="btn btn-sm btn-danger remover-servico" data-id="{{ $servico->id }}"><i class="fa fa-times" aria-hidden="true"></i></button>
                         </td>
@@ -133,8 +133,8 @@ function atualizarTabelaServicosSelecionados() {
 
         html += `<tr style="background-color: #f8f9fa;">
                     <td colspan="4"></td>
-                    <td><strong>Total do Pedido</strong></td>
-                    <td id="soma-total" style="font-weight: bold;">${somaTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                    <td class="text-right"><strong>Total do Pedido</strong></td>
+                    <td id="soma-total" class="text-right" style="font-weight: bold;">${somaTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
                     <td></td>
                  </tr>`;
 
