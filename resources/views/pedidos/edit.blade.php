@@ -77,15 +77,13 @@
 
 @section('javascripts_bottom')
 @parent
-
-<!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<!-- Bootstrap Bundle (JS + Popper) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-<!-- Select2 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
@@ -121,7 +119,7 @@ function atualizarTabelaServicosSelecionados() {
                         <td>${descricao}</td>
                         <td>${unidade}</td>
                         <td>
-                            <input type="number" name="quantidades[${id}]" class="form-control quantidade-input" min="0" value="${quantidade}" step="1" data-id="${id}" />
+                            <input type="text" name="quantidades[${id}]" class="form-control quantidade-input milhares-mask" min="0" value="${quantidade}" step="1" data-id="${id}" />
                         </td>
                         <td>R$ ${valor.toFixed(2).replace('.', ',')}</td>
                         <td class="valor-total" data-id="${id}">R$ ${valorTotal.toFixed(2).replace('.', ',')}</td>
@@ -146,6 +144,10 @@ function atualizarTabelaServicosSelecionados() {
     }
 
     $('#tabela-servicos-selecionados').html(html);
+
+    $('.milhares-mask').mask('000.000.000.000.000', {
+        reverse: true
+    });
 }
 
 // Quando altera a quantidade manualmente
