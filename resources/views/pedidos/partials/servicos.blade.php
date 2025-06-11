@@ -28,15 +28,14 @@
                 <td>{{ number_format($servico->valor_unitario, 2, ',', '.') }}</td>
                 <td>{{ number_format($servico->pivot->quantidade, 0, ',', '.') }}</td>
                 <td>{{ number_format($valorTotalServico, 2, ',', '.') }}</td>
-
             </tr>
             @endforeach
         </tbody>
         <tfoot>
             <tr>
                 <td colspan="3"></td>
-                <td><strong>Valor total do pedido: </strong></td>
-                <td>{{ number_format($valorTotalPedido, 2, ',', '.') }}</td>
+                <td class="text-right"><strong>Valor total do pedido: </strong></td>
+                <td class="text-right"><strong>{{ number_format($valorTotalPedido, 2, ',', '.') }}</strong></td>
             </tr>
         </tfoot>
     </table>
