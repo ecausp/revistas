@@ -28,7 +28,7 @@
 
                             <option 
                                 value="{{ $servico->id }}" 
-                                data-empresa="{{ $servico->empresa->nome ?? '' }}"
+                                data-empresa="{{ $servico->empresas->first()->razao_social ?? '' }}"
                                 data-descricao="{{ $servico->descricao }}" 
                                 data-unidade="{{ $servico->unidade_medida }}"
                                 data-valor="{{ number_format($servico->valor_unitario, 2, ',', '.') }}"

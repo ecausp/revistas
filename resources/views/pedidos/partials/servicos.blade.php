@@ -8,6 +8,7 @@
     <table class="table datatable-simples dt-fixed-header dt-paging-50 responsive no-footer table-striped responsive mb-0">
         <thead>
             <tr>
+                <th>Empresa</th>
                 <th>Descrição</th>
                 <th>Unidade de Medida</th>
                 <th>Valor Unitário (R$)</th>
@@ -25,6 +26,7 @@
             $valorTotalPedido += $valorTotalServico;
             @endphp
             <tr>
+                <td>{{ $servico->empresas->first()->razao_social }}</td>
                 <td>{{ $servico->descricao }}</td>
                 <td>{{ $servico->unidade_medida }}</td>
                 <td class="text-right">{{ number_format($servico->valor_unitario, 2, ',', '.') }}</td>
@@ -35,7 +37,7 @@
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="3"></td>
+                <td colspan="4"></td>
                 <td class="text-right"><strong>Valor total do pedido: </strong></td>
                 <td class="text-right"><strong>{{ number_format($valorTotalPedido, 2, ',', '.') }}</strong></td>
             </tr>
