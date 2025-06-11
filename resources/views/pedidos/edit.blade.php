@@ -114,6 +114,8 @@ function atualizarTabelaServicosSelecionados() {
             const quantidade = parseFloat(option.data('quantidade')) || 0;
             const valorTotal = quantidade * valor;
 
+
+
             html += `<tr data-id="${id}">
                         <td>${empresa}</td>
                         <td>${descricao}</td>
@@ -160,6 +162,7 @@ $(document).on('input', '.quantidade-input', function() {
         let quantidadeBr = $(this).val() || '0';
         quantidadeBr = quantidadeBr.replace(/\./g, '').replace(',', '.');
         const quantidade = parseFloat(quantidadeBr) || 0;
+        console.log('ID:', id, 'quantidadeBr:', quantidadeBr, 'quantidade:', quantidade);
 
         const option = $('#servico_id').find(`option[value="${id}"]`);
         const valorBr = option.attr('data-valor') || '0,00';
@@ -203,5 +206,14 @@ $(document).on('click', '.remover-servico', function() {
 
     $('#servico_id').val(selecionados).trigger('change');
 });
+
+$('form').on('submit', function() {
+    $('.quantidade-input').each(function() {
+        let val = $(this).val();
+        val = val.replace(/\./g, '');  // remove pontos
+        $(this).val(val);
+    });
+});
+
 </script>
 @endsection

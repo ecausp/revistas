@@ -157,7 +157,6 @@ public function update(Request $request, Pedido $pedido)
         'servicos' => 'array',
         'quantidades' => 'array',
     ]);
-
     // Atualiza dados simples
     $pedido->observacoes = $request->observacoes;
     $pedido->revista_id = $request->revista_id;
