@@ -5,7 +5,7 @@
         <h5 class="mb-0 me-2 mr-5">Serviços</h5>
     </div>
 </div>
-    <table class="table table-striped">
+    <table class="table datatable-simples dt-fixed-header dt-paging-50 responsive no-footer table-striped responsive mb-0">
         <thead>
             <tr>
                 <th>Descrição</th>
