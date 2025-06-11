@@ -122,9 +122,9 @@ function atualizarTabelaServicosSelecionados() {
                             <input type="text" name="quantidades[${id}]" class="form-control quantidade-input milhares-mask" min="0" value="${quantidade}" step="1" data-id="${id}" />
                         </td>
                         <td>R$ ${valor.toFixed(2).replace('.', ',')}</td>
-                        <td class="valor-total" data-id="${id}">R$ ${valorTotal.toFixed(2).replace('.', ',')}</td>
+                        <td class="valor-total" data-id="${id}">${valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
                         <td class="text-center">
-                            <button class="btn btn-sm btn-danger remover-servico" data-id="1"><i class="fa fa-times" aria-hidden="true"></i></button>
+                            <button class="btn btn-sm btn-danger remover-servico" data-id="{{ $servico->id }}"><i class="fa fa-times" aria-hidden="true"></i></button>
                         </td>
                     </tr>`;
 
@@ -134,7 +134,7 @@ function atualizarTabelaServicosSelecionados() {
         html += `<tr style="background-color: #f8f9fa;">
                     <td colspan="4"></td>
                     <td><strong>Total do Pedido</strong></td>
-                    <td id="soma-total" style="font-weight: bold;">R$ ${somaTotal.toFixed(2).replace('.', ',')}</td>
+                    <td id="soma-total" style="font-weight: bold;">${somaTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
                     <td></td>
                  </tr>`;
 
@@ -156,17 +156,32 @@ $(document).on('input', '.quantidade-input', function() {
 
     $('.quantidade-input').each(function() {
         const id = $(this).data('id');
-        const quantidade = parseFloat($(this).val()) || 0;
+
+        let quantidadeBr = $(this).val() || '0';
+        quantidadeBr = quantidadeBr.replace(/\./g, '').replace(',', '.');
+        const quantidade = parseFloat(quantidadeBr) || 0;
+
         const option = $('#servico_id').find(`option[value="${id}"]`);
         const valorBr = option.attr('data-valor') || '0,00';
         const valorUnitario = parseFloat(valorBr.replace('.', '').replace(',', '.')) || 0;
 
         const total = quantidade * valorUnitario;
-        $(`.valor-total[data-id="${id}"]`).text(`R$ ${total.toFixed(2).replace('.', ',')}`);
+
+
+        const totalFormatado = total.toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+        });
+
+    $(`.valor-total[data-id="${id}"]`).text(totalFormatado);
+
         somaTotal += total;
     });
 
-    $('#soma-total').text(`R$ ${somaTotal.toFixed(2).replace('.', ',')}`);
+    $('#soma-total').text(somaTotal.toLocaleString('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+    }));
 });
 
 // Ao trocar o select2
