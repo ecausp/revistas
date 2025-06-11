@@ -49,6 +49,19 @@ $(document).ready(function() {
     $('.select2').select2();
 });
 
+$('form').on('submit', function() {
+    $('.quantidade-input').each(function() {
+        // Pega o valor com máscara
+        const valorComMascara = $(this).val();
+
+        // Remove os pontos da máscara
+        const valorLimpo = valorComMascara.replace(/\./g, '').replace(',', '.');
+
+        // Atualiza o valor do input com o valor limpo para envio
+        $(this).val(valorLimpo);
+    });
+});
+
 function atualizarTabelaServicosSelecionados() {
     const selecionados = $('#servico_id').val(); // array de IDs selecionados
     let html = '';
@@ -74,7 +87,7 @@ function atualizarTabelaServicosSelecionados() {
                         <td>${descricao}</td>
                         <td>${unidade}</td>
                         <td>
-                            <input type="text" name="quantidades[${id}]" class="form-control quantidade-input milhares-mask" min="0" value="0" data-id="${id}" />
+                            <input type="text" name="quantidades[${id}]" class="form-control quantidade-input milhares-mask" data-id="${id}" />
                         </td>
 
                         <td class="text-right">${valor.toFixed(2).replace('.', ',')}</td>
