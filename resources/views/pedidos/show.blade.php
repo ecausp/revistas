@@ -11,11 +11,13 @@
         @include('pedidos.partials.cabecalho')
 
         <p><strong>Observações:</strong> {{ $pedido->observacoes }}</p>
-
-        @include('pedidos.partials.servicos')
-
+        <div id="tabela-servicos">
+          @include('pedidos.partials.servicos')
+        </div>
+        
         @include('pedidos.partials.arquivos')
-    </div>
+    
+      </div>
 
 
 
@@ -82,7 +84,7 @@
 <!-- Modal de Serviços -->
 <div class="modal fade" id="adicionarServicoModal" tabindex="-1" aria-labelledby="adicionarServicoModal" aria-hidden="true">
   <div class="modal-dialog">
-    <form method="POST" action="{{ route('home', $pedido) }}">
+    <form id="form-servicos" method="POST" action="{{ route('pedidos.updateServicos', $pedido) }}">
       @csrf
       @method('PUT')
       <div class="modal-content">
@@ -102,6 +104,10 @@
               @endforeach
             </select>
           </div>
+           <!-- Aqui vai aparecer a tabela com as quantidades -->
+  <div id="tabela-quantidades" class="mt-4">
+    <!-- JS preenche isso -->
+  </div>
         </div>
         <div class="modal-footer">
           <button type="submit" class="btn btn-primary">Salvar</button>
@@ -118,12 +124,98 @@
 @section('javascripts_bottom')
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+
 <script>
-    $(document).ready(function() {
-        $('.select2').select2({
-            placeholder: "Selecione os serviços",
-            width: '100%'
+  $(document).ready(function () {
+    $('.milhares-mask').mask('#.##0', { reverse: true });
+
+    $('form').on('submit', function () {
+      $('.milhares-mask').each(function () {
+        let val = $(this).val().replace(/\./g, '');
+        $(this).val(val);
+      });
+    });
+  });
+</script>
+
+<script>
+let quantidadesIniciais = {!! json_encode(
+    $pedido->servicos->mapWithKeys(function ($servico) {
+        return [$servico->id => $servico->pivot->quantidade];
+    })
+) !!};
+
+$(document).ready(function() {
+    $('.select2').select2({
+        placeholder: "Selecione os serviços",
+        width: '100%'
+    });
+
+    $('#form-servicos').on('submit', function(e) {
+        e.preventDefault();
+
+        const form = $(this);
+        const url = form.attr('action');
+        const data = form.serialize();
+
+        $.ajax({
+            url: url,
+            type: 'PUT',
+            data: data,
+            success: function(response) {
+                $('#tabela-servicos').html(response.html);
+
+                // Atualiza quantidades iniciais com o que vem do backend (se quiser)
+                quantidadesIniciais = response.quantidades;
+
+                // Fecha o modal
+                const modalEl = document.getElementById('adicionarServicoModal');
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                if (modal) modal.hide();
+            },
+            error: function() {
+                alert('Erro ao atualizar os serviços. Verifique os dados e tente novamente.');
+            }
         });
     });
+
+    $('#adicionarServicoModal').on('shown.bs.modal', function () {
+        atualizarTabelaQuantidades();
+    });
+});
+
+function atualizarTabelaQuantidades() {
+    const selecionados = $('#servicos').select2('data');
+    let html = '';
+
+    if (selecionados.length > 0) {
+        html += '<table class="table table-bordered">';
+        html += '<thead><tr><th>Serviço</th><th>Quantidade</th></tr></thead><tbody>';
+
+        selecionados.forEach(item => {
+            const valor = quantidadesIniciais[item.id] ?? 1;
+
+            html += `
+                <tr>
+                    <td>${item.text}</td>
+                    <td>
+                        <input style="text-align: right;" type="text" class="milhares-mask" name="quantidades[${item.id}]" class="form-control" value="${valor}" required>
+                    </td>
+                </tr>
+            `;
+        });
+
+        html += '</tbody></table>';
+    }
+
+    $('#tabela-quantidades').html(html);
+    
+$('.milhares-mask').mask('#.##0', {
+  reverse: true
+});
+
+    
+}
 </script>
 @endsection
