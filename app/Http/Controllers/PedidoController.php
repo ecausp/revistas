@@ -119,9 +119,10 @@ public function store(Request $request)
         $this->authorize("acesso-revista");
         $licitacao = $pedido->licitacao;
         $solicitante = $pedido->solicitante;
-        
+        $servicos = Servico::all();
+
         if(Solicitante::where('user_id', auth()->id())->exists()|| auth()->user()->hasRole('admin'))
-            return view('pedidos.show', compact('pedido', 'licitacao', 'solicitante'));
+            return view('pedidos.show', compact('pedido', 'licitacao', 'solicitante', 'servicos'));
         else
         {
             session()->flash('danger', 'Usuário não cadastrado como solicitante. Favor contatar financeiro.');

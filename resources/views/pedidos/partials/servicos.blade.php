@@ -14,6 +14,7 @@
                 <th>Valor Unitário (R$)</th>
                 <th>Quantidade</th>
                 <th>Valor Total (R$)</th>
+                <th>Ações</th>
             </tr>
         </thead>
         <tbody>
@@ -32,6 +33,11 @@
                 <td class="text-right">{{ number_format($servico->valor_unitario, 2, ',', '.') }}</td>
                 <td class="text-right">{{ number_format($servico->pivot->quantidade, 0, ',', '.') }}</td>
                 <td class="text-right">{{ number_format($valorTotalServico, 2, ',', '.') }}</td>
+                <td>
+                    <button class="btn btn-danger d-flex justify-content-center">
+                        <i class="fa fa-times"></i>
+                    </button>
+                </td>
             </tr>
             @endforeach
         </tbody>
