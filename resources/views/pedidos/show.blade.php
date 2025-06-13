@@ -23,16 +23,21 @@
 <div class="container mt-5 col">
     <a href="{{ route('pedidos.edit', $pedido) }}" class="btn btn-primary"><i class="fas fa-edit"></i>
         Editar</a>
+    @php
+        $user = auth()->user();
+    @endphp
 
+    @if(($user->can('admin') || $user->can('acesso-revista')) && !$user->hasRole('financeiro'))
+    
+    <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#adicionarServicoModal">
+        <i class="fas fa-wrench"></i> Serviços(s)
+    </button>
 
     <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#adicionarArquivoModal">
         <i class="fas fa-paperclip"></i> Arquivo(s)
     </button>
 
-    <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#adicionarServicoModal">
-        <i class="fas fa-wrench"></i> Serviços(s)
-    </button>
-
+    @endif
 
     @include('pedidos.partials.delete')
 
