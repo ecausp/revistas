@@ -30,7 +30,7 @@
     </button>
 
     <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#adicionarServicoModal">
-        <i class="fas fa-wrench"></i> Servicos(s)
+        <i class="fas fa-wrench"></i> Serviços(s)
     </button>
 
 
