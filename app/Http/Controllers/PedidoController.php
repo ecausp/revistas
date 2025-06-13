@@ -206,37 +206,46 @@ public function update(Request $request, Pedido $pedido)
     }
 
 
-public function updateServicos(Request $request, Pedido $pedido)
-{
-    // Validação básica
-    $request->validate([
-        'servicos' => 'required|array',
-        'quantidades' => 'required|array',
-    ]);
+    public function updateServicos(Request $request, Pedido $pedido)
+    {
+        // Validação básica
+        $request->validate([
+            'servicos' => 'required|array',
+            'quantidades' => 'required|array',
+        ]);
 
-    $servicos = $request->input('servicos');
-    $quantidades = $request->input('quantidades');
+        $servicos = $request->input('servicos');
+        $quantidades = $request->input('quantidades');
 
-    // Atualiza os serviços com as quantidades no relacionamento many-to-many (pivot)
-    $syncData = [];
-    foreach ($servicos as $servicoId) {
-        $syncData[$servicoId] = ['quantidade' => $quantidades[$servicoId] ?? 1];
+        // Atualiza os serviços com as quantidades no relacionamento many-to-many (pivot)
+        $syncData = [];
+        foreach ($servicos as $servicoId) {
+            $syncData[$servicoId] = ['quantidade' => $quantidades[$servicoId] ?? 1];
+        }
+
+        $pedido->servicos()->sync($syncData);
+
+        // Recarrega relação para view atualizada
+        $pedido->load('servicos');
+
+        // Renderiza a partial da tabela com os serviços atualizados
+        $html = view('pedidos.partials.servicos', compact('pedido'))->render();
+
+        // Retorna JSON para o AJAX
+        return response()->json([
+            'html' => $html,
+            'quantidades' => $pedido->servicos->pluck('pivot.quantidade', 'id'),
+        ]);
     }
 
-    $pedido->servicos()->sync($syncData);
+    public function removerServicoDoPedido($pedidoId, $servicoId)
+    {
+        $pedido = Pedido::findOrFail($pedidoId);
+        $pedido->servicos()->detach($servicoId);
 
-    // Recarrega relação para view atualizada
-    $pedido->load('servicos');
+        return response()->json(['mensagem' => 'Serviço desvinculado com sucesso!']);
+    }
 
-    // Renderiza a partial da tabela com os serviços atualizados
-    $html = view('pedidos.partials.servicos', compact('pedido'))->render();
-
-    // Retorna JSON para o AJAX
-    return response()->json([
-        'html' => $html,
-        'quantidades' => $pedido->servicos->pluck('pivot.quantidade', 'id'),
-    ]);
-}
 
 
 }

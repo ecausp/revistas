@@ -26,7 +26,7 @@
             $valorTotalServico = $servico->pivot->quantidade * $servico->valor_unitario;
             $valorTotalPedido += $valorTotalServico;
             @endphp
-            <tr>
+            <tr id="servico-{{ $servico->id }}">
                 <td>{{ $servico->empresas->first()->razao_social }}</td>
                 <td>{{ $servico->descricao }}</td>
                 <td>{{ $servico->unidade_medida }}</td>
@@ -34,7 +34,7 @@
                 <td class="text-right">{{ number_format($servico->pivot->quantidade, 0, ',', '.') }}</td>
                 <td class="text-right">{{ number_format($valorTotalServico, 2, ',', '.') }}</td>
                 <td>
-                    <button class="btn btn-danger d-flex justify-content-center">
+                    <button class="btn btn-danger d-flex justify-content-center remover-servico"  data-pedido-id="{{ $pedido->id }}" data-servico-id="{{ $servico->id }}">
                         <i class="fa fa-times"></i>
                     </button>
                 </td>

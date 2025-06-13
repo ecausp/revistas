@@ -123,7 +123,8 @@
 
 @section('javascripts_bottom')
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
 
 <script>
@@ -214,8 +215,33 @@ function atualizarTabelaQuantidades() {
 $('.milhares-mask').mask('#.##0', {
   reverse: true
 });
-
     
 }
+
+$(document).on('click', '.remover-servico', function () {
+    const button = $(this);
+    const pedidoId = button.data('pedido-id');
+    const servicoId = button.data('servico-id');
+
+    if (!confirm('Tem certeza que deseja remover este serviço?')) return;
+
+    $.ajax({
+        url: `/pedidos/${pedidoId}/servicos/${servicoId}`,
+        type: 'DELETE',
+        data: {
+            _token: '{{ csrf_token() }}'
+        },
+        success: function (resposta) {
+            alert(resposta.mensagem);
+            // Remove a linha do serviço
+            $(`#servico-${servicoId}`).remove();
+        },
+        error: function () {
+            alert('Erro ao remover o serviço. Tente novamente.');
+        }
+    });
+});
+
+
 </script>
 @endsection
