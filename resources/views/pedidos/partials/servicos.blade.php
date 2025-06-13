@@ -8,11 +8,13 @@
     <table class="table datatable-simples dt-fixed-header dt-paging-50 responsive no-footer table-striped responsive mb-0">
         <thead>
             <tr>
+                <th>Empresa</th>
                 <th>Descrição</th>
                 <th>Unidade de Medida</th>
                 <th>Valor Unitário (R$)</th>
                 <th>Quantidade</th>
                 <th>Valor Total (R$)</th>
+                <th>Ações</th>
             </tr>
         </thead>
         <tbody>
@@ -24,18 +26,24 @@
             $valorTotalServico = $servico->pivot->quantidade * $servico->valor_unitario;
             $valorTotalPedido += $valorTotalServico;
             @endphp
-            <tr>
+            <tr id="servico-{{ $servico->id }}">
+                <td>{{ $servico->empresas->first()->razao_social }}</td>
                 <td>{{ $servico->descricao }}</td>
                 <td>{{ $servico->unidade_medida }}</td>
                 <td class="text-right">{{ number_format($servico->valor_unitario, 2, ',', '.') }}</td>
                 <td class="text-right">{{ number_format($servico->pivot->quantidade, 0, ',', '.') }}</td>
                 <td class="text-right">{{ number_format($valorTotalServico, 2, ',', '.') }}</td>
+                <td>
+                    <button class="btn btn-danger d-flex justify-content-center remover-servico"  data-pedido-id="{{ $pedido->id }}" data-servico-id="{{ $servico->id }}">
+                        <i class="fa fa-times"></i>
+                    </button>
+                </td>
             </tr>
             @endforeach
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="3"></td>
+                <td colspan="4"></td>
                 <td class="text-right"><strong>Valor total do pedido: </strong></td>
                 <td class="text-right"><strong>{{ number_format($valorTotalPedido, 2, ',', '.') }}</strong></td>
             </tr>

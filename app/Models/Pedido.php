@@ -37,8 +37,8 @@ class Pedido extends Model
         return $this->belongsTo(Licitacao::class);
     }
 
-    public function servicos()
-{
-    return $this->belongsToMany(Servico::class, 'pedido_servico')->withPivot('quantidade')->withTimestamps();
-}
+        public function servicos()
+    {
+        return $this->belongsToMany(Servico::class, 'pedido_servico')->withPivot('quantidade')->withTimestamps();
+    }
 }

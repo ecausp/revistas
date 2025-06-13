@@ -119,9 +119,10 @@ public function store(Request $request)
         $this->authorize("acesso-revista");
         $licitacao = $pedido->licitacao;
         $solicitante = $pedido->solicitante;
-        
+        $servicos = Servico::all();
+
         if(Solicitante::where('user_id', auth()->id())->exists()|| auth()->user()->hasRole('admin'))
-            return view('pedidos.show', compact('pedido', 'licitacao', 'solicitante'));
+            return view('pedidos.show', compact('pedido', 'licitacao', 'solicitante', 'servicos'));
         else
         {
             session()->flash('danger', 'Usuário não cadastrado como solicitante. Favor contatar financeiro.');
@@ -157,7 +158,6 @@ public function update(Request $request, Pedido $pedido)
         'servicos' => 'array',
         'quantidades' => 'array',
     ]);
-
     // Atualiza dados simples
     $pedido->observacoes = $request->observacoes;
     $pedido->revista_id = $request->revista_id;
@@ -204,4 +204,48 @@ public function update(Request $request, Pedido $pedido)
             return redirect()->route('home');
         }
     }
+
+
+    public function updateServicos(Request $request, Pedido $pedido)
+    {
+        // Validação básica
+        $request->validate([
+            'servicos' => 'required|array',
+            'quantidades' => 'required|array',
+        ]);
+
+        $servicos = $request->input('servicos');
+        $quantidades = $request->input('quantidades');
+
+        // Atualiza os serviços com as quantidades no relacionamento many-to-many (pivot)
+        $syncData = [];
+        foreach ($servicos as $servicoId) {
+            $syncData[$servicoId] = ['quantidade' => $quantidades[$servicoId] ?? 1];
+        }
+
+        $pedido->servicos()->sync($syncData);
+
+        // Recarrega relação para view atualizada
+        $pedido->load('servicos');
+
+        // Renderiza a partial da tabela com os serviços atualizados
+        $html = view('pedidos.partials.servicos', compact('pedido'))->render();
+
+        // Retorna JSON para o AJAX
+        return response()->json([
+            'html' => $html,
+            'quantidades' => $pedido->servicos->pluck('pivot.quantidade', 'id'),
+        ]);
+    }
+
+    public function removerServicoDoPedido($pedidoId, $servicoId)
+    {
+        $pedido = Pedido::findOrFail($pedidoId);
+        $pedido->servicos()->detach($servicoId);
+
+        return response()->json(['mensagem' => 'Serviço desvinculado com sucesso!']);
+    }
+
+
+
 }

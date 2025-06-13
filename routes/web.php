@@ -85,3 +85,6 @@ Route::get('/buscar-usuario', [SolicitanteController::class, 'buscarUsuario']);
 
 Route::get('/arquivos/{id}/download', [ArquivoController::class, 'download'])->name('arquivos.download');
 Route::get('/arquivos/{id}/ver', [ArquivoController::class, 'view'])->name('arquivos.visualizar');
+
+Route::put('/pedidos/{pedido}/servicos', [PedidoController::class, 'updateServicos'])->name('pedidos.updateServicos');
+Route::delete('/pedidos/{pedido}/servicos/{servico}', [PedidoController::class, 'removerServicoDoPedido'])->name('pedidos.servicos.remover');

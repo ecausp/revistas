@@ -11,54 +11,17 @@
         @include('pedidos.partials.cabecalho')
 
         <p><strong>Observações:</strong> {{ $pedido->observacoes }}</p>
+        <div id="tabela-servicos">
+          @include('pedidos.partials.servicos')
+        </div>
+        
+        @include('pedidos.partials.arquivos')
+    
+      </div>
 
-        @include('pedidos.partials.servicos')
-    </div>
 
 
 
-
-@if ($pedido->arquivos->count() > 0)
-<div class="card mt-4">
-<div class="card-header">
-    <div class="d-flex align-items-center">
-        <h5 class="mb-0 me-2 mr-5">Arquivos Anexados</h5>
-        @include('pedidos.partials.botao')
-    </div>
-</div>
-    <table class="table datatable-simples dt-fixed-header dt-paging-50 responsive no-footer table-striped responsive mb-0">
-        <thead>
-            <tr>
-                <th style="width: 33%;">Arquivo</th>
-                <th style="width: 33%;">Descrição</th>
-                <th style="width: 33%;">Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($pedido->arquivos as $arquivo)
-            <tr>
-                <td>{{ $arquivo->nome }}</td>
-                <td>{{ $arquivo->descricao }}</td>
-                <td class="d-flex gap-2">
-                    <a href="{{ asset('storage/' . $arquivo->path) }}" target="_blank"
-                        class="btn btn-primary d-flex ml-2 mr-2 justify-content-center">
-                        <i class="fas fa-eye"></i>
-                    </a>
-                    <form action="{{ route('arquivos.destroy', $arquivo) }}" method="POST"
-                        onsubmit="return confirm('Tem certeza que deseja excluir este arquivo?')">
-                        @csrf
-                        @method('DELETE')
-                        <button class="btn btn-danger d-flex justify-content-center">
-                            <i class="fa fa-times"></i>
-                        </button>
-                    </form>
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
-</div>
-@endif
 
 
 
@@ -68,6 +31,16 @@
     <a href="{{ route('pedidos.edit', $pedido) }}" class="btn btn-primary"><i class="fas fa-edit"></i>
         Editar</a>
 
+
+    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#adicionarArquivoModal">
+        <i class="fas fa-paperclip"></i> Arquivo(s)
+    </button>
+
+    <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#adicionarServicoModal">
+        <i class="fas fa-wrench"></i> Servicos(s)
+    </button>
+
+
     @include('pedidos.partials.delete')
 
     <a href="{{ route('pedidos.index') }}" class="btn btn-secondary"><i class="fas fa-chevron-left"></i>
@@ -75,10 +48,10 @@
 
 </div>
 @endcan
-<!-- Modal -->
+<!-- Modal de Arquivos -->
 <div class="modal fade" id="adicionarArquivoModal" tabindex="-1" aria-labelledby="adicionarArquivoModalLabel"
     aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <form action="{{ route('arquivos.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <input type="hidden" name="pedido_id" value="{{ $pedido->id }}">
@@ -87,6 +60,7 @@
                     <h5 class="modal-title" id="adicionarArquivoModalLabel">Adicionar Arquivo</h5>
                 </div>
                 <div class="modal-body">
+                    <!-- Formulário de upload -->
                     <div class="mb-3">
                         <label for="arquivo" class="form-label">Arquivo</label>
                         <input class="form-control" type="file" name="arquivo" accept=".pdf,.jpg,.jpeg,.png,.svg,.tiff"
@@ -100,14 +74,174 @@
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-primary">Salvar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                 </div>
             </div>
         </form>
     </div>
 </div>
+
+<!-- Modal de Serviços -->
+<div class="modal fade" id="adicionarServicoModal" tabindex="-1" aria-labelledby="adicionarServicoModal" aria-hidden="true">
+  <div class="modal-dialog">
+    <form id="form-servicos" method="POST" action="{{ route('pedidos.updateServicos', $pedido) }}">
+      @csrf
+      @method('PUT')
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="adicionarServicoModal">Editar Serviços do Pedido</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="servicos" class="form-label">Serviços</label>
+            <select id="servicos" name="servicos[]" class="form-select select2" multiple required>
+              @foreach($servicos as $servico)
+                <option value="{{ $servico->id }}"
+                    {{ $pedido->servicos->contains($servico->id) ? 'selected' : '' }}>
+                  {{ $servico->descricao }}
+                </option>
+              @endforeach
+            </select>
+          </div>
+           <!-- Aqui vai aparecer a tabela com as quantidades -->
+  <div id="tabela-quantidades" class="mt-4">
+    <!-- JS preenche isso -->
+  </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Salvar</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+
 @endsection
 
 @section('javascripts_bottom')
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
 
+<script>
+  $(document).ready(function () {
+    $('.milhares-mask').mask('#.##0', { reverse: true });
+
+    $('form').on('submit', function () {
+      $('.milhares-mask').each(function () {
+        let val = $(this).val().replace(/\./g, '');
+        $(this).val(val);
+      });
+    });
+  });
+</script>
+
+<script>
+let quantidadesIniciais = {!! json_encode(
+    $pedido->servicos->mapWithKeys(function ($servico) {
+        return [$servico->id => $servico->pivot->quantidade];
+    })
+) !!};
+
+$(document).ready(function() {
+    $('.select2').select2({
+        placeholder: "Selecione os serviços",
+        width: '100%'
+    });
+
+    $('#form-servicos').on('submit', function(e) {
+        e.preventDefault();
+
+        const form = $(this);
+        const url = form.attr('action');
+        const data = form.serialize();
+
+        $.ajax({
+            url: url,
+            type: 'PUT',
+            data: data,
+            success: function(response) {
+                $('#tabela-servicos').html(response.html);
+
+                // Atualiza quantidades iniciais com o que vem do backend (se quiser)
+                quantidadesIniciais = response.quantidades;
+
+                // Fecha o modal
+                const modalEl = document.getElementById('adicionarServicoModal');
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                if (modal) modal.hide();
+            },
+            error: function() {
+                alert('Erro ao atualizar os serviços. Verifique os dados e tente novamente.');
+            }
+        });
+    });
+
+    $('#adicionarServicoModal').on('shown.bs.modal', function () {
+        atualizarTabelaQuantidades();
+    });
+});
+
+function atualizarTabelaQuantidades() {
+    const selecionados = $('#servicos').select2('data');
+    let html = '';
+
+    if (selecionados.length > 0) {
+        html += '<table class="table table-bordered">';
+        html += '<thead><tr><th>Serviço</th><th>Quantidade</th></tr></thead><tbody>';
+
+        selecionados.forEach(item => {
+            const valor = quantidadesIniciais[item.id] ?? 1;
+
+            html += `
+                <tr>
+                    <td>${item.text}</td>
+                    <td>
+                        <input style="text-align: right;" type="text" class="milhares-mask" name="quantidades[${item.id}]" class="form-control" value="${valor}" required>
+                    </td>
+                </tr>
+            `;
+        });
+
+        html += '</tbody></table>';
+    }
+
+    $('#tabela-quantidades').html(html);
+    
+$('.milhares-mask').mask('#.##0', {
+  reverse: true
+});
+    
+}
+
+$(document).on('click', '.remover-servico', function () {
+    const button = $(this);
+    const pedidoId = button.data('pedido-id');
+    const servicoId = button.data('servico-id');
+
+    if (!confirm('Tem certeza que deseja remover este serviço?')) return;
+
+    $.ajax({
+        url: `/pedidos/${pedidoId}/servicos/${servicoId}`,
+        type: 'DELETE',
+        data: {
+            _token: '{{ csrf_token() }}'
+        },
+        success: function (resposta) {
+            alert(resposta.mensagem);
+            // Remove a linha do serviço
+            $(`#servico-${servicoId}`).remove();
+        },
+        error: function () {
+            alert('Erro ao remover o serviço. Tente novamente.');
+        }
+    });
+});
+
+
+</script>
 @endsection

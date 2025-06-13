@@ -28,7 +28,7 @@
 
                             <option 
                                 value="{{ $servico->id }}" 
-                                data-empresa="{{ $servico->empresa->nome ?? '' }}"
+                                data-empresa="{{ $servico->empresas->first()->razao_social ?? '' }}"
                                 data-descricao="{{ $servico->descricao }}" 
                                 data-unidade="{{ $servico->unidade_medida }}"
                                 data-valor="{{ number_format($servico->valor_unitario, 2, ',', '.') }}"
@@ -114,12 +114,14 @@ function atualizarTabelaServicosSelecionados() {
             const quantidade = parseFloat(option.data('quantidade')) || 0;
             const valorTotal = quantidade * valor;
 
+
+
             html += `<tr data-id="${id}">
                         <td>${empresa}</td>
                         <td>${descricao}</td>
                         <td>${unidade}</td>
                         <td>
-                            <input type="text" name="quantidades[${id}]" class="form-control quantidade-input milhares-mask" min="0" value="${quantidade}" step="1" data-id="${id}" />
+                            <input type="text" name="quantidades[${id}]" class="form-control quantidade-input milhares-mask" value="${quantidade}" data-id="${id}" />
                         </td>
                         <td class="text-right">R$ ${valor.toFixed(2).replace('.', ',')}</td>
                         <td class="valor-total text-right" data-id="${id}">${valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
@@ -160,6 +162,7 @@ $(document).on('input', '.quantidade-input', function() {
         let quantidadeBr = $(this).val() || '0';
         quantidadeBr = quantidadeBr.replace(/\./g, '').replace(',', '.');
         const quantidade = parseFloat(quantidadeBr) || 0;
+        console.log('ID:', id, 'quantidadeBr:', quantidadeBr, 'quantidade:', quantidade);
 
         const option = $('#servico_id').find(`option[value="${id}"]`);
         const valorBr = option.attr('data-valor') || '0,00';
@@ -203,5 +206,14 @@ $(document).on('click', '.remover-servico', function() {
 
     $('#servico_id').val(selecionados).trigger('change');
 });
+
+$('form').on('submit', function() {
+    $('.quantidade-input').each(function() {
+        let val = $(this).val();
+        val = val.replace(/\./g, '');  // remove pontos
+        $(this).val(val);
+    });
+});
+
 </script>
 @endsection
