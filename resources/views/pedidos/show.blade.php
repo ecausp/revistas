@@ -18,28 +18,26 @@
         @include('pedidos.partials.arquivos')
     
       </div>
-
-
-
-
-
-
-
 </div>
 
 <div class="container mt-5 col">
     <a href="{{ route('pedidos.edit', $pedido) }}" class="btn btn-primary"><i class="fas fa-edit"></i>
         Editar</a>
+    @php
+        $user = auth()->user();
+    @endphp
 
+    @if(($user->can('admin') || $user->can('acesso-revista')) && !$user->hasRole('financeiro'))
+    
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#adicionarServicoModal">
+        <i class="fas fa-wrench"></i> Serviços(s)
+    </button>
 
-    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#adicionarArquivoModal">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#adicionarArquivoModal">
         <i class="fas fa-paperclip"></i> Arquivo(s)
     </button>
 
-    <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#adicionarServicoModal">
-        <i class="fas fa-wrench"></i> Servicos(s)
-    </button>
-
+    @endif
 
     @include('pedidos.partials.delete')
 
@@ -48,6 +46,7 @@
 
 </div>
 @endcan
+
 <!-- Modal de Arquivos -->
 <div class="modal fade" id="adicionarArquivoModal" tabindex="-1" aria-labelledby="adicionarArquivoModalLabel"
     aria-hidden="true">

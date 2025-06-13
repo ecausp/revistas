@@ -20,6 +20,7 @@
                 <td>{{ $arquivo->nome }}</td>
                 <td>{{ $arquivo->descricao }}</td>
                 <td class="d-flex gap-2">
+                    <!-- eh necessario rodar o comando php artisan storage:link antes -->
                     <a href="{{ asset('storage/' . $arquivo->path) }}" target="_blank"
                         class="btn btn-primary d-flex ml-2 mr-2 justify-content-center">
                         <i class="fas fa-eye"></i>
