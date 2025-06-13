@@ -22,7 +22,7 @@ class PedidoController extends Controller
 
         $pedidos = Pedido::all();
         
-        if(Solicitante::where('user_id', auth()->id())->exists() || auth()->user()->hasRole('admin'))
+        if(Solicitante::where('user_id', auth()->id())->exists() || auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro'))
             return view('pedidos.index', compact('pedidos'));
         else
         {
@@ -64,51 +64,51 @@ class PedidoController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-public function store(Request $request)
-{
-    $this->authorize("acesso-revista");
-
-    // Validação básica
-    $validated = $request->validate([
-        'solicitante_id' => 'required|exists:solicitantes,id',
-        'revista_id' => 'required|exists:revistas,id',
-        'licitacao_id' => 'required|exists:licitacoes,id',
-        'observacoes' => 'nullable|string',
-        'servicos' => 'required|array',
-        'servicos.*' => 'exists:servicos,id',
-        'quantidades' => 'required|array',
-        'quantidades.*' => 'integer|min:1',
-    ]);
-
-    // Criando o pedido
-    $pedido = Pedido::create([
-        'licitacao_id' => $validated['licitacao_id'],
-        'solicitante_id' => $validated['solicitante_id'],
-        'revista_id' => $validated['revista_id'],
-        'observacoes' => $validated['observacoes'],
-    ]);
-
-    // Relacionando serviços e quantidades
-    $dadosParaSync = [];
-    foreach ($validated['servicos'] as $servicoId) {
-        $qtd = $validated['quantidades'][$servicoId] ?? 1;
-        $dadosParaSync[$servicoId] = ['quantidade' => $qtd];
-    }
-
-    $pedido->servicos()->sync($dadosParaSync);
-    
-    if(Solicitante::where('user_id', auth()->id())->exists()|| auth()->user()->hasRole('admin'))
+    public function store(Request $request)
     {
-        session()->flash('success', 'Pedido cadastrado com sucesso!');
-        return redirect()->route('pedidos.index');
-    }
-    else
-    {
-        session()->flash('danger', 'Usuário não cadastrado como solicitante. Favor contatar financeiro.');
-        return redirect()->route('home');
+        $this->authorize("acesso-revista");
 
+        // Validação básica
+        $validated = $request->validate([
+            'solicitante_id' => 'required|exists:solicitantes,id',
+            'revista_id' => 'required|exists:revistas,id',
+            'licitacao_id' => 'required|exists:licitacoes,id',
+            'observacoes' => 'nullable|string',
+            'servicos' => 'required|array',
+            'servicos.*' => 'exists:servicos,id',
+            'quantidades' => 'required|array',
+            'quantidades.*' => 'integer|min:1',
+        ]);
+
+        // Criando o pedido
+        $pedido = Pedido::create([
+            'licitacao_id' => $validated['licitacao_id'],
+            'solicitante_id' => $validated['solicitante_id'],
+            'revista_id' => $validated['revista_id'],
+            'observacoes' => $validated['observacoes'],
+        ]);
+
+        // Relacionando serviços e quantidades
+        $dadosParaSync = [];
+        foreach ($validated['servicos'] as $servicoId) {
+            $qtd = $validated['quantidades'][$servicoId] ?? 1;
+            $dadosParaSync[$servicoId] = ['quantidade' => $qtd];
+        }
+
+        $pedido->servicos()->sync($dadosParaSync);
+        
+        if(Solicitante::where('user_id', auth()->id())->exists()|| auth()->user()->hasRole('admin'))
+        {
+            session()->flash('success', 'Pedido cadastrado com sucesso!');
+            return redirect()->route('pedidos.index');
+        }
+        else
+        {
+            session()->flash('danger', 'Usuário não cadastrado como solicitante. Favor contatar financeiro.');
+            return redirect()->route('home');
+
+        }
     }
-}
 
 
     /**
@@ -121,7 +121,7 @@ public function store(Request $request)
         $solicitante = $pedido->solicitante;
         $servicos = Servico::all();
 
-        if(Solicitante::where('user_id', auth()->id())->exists()|| auth()->user()->hasRole('admin'))
+        if(Solicitante::where('user_id', auth()->id())->exists()|| auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro'))
             return view('pedidos.show', compact('pedido', 'licitacao', 'solicitante', 'servicos'));
         else
         {

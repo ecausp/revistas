@@ -18,13 +18,6 @@
         @include('pedidos.partials.arquivos')
     
       </div>
-
-
-
-
-
-
-
 </div>
 
 <div class="container mt-5 col">
@@ -48,6 +41,7 @@
 
 </div>
 @endcan
+
 <!-- Modal de Arquivos -->
 <div class="modal fade" id="adicionarArquivoModal" tabindex="-1" aria-labelledby="adicionarArquivoModalLabel"
     aria-hidden="true">
