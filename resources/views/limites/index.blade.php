@@ -34,10 +34,8 @@
                     <td>{{ $limite->servico->empresas()->first()->razao_social }}</td>
                     <td>{{ $limite->servico->descricao }}</td>
                     <td>{{ number_format($limite->quantidade, 0, ',', '.') }}</td>
-                    <td>R$ {{ number_format($limite->valor_unitario, 2, ',', '.') }}</td>
-                    <td>R$
-                        {{ number_format(($limite->quantidade * $limite->valor_unitario), 2, ',', '.') }}
-                    </td>
+                    <td class="text-right">{{ number_format($limite->valor_unitario, 2, ',', '.') }}</td>
+                    <td class="text-right">{{ number_format(($limite->quantidade * $limite->valor_unitario), 2, ',', '.') }} </td>
 
                     <td>
                         <a href="{{ route('limites.show', $limite) }}" class="btn btn-primary"><i
