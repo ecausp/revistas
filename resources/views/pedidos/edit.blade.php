@@ -88,6 +88,10 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
+function formatarValorBrasileiro(valor) {
+    return valor.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
 $(document).ready(function() {
     $('.select2').select2();
     atualizarTabelaServicosSelecionados(); // Carrega a tabela se já houver selecionados
@@ -123,8 +127,8 @@ function atualizarTabelaServicosSelecionados() {
                         <td>
                             <input type="text" name="quantidades[${id}]" class="form-control quantidade-input milhares-mask" value="${quantidade}" data-id="${id}" />
                         </td>
-                        <td class="text-right"> ${valor.toFixed(2).replace('.', ',')}</td>
-                        <td class="valor-total text-right" data-id="${id}">${valorTotal}</td>
+                        <td class="text-right"> ${formatarValorBrasileiro(valor)}</td>
+                        <td class="valor-total text-right" data-id="${id}">${formatarValorBrasileiro(valorTotal)}</td>
                         <td class="text-center">
                             <button class="btn btn-sm btn-danger remover-servico" data-id="{{ $servico->id }}"><i class="fa fa-times" aria-hidden="true"></i></button>
                         </td>
@@ -136,7 +140,7 @@ function atualizarTabelaServicosSelecionados() {
         html += `<tr style="background-color: #f8f9fa;">
                     <td colspan="4"></td>
                     <td class="text-right"><strong>Total do Pedido</strong></td>
-                    <td id="soma-total" class="text-right" style="font-weight: bold;">${somaTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                    <td id="soma-total" class="text-right" style="font-weight: bold;">${formatarValorBrasileiro(somaTotal)}</td>
                     <td></td>
                  </tr>`;
 
@@ -171,20 +175,13 @@ $(document).on('input', '.quantidade-input', function() {
         const total = quantidade * valorUnitario;
 
 
-        const totalFormatado = total.toLocaleString('pt-BR', {
-            style: 'currency',
-            currency: 'BRL'
-        });
-
-    $(`.valor-total[data-id="${id}"]`).text(totalFormatado);
+        const totalFormatado = total.toFixed(2).replace('.', ',');
+        $(`.valor-total[data-id="${id}"]`).text(formatarValorBrasileiro(total));
 
         somaTotal += total;
     });
 
-    $('#soma-total').text(somaTotal.toLocaleString('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-    }));
+    $('#soma-total').text(formatarValorBrasileiro(somaTotal));
 });
 
 // Ao trocar o select2

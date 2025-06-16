@@ -41,7 +41,7 @@
                             <tr>
                                 <th>Serviço</th>
                                 <th>Unidade de Medida</th>
-                                <th>Valor Unitário</th>
+                                <th>Valor Unitário (R$)</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -49,7 +49,7 @@
                             <tr>
                                 <td>{{ $servico->descricao }}</td>
                                 <td>{{ $servico->unidade_medida }}</td>
-                                <td>R$ {{ number_format($servico->valor_unitario, 2, ',', '.') }}</td>
+                                <td class="text-right"> {{ number_format($servico->valor_unitario, 2, ',', '.') }}</td>
                             </tr>
                             @endforeach
                         </tbody>
