@@ -16,7 +16,7 @@
             @foreach ($empresa->servicos as $servico)
             <tr>
                 <td>{{ $servico->descricao }}</td>
-                <td class="text-right">{{ $servico->valor_unitario }}</td>
+                <td class="text-right">{{ number_format($servico->valor_unitario, 2, ',', '.') }}</td>
                 <td>{{ $servico->unidade_medida }}</td>
                 <td><a href="{{ route('servicos.show', $servico) }}" class="btn btn-primary"><i class="fas fa-eye"></i>
                     </a></td>
