@@ -20,10 +20,17 @@ class PedidoController extends Controller
         $this->authorize("acesso-revista");
         \UspTheme::activeUrl('pedidos');
 
-        $pedidos = Pedido::all();
-        
-        if(Solicitante::where('user_id', auth()->id())->exists() || auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro'))
+        if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro'))
+        {
+            $pedidos = Pedido::all(); 
             return view('pedidos.index', compact('pedidos'));
+        }
+        else if(Solicitante::where('user_id', auth()->id())->exists())
+        {   
+            $solicitante = Solicitante::where('user_id', auth()->id())->first();
+            $pedidos = Pedido::where('revista_id', $solicitante->revista_id)->get();  
+            return view('pedidos.index', compact('pedidos'));
+        }
         else
         {
             session()->flash('danger', 'Usuário não cadastrado como solicitante. Favor contatar financeiro.');
