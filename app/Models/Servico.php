@@ -27,5 +27,9 @@ class Servico extends Model
     {
         return $this->belongsToMany(Pedido::class, 'pedido_servico')->withPivot('quantidade')->withTimestamps();
     }
+    public function limites()
+    {
+        return $this->hasMany(Limite::class);
+    }
 
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Pedido;
 use App\Models\Servico;
 use App\Models\Solicitante;
+use App\Models\Revista;
 use App\Models\Licitacao;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -49,22 +50,28 @@ class PedidoController extends Controller
         $anoAtual = date('Y');
         $licitacao = Licitacao::where('ano', $anoAtual)->first();
         
-        $solicitante = Solicitante::where('user_id', auth()->user()->id)->first();
-        $servicos = Servico::all();
+
         \UspTheme::activeUrl('pedidos/create');
         
         if(Solicitante::where('user_id', auth()->id())->exists())
+        {
+            $solicitante = Solicitante::where('user_id', auth()->user()->id)->first();
+            $revista = Revista::where('id', $solicitante->revista_id)->first();
+            $servicos = Servico::whereHas('limites', function ($query) use ($revista) {
+                $query->where('revista_id', $revista->id);})->get();
             return view('pedidos.create', compact('solicitante','servicos', 'licitacao'));
+        }
+        
         else if(auth()->user()->hasRole('admin'))
         {
             session()->flash('danger', 'Esse admin não está cadastrado como solicitante e não pode criar pedidos.');
             return redirect()->route('pedidos.index');
         }
+        
         else
         {
             session()->flash('danger', 'Usuário não cadastrado como solicitante. Favor contatar financeiro.');
             return redirect()->route('home');
-
         }
     }
 
