@@ -9,7 +9,7 @@
     @can("admin-financeiro")
     <div class="card-body">
         <p><strong>Ano:</strong> {{ $licitacao->ano }}</p>
-        <p><strong>Valor Total:</strong> {{ number_format($licitacao->valor_total, 2, ',', '.') }}</p>
+        <p><strong>Valor Total(R$):</strong> {{ number_format($licitacao->valor_total, 2, ',', '.') }}</p>
 
         @include('licitacoes.partials.empresas')
         @include('partials.editor')
