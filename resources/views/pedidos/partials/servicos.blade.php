@@ -8,13 +8,14 @@
     <table class="table datatable-simples dt-fixed-header dt-paging-50 responsive no-footer table-striped responsive mb-0">
         <thead>
             <tr>
-                <th>Empresa</th>
-                <th>Descrição</th>
-                <th>Unidade de Medida</th>
-                <th>Valor Unitário (R$)</th>
-                <th>Quantidade</th>
-                <th>Valor Total (R$)</th>
-                <th>Ações</th>
+                <th style="width: 11%;">Empresa</th>
+                <th style="width: 20%;">Descrição</th>
+                <th style="width: 11%;">Unidade de Medida</th>
+                <th style="width: 11%;">Valor Unitário (R$)</th>
+                <th style="width: 15%;">Quantidade</th>
+                <th style="width: 11%;">Valor Total (R$)</th>
+                <th style="width: 11%;">Status</th>
+                <th style="width: 10%;">Ações</th>
             </tr>
         </thead>
         <tbody>
@@ -33,6 +34,12 @@
                 <td class="text-right">{{ number_format($servico->valor_unitario, 2, ',', '.') }}</td>
                 <td class="text-right">{{ number_format($servico->pivot->quantidade, 0, ',', '.') }}</td>
                 <td class="text-right">{{ number_format($valorTotalServico, 2, ',', '.') }}</td>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-plus text-warning border border-warning rounded-pill p-2 mr-2" style="font-size: 1rem; width: 32px; height: 32px;"></i>
+                        <span class="text-secondary" style="font-size: .9rem; font-style: italic;">Em Andamento</span>
+                    </div>
+                </td>
                 <td>
                     <button class="btn btn-danger d-flex justify-content-center remover-servico"  data-pedido-id="{{ $pedido->id }}" data-servico-id="{{ $servico->id }}">
                         <i class="fa fa-times"></i>
