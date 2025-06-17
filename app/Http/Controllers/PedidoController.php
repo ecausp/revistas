@@ -67,7 +67,6 @@ class PedidoController extends Controller
             session()->flash('danger', 'Esse admin não está cadastrado como solicitante e não pode criar pedidos.');
             return redirect()->route('pedidos.index');
         }
-        
         else
         {
             session()->flash('danger', 'Usuário não cadastrado como solicitante. Favor contatar financeiro.');
@@ -150,9 +149,22 @@ class PedidoController extends Controller
      */
     public function edit(Pedido $pedido)
     {
-        $servicos = Servico::all();
-        if(Solicitante::where('user_id', auth()->id())->exists()|| auth()->user()->hasRole('admin'))
+        $this->authorize("acesso-revista");
+
+        if(Solicitante::where('user_id', auth()->id())->exists())
+        {
+            $solicitante = Solicitante::where('user_id', auth()->user()->id)->first();
+            $revista = Revista::where('id', $solicitante->revista_id)->first();
+            $servicos = Servico::whereHas('limites', function ($query) use ($revista) {
+                $query->where('revista_id', $revista->id);})->get();
             return view('pedidos.edit', compact('pedido', 'servicos'));
+        }
+        else if(auth()->user()->hasRole('admin'))
+        {
+            session()->flash('danger', 'Esse admin não está cadastrado como solicitante e não pode editar esse pedido.');
+            return redirect()->route('pedidos.index');
+        }
+
 
         else
         {
