@@ -22,6 +22,10 @@
 @section('styles')
 @parent
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<!-- Tradução para português do Brasil -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/i18n/pt-BR.js"></script>
+
 <style>
 .select2-container {
     width: 100% !important;
@@ -45,7 +49,8 @@ $(document).ready(function() {
 
     // Inicializa o Select2 de forma responsiva para o campo SERVIÇO
     $('#servico_id').select2({
-        width: '100%'
+        width: '100%',
+        language: "pt-BR"
     });
 });
 </script>

@@ -20,8 +20,19 @@
 
 @section('javascripts_bottom')
 @parent
+<!-- Select2 principal -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<!-- Tradução para português do Brasil -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/i18n/pt-BR.js"></script>
+
+
 <script>
+
 $(document).ready(function() {
+    $('.select2').select2({
+        language: "pt-BR"
+    });
     // Formato número
     $('.numero').mask('000.000.000.000.000', {
         reverse: true

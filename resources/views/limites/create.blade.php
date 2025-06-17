@@ -63,6 +63,12 @@
 
 @section('javascripts_bottom')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+
+<!-- Select2 principal -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<!-- Tradução para português do Brasil -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/i18n/pt-BR.js"></script>
+
 @parent
 <script>
 $(document).ready(function() {
@@ -161,7 +167,7 @@ $(document).ready(function() {
     }
 
     // Inicializa o Select2
-    $('.select2').select2();
+    $('.select2').select2({language: "pt-BR"});
 
     // Eventos
     $('#servico_id').on('select2:select', function(e) {

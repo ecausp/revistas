@@ -34,7 +34,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
 
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<!-- Select2 principal -->
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<!-- Tradução para português do Brasil -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/i18n/pt-BR.js"></script>
 
 <!-- Script de inicialização -->
 <script>
@@ -46,7 +49,7 @@ function formatarMilhares(numero) {
 }
 
 $(document).ready(function() {
-    $('.select2').select2();
+    $('.select2').select2({language: "pt-BR"});
 });
 
 $('form').on('submit', function() {
