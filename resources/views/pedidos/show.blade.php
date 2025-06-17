@@ -30,7 +30,7 @@
     @if(($user->can('admin') || $user->can('acesso-revista')) && !$user->hasRole('financeiro'))
     
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#adicionarServicoModal">
-        <i class="fas fa-wrench"></i> Serviços(s)
+        <i class="fas fa-wrench"></i> Serviço(s)
     </button>
 
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#adicionarArquivoModal">
