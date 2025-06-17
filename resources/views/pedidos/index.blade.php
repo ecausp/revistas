@@ -18,6 +18,7 @@
                 <tr>
                     <th>Revista</th>
                     <th>Licitação</th>
+                    <th>Status</th>
                     <th>Ações</th>
                 </tr>
             </thead>
@@ -26,6 +27,12 @@
                 <tr>
                     <td>{{ $pedido->revista->name }}</td>
                     <td>{{ $pedido->licitacao->descricao }} - {{ $pedido->licitacao->ano }}</td>
+    	            <td>
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-plus text-warning border border-warning rounded-pill p-2 mr-2" style="font-size: 1rem; width: 32px; height: 32px;"></i>
+                            <span class="text-secondary" style="font-size: .9rem; font-style: italic;">Em Andamento</span>
+                        </div>
+                    </td>
                     <td>
                         <a href="{{ route('pedidos.show', $pedido) }}" class="btn btn-primary"><i
                                 class="fas fa-eye"></i> </a>
