@@ -122,8 +122,12 @@
 
 @section('javascripts_bottom')
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<!-- Tradução para português do Brasil -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/i18n/pt-BR.js"></script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
 
 <script>
@@ -149,7 +153,8 @@ let quantidadesIniciais = {!! json_encode(
 $(document).ready(function() {
     $('.select2').select2({
         placeholder: "Selecione os serviços",
-        width: '100%'
+        width: '100%',
+        language: "pt-BR"
     });
 
     $('#form-servicos').on('submit', function(e) {
