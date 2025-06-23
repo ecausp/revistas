@@ -220,36 +220,10 @@ function atualizarTabelaQuantidades() {
 
     $('#tabela-quantidades').html(html);
     
-$('.milhares-mask').mask('#.##0', {
-  reverse: true
-});
-    
+    $('.milhares-mask').mask('#.##0', {
+        reverse: true
+    });    
 }
-
-$(document).on('click', '.remover-servico', function () {
-    const button = $(this);
-    const pedidoId = button.data('pedido-id');
-    const servicoId = button.data('servico-id');
-
-    if (!confirm('Tem certeza que deseja remover este serviço?')) return;
-
-    $.ajax({
-        url: `/pedidos/${pedidoId}/servicos/${servicoId}`,
-        type: 'DELETE',
-        data: {
-            _token: '{{ csrf_token() }}'
-        },
-        success: function (resposta) {
-            alert(resposta.mensagem);
-            // Remove a linha do serviço
-            $(`#servico-${servicoId}`).remove();
-        },
-        error: function () {
-            alert('Erro ao remover o serviço. Tente novamente.');
-        }
-    });
-});
-
 
 </script>
 @endsection
