@@ -32,11 +32,7 @@
     @endphp
 
     @if(($user->can('admin') || $user->can('acesso-revista')) && !$user->hasRole('financeiro'))
-    
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#adicionarServicoModal">
-        <i class="fas fa-wrench"></i> Serviço(s)
-    </button>
-
+ 
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#adicionarArquivoModal">
         <i class="fas fa-paperclip"></i> Arquivo(s)
     </button>
@@ -84,44 +80,6 @@
     </div>
 </div>
 
-<!-- Modal de Serviços -->
-<div class="modal fade" id="adicionarServicoModal" tabindex="-1" aria-labelledby="adicionarServicoModal" aria-hidden="true">
-  <div class="modal-dialog">
-    <form id="form-servicos" method="POST" action="{{ route('pedidos.updateServicos', $pedido) }}">
-      @csrf
-      @method('PUT')
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="adicionarServicoModal">Editar Serviços do Pedido</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-        </div>
-        <div class="modal-body">
-          <div class="mb-3">
-            <label for="servicos" class="form-label">Serviços</label>
-            <select id="servicos" name="servicos[]" class="form-select select2" multiple required>
-              @foreach($servicos as $servico)
-                <option value="{{ $servico->id }}"
-                    {{ $pedido->servicos->contains($servico->id) ? 'selected' : '' }}>
-                  {{ $servico->descricao }}
-                </option>
-              @endforeach
-            </select>
-          </div>
-           <!-- Aqui vai aparecer a tabela com as quantidades -->
-  <div id="tabela-quantidades" class="mt-4">
-    <!-- JS preenche isso -->
-  </div>
-        </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-primary">Salvar</button>
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-        </div>
-      </div>
-    </form>
-  </div>
-</div>
-
-
 @endsection
 
 @section('javascripts_bottom')
@@ -145,85 +103,5 @@
       });
     });
   });
-</script>
-
-<script>
-let quantidadesIniciais = {!! json_encode(
-    $pedido->servicos->mapWithKeys(function ($servico) {
-        return [$servico->id => $servico->pivot->quantidade];
-    })
-) !!};
-
-$(document).ready(function() {
-    $('.select2').select2({
-        placeholder: "Selecione os serviços",
-        width: '100%',
-        language: "pt-BR"
-    });
-
-    $('#form-servicos').on('submit', function(e) {
-        e.preventDefault();
-
-        const form = $(this);
-        const url = form.attr('action');
-        const data = form.serialize();
-
-        $.ajax({
-            url: url,
-            type: 'PUT',
-            data: data,
-            success: function(response) {
-                $('#tabela-servicos').html(response.html);
-
-                // Atualiza quantidades iniciais com o que vem do backend (se quiser)
-                quantidadesIniciais = response.quantidades;
-
-                // Fecha o modal
-                const modalEl = document.getElementById('adicionarServicoModal');
-                const modal = bootstrap.Modal.getInstance(modalEl);
-                if (modal) modal.hide();
-            },
-            error: function() {
-                alert('Erro ao atualizar os serviços. Verifique os dados e tente novamente.');
-            }
-        });
-    });
-
-    $('#adicionarServicoModal').on('shown.bs.modal', function () {
-        atualizarTabelaQuantidades();
-    });
-});
-
-function atualizarTabelaQuantidades() {
-    const selecionados = $('#servicos').select2('data');
-    let html = '';
-
-    if (selecionados.length > 0) {
-        html += '<table class="table table-bordered">';
-        html += '<thead><tr><th>Serviço</th><th>Quantidade</th></tr></thead><tbody>';
-
-        selecionados.forEach(item => {
-            const valor = quantidadesIniciais[item.id] ?? 1;
-
-            html += `
-                <tr>
-                    <td>${item.text}</td>
-                    <td>
-                        <input style="text-align: right;" type="text" class="milhares-mask" name="quantidades[${item.id}]" class="form-control" value="${valor}" required>
-                    </td>
-                </tr>
-            `;
-        });
-
-        html += '</tbody></table>';
-    }
-
-    $('#tabela-quantidades').html(html);
-    
-    $('.milhares-mask').mask('#.##0', {
-        reverse: true
-    });    
-}
-
 </script>
 @endsection

@@ -16,7 +16,6 @@
                 <th style="width: 15%;">Quantidade</th>
                 <th style="width: 11%;">Valor Total (R$)</th>
                 <th style="width: 11%;">Status</th>
-                <th style="width: 10%;">Ações</th>
             </tr>
         </thead>
         <tbody>
@@ -43,11 +42,6 @@
                             data-status="Em Andamento">
                             <i class="fas fa-plus text-warning border border-warning rounded-pill p-2 mr-2 " style="font-size: 1rem; width: 32px; height: 32px;"></i>
                             <span class="text-secondary" style="font-size: .9rem; font-style: italic;">Em Elaboração</span>
-                    </button>
-                </td>
-                <td>
-                    <button class="btn btn-danger d-flex justify-content-center remover-servico"  data-pedido-id="{{ $pedido->id }}" data-servico-id="{{ $servico->id }}">
-                        <i class="fa fa-times"></i>
                     </button>
                 </td>
             </tr>
