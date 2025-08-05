@@ -31,7 +31,11 @@
                 <tr>
                     <td>{{ $limite->licitacao->descricao }}</td>
                     <td>{{ $limite->revista->name }}</td>
+                    @if($limite->servico->empresas()->first() != NULL)
                     <td>{{ $limite->servico->empresas()->first()->razao_social }}</td>
+                    @else
+                    <td></td>
+                    @endif
                     <td>{{ $limite->servico->descricao }}</td>
                     <td>{{ number_format($limite->quantidade, 0, ',', '.') }}</td>
                     <td class="text-right">{{ number_format($limite->valor_unitario, 2, ',', '.') }}</td>
