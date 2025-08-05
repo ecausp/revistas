@@ -45,7 +45,7 @@ class LimiteController extends Controller
             'quantidade' => 'required|integer|min:1',
             'valor_unitario' => 'required|numeric|min:0',
         ]);
-        
+
         $limite = new Limite();
 
         $limite = [
@@ -57,8 +57,9 @@ class LimiteController extends Controller
             'editor' => $request->user()->id,
         ];
 
-        Limite::create($limite);
+        
 
+        $novo_limite = Limite::create($limite);
         session()->flash('success', 'Cadastrado com sucesso!');
         return redirect()->route('limites.index');
     }

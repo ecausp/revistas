@@ -31,7 +31,7 @@
                 <tr>
                     <td>{{ $limite->licitacao->descricao }}</td>
                     <td>{{ $limite->revista->name }}</td>
-                    <td>{{ $limite->servico->empresas()->first()->razao_social }}</td>
+                    <td>{{ $limite->servico->empresas()->first() }}</td>
                     <td>{{ $limite->servico->descricao }}</td>
                     <td>{{ number_format($limite->quantidade, 0, ',', '.') }}</td>
                     <td class="text-right">{{ number_format($limite->valor_unitario, 2, ',', '.') }}</td>
