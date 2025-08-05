@@ -7,7 +7,7 @@
         Cadastrar Contato para a empresa {{ $empresa->razao_social }}
     </div>
     <div class="card-body">
-        @can('admin')
+        @can('admin-financeiro')
         <form action="{{ route('contatos.store') }}" method="POST">
             @csrf
             @include('contatos.partials.forms')
