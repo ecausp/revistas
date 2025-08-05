@@ -13,7 +13,7 @@ class ContatoController extends Controller
 {
     public function create(Empresa $empresa)
     {
-        $this->authorize('admin');
+        $this->authorize('admin-financeiro');
         return view('contatos.create', compact('empresa'));
     }
 
@@ -46,10 +46,6 @@ class ContatoController extends Controller
         return redirect()->route('empresas.index');
     }
 
-    public function index()
-    {
-        return view('searchDemo');
-    }
     
    // faz o autocomplete no nome do usuário quando tenta cadastrar um novo;
     public function autocomplete(Request $request)
