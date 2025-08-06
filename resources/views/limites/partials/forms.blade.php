@@ -9,14 +9,25 @@
         </select>
     </div>
 
+    @if(isset($limite))
+        <div class="mb-1">
+        <label for="revista_id" class="form-label">Revista</label>
+        <select class="form-control select2" name="revista_id[]" id="revista_id" disabled>
+            <option value="{{ $limite->revista->id }}">{{ $limite->revista->name }} - {{ $limite->revista->centro_despesa }}</option>
+             <input type="hidden" name="revista_id[]" value="{{ $limite->revista->id }}">
+        </select>
+    </div>
+    
+    @else
     <div class="mb-1">
         <label for="revista_id" class="form-label">Revista</label>
-        <select class="form-control select2" name="revista_id" id="revista_id">
+        <select class="form-control select2" name="revista_id[]" id="revista_id" multiple="multiple">
             @foreach ($revistas as $revista)
             <option value="{{ $revista->id }}">{{ $revista->name }} - {{ $revista->centro_despesa }}</option>
             @endforeach
         </select>
     </div>
+    @endif
 
     <div class="mb-1">
         <label for="servico_id" class="form-label">Serviço</label>
