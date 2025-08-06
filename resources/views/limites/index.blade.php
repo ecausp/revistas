@@ -35,7 +35,7 @@
                     @if($limite->servico->empresas()->first() != NULL)
                     <td>{{ $limite->servico->empresas()->first()->razao_social }}</td>
                     @else
-                    <td></td>
+                    <td style="color: red;">Esse serviço não está associado a nenhuma empresa</td>
                     @endif
 
                     <td>{{ $limite->servico->descricao }}</td>
