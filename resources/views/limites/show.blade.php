@@ -12,6 +12,8 @@
 
         @if($limite->servico->empresas()->first() != NULL)
         <p><strong>Empresa: </strong>{{ $limite->servico->empresas()->first()->razao_social }}</p>
+        @else
+        <p><strong>Empresa: </strong><span style="color: red;">Esse serviço não está associado a nenhuma empresa</span></p>
         @endif
         
         <p><strong>Revista: </strong>{{ $limite->revista->name }} - {{ $limite->revista->centro_despesa }}</p>
