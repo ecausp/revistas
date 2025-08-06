@@ -94,16 +94,22 @@ class LimiteController extends Controller
             'valor_unitario' => 'required|numeric|min:0',
         ]);
 
-        $limite_editado = [
-            'licitacao_id' => $request->licitacao_id,
-            'revista_id' => $request->revista_id,
-            'servico_id' => $request->servico_id,
-            'quantidade' => $request->quantidade,
-            'valor_unitario' => $request->valor_unitario,
-            'editor' => $request->user()->id,
-        ];
 
-        $limite->update($limite_editado);
+ 
+
+        foreach($request->revista_id as $revistaId)
+        {
+            $limite_editado = [
+                'licitacao_id' => $request->licitacao_id,
+                'revista_id' => $revistaId,
+                'servico_id' => $request->servico_id,
+                'quantidade' => $request->quantidade,
+                'valor_unitario' => $request->valor_unitario,
+                'editor' => $request->user()->id,
+            ];
+            $limite->update($limite_editado);
+        }
+
 
         session()->flash('success', 'Atualizado com sucesso!');
         return redirect()->route('limites.index');
