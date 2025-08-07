@@ -8,6 +8,7 @@ use App\Models\Solicitante;
 use App\Models\Revista;
 use App\Models\Licitacao;
 use App\Models\User;
+use App\States\EmElaboracao;
 use Illuminate\Http\Request;
 
 
@@ -101,6 +102,8 @@ class PedidoController extends Controller
             'observacoes' => $validated['observacoes'],
         ]);
 
+        $pedido->status = new EmElaboracao($pedido);
+        
         // Relacionando serviços e quantidades
         $dadosParaSync = [];
         foreach ($validated['servicos'] as $servicoId) {
