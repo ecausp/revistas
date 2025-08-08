@@ -13,8 +13,13 @@ class EmAnaliseEmpresa extends StatusPedido
         return 'Em Análise (Empresa)';
     }
 
-    public function color(): string
+    public function icon(): string
     {
-        return 'green';
+        return 'fas fa-glasses text-success border border-success rounded-pill p-2 mr-2 ml-5';
+    }
+
+    public function icon_style(): string
+    {
+        return 'font-size: 1rem; width: 32px; height: 32px';
     }
 }
