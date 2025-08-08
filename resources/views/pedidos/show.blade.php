@@ -6,8 +6,8 @@
     <div class="card-header h5">
         <div class="d-flex align-items-center">
             Pedido {{ $pedido->id }}
-            <i class="fas fa-plus text-warning border border-warning rounded-pill p-2 mr-2 ml-5" style="font-size: 1rem; width: 32px; height: 32px;"></i>
-            <span class="text-secondary" style="font-size: .9rem; font-style: italic;">Em Andamento</span>
+            <i class="{{ $pedido->status->icon() }}" style="font-size: 1rem; width: 32px; height: 32px;"></i>
+            <span class="text-secondary" style="font-size: .9rem; font-style: italic;">{{ $pedido->status->label() }}</span>
         </div>
     </div>
     @can("acesso-revista")
