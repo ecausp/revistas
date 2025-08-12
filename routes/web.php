@@ -89,6 +89,7 @@ Route::get('/arquivos/{id}/ver', [ArquivoController::class, 'view'])->name('arqu
 Route::put('/pedidos/{pedido}/servicos', [PedidoController::class, 'updateServicos'])->name('pedidos.updateServicos');
 Route::delete('/pedidos/{pedido}/servicos/{servico}', [PedidoController::class, 'removerServicoDoPedido'])->name('pedidos.servicos.remover');
 
+
 // ALTERAÇÕES DE STATUS
 # 1 - envia para analise da empresa
 Route::post('/pedidos/{pedido}/analise-empresa', [PedidoController::class, 'paraAnaliseEmpresa'])
