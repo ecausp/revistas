@@ -37,13 +37,12 @@ class ContatoController extends Controller
             $user = new User();
             $user->name = $request->name;
             $user->email = $request->email;
-
+            $user->telefone = $request->telefone;
             $user->codpes = 0;
             $user->save();
         }
 
         $user->telefone = $request->telefone;
-        //dd($user->id);
         // Agora cria o contato associando a empresa com o usuário
         $contato = new Contato();
         $contato->user_id = $user->id;
