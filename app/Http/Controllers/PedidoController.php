@@ -10,6 +10,9 @@ use App\Models\Licitacao;
 use App\Models\User;
 use Illuminate\Http\Request;
 
+use App\Mail\PedidoEnviadoParaEmpresaMail;
+use Illuminate\Support\Facades\Mail;
+
 #states
 use App\States\EmElaboracao;
 use App\States\EmAnaliseEmpresa;
@@ -278,21 +281,6 @@ public function update(Request $request, Pedido $pedido)
     }
 
 
-    public function paraAnaliseEmpresa(Pedido $pedido)
-    {
-        // Troca o status
-        $pedido->status->transitionTo(EmAnaliseEmpresa::class);
-
-        $pedido->save();
-
-
-        session()->flash('sucess', 'Pedido enviado por e-mail para os contatos da empresa responsável.');
-        
-        $solicitante = Solicitante::where('user_id', auth()->id())->first();
-            $pedidos = Pedido::where('revista_id', $solicitante->revista_id)->get();  
-            return view('pedidos.index', compact('pedidos'));
-    }
-
      public function paraElaboracao(Pedido $pedido)
     {
         // Troca o status
@@ -305,6 +293,24 @@ public function update(Request $request, Pedido $pedido)
         
         $solicitante = Solicitante::where('user_id', auth()->id())->first();
         $pedidos = Pedido::where('revista_id', $solicitante->revista_id)->get();  
+        return view('pedidos.index', compact('pedidos'));
+    }
+
+    public function paraAnaliseEmpresa(Pedido $pedido)
+    {
+        // 1. Atualiza o status do pedido
+        $pedido->status->transitionTo(EmAnaliseEmpresa::class);
+        $pedido->save();
+
+        // 2. Envia o e-mail para a empresa
+        Mail::to("jpedrotoledo@usp.br")->send(new PedidoEnviadoParaEmpresaMail($pedido));
+        
+
+        session()->flash('success', 'Pedido enviado por e-mail para os contatos da empresa responsável.');
+        
+        $solicitante = Solicitante::where('user_id', auth()->id())->first();
+        $pedidos = Pedido::where('revista_id', $solicitante->revista_id)->get();  
+        
         return view('pedidos.index', compact('pedidos'));
     }
 
