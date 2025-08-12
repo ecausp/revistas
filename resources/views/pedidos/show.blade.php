@@ -6,8 +6,8 @@
     <div class="card-header h5">
         <div class="d-flex align-items-center">
             Pedido {{ $pedido->id }}
-            <i class="fas fa-plus text-warning border border-warning rounded-pill p-2 mr-2 ml-5" style="font-size: 1rem; width: 32px; height: 32px;"></i>
-            <span class="text-secondary" style="font-size: .9rem; font-style: italic;">Em Andamento</span>
+            <i class="{{ $pedido->status->icon() }}" style="{{ $pedido->status->icon_style() }}"></i>
+            <span class="text-secondary" style="font-size: .9rem; font-style: italic;">{{ $pedido->status->label() }}</span>
         </div>
     </div>
     @can("acesso-revista")
@@ -25,22 +25,39 @@
 </div>
 
 <div class="container mt-5 col">
+    @if($pedido->status != "em_analise_empresa")
     <a href="{{ route('pedidos.edit', $pedido) }}" class="btn btn-primary"><i class="fas fa-edit"></i>
         Editar</a>
+
     @php
         $user = auth()->user();
     @endphp
 
-    @if(($user->can('admin') || $user->can('acesso-revista')) && !$user->hasRole('financeiro'))
+        @if(($user->can('admin') || $user->can('acesso-revista')) && !$user->hasRole('financeiro'))
  
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#adicionarArquivoModal">
         <i class="fas fa-paperclip"></i> Arquivo(s)
     </button>
 
-    @endif
+        @endif
 
     @include('pedidos.partials.delete')
 
+    <form action="{{ route('pedidos.analise-empresa', $pedido) }}" method="POST" class="d-inline">
+        @csrf
+        <button type="submit" class="btn btn-success" title="Enviar para análise da empresa.">
+            <i class="fas fa-glasses"></i> Enviar
+        </button>
+    </form>
+
+    @else
+    <form action="{{ route('pedidos.elaboracao', $pedido) }}" method="POST" class="d-inline">
+        @csrf
+        <button type="submit" class="btn btn-warning" title="Retornar para elaboracao.">
+            <i class="fas fa-chevron-left"></i> Devolver
+        </button>
+    </form>
+    @endif
     <a href="{{ route('pedidos.index') }}" class="btn btn-secondary"><i class="fas fa-chevron-left"></i>
         Voltar</a>
 

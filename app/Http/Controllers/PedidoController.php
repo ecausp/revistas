@@ -10,6 +10,9 @@ use App\Models\Licitacao;
 use App\Models\User;
 use Illuminate\Http\Request;
 
+#states
+use App\States\EmElaboracao;
+use App\States\EmAnaliseEmpresa;
 
 class PedidoController extends Controller
 {
@@ -101,6 +104,8 @@ class PedidoController extends Controller
             'observacoes' => $validated['observacoes'],
         ]);
 
+        $pedido->status = new EmElaboracao($pedido);
+        
         // Relacionando serviços e quantidades
         $dadosParaSync = [];
         foreach ($validated['servicos'] as $servicoId) {
@@ -273,5 +278,34 @@ public function update(Request $request, Pedido $pedido)
     }
 
 
+    public function paraAnaliseEmpresa(Pedido $pedido)
+    {
+        // Troca o status
+        $pedido->status->transitionTo(EmAnaliseEmpresa::class);
+
+        $pedido->save();
+
+
+        session()->flash('sucess', 'Pedido enviado por e-mail para os contatos da empresa responsável.');
+        
+        $solicitante = Solicitante::where('user_id', auth()->id())->first();
+            $pedidos = Pedido::where('revista_id', $solicitante->revista_id)->get();  
+            return view('pedidos.index', compact('pedidos'));
+    }
+
+     public function paraElaboracao(Pedido $pedido)
+    {
+        // Troca o status
+        $pedido->status->transitionTo(EmElaboracao::class);
+
+        $pedido->save();
+
+
+        session()->flash('error', 'Pedido devolvido para elaboração.');
+        
+        $solicitante = Solicitante::where('user_id', auth()->id())->first();
+        $pedidos = Pedido::where('revista_id', $solicitante->revista_id)->get();  
+        return view('pedidos.index', compact('pedidos'));
+    }
 
 }

@@ -5,7 +5,17 @@
 
         <select class="form-control select2" id="servico_id" name="servicos[]" multiple="multiple">
             @foreach ($servicos as $servico)
-            <option value="{{ $servico->id }}" data-empresa="{{ $servico->empresas->first()->razao_social}}"
+            @php
+                if(isset($servico->empresas)){
+                    $dataEmpresa = $servico->empresas->first()->razao_social;
+                }
+                else
+                {
+                    $dataEmpresa = "Esse serviço não está associado a nenhuma empresa!";
+                }
+
+            @endphp
+            <option value="{{ $servico->id }}" data-empresa="{{ $dataEmpresa}}"
                 data-descricao="{{ $servico->descricao }}" data-unidade="{{ $servico->unidade_medida }}"
                 data-valor="{{ number_format($servico->valor_unitario, 2, ',', '.') }}">
                 {{ $servico->descricao }} - {{ $servico->unidade_medida }}

@@ -2,18 +2,22 @@
 
 namespace App\Models;
 
+use App\States\StatusPedido;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\ModelStates\HasStates;
 
 class Pedido extends Model
 {
     use HasFactory;
+    use HasStates;
 
     protected $fillable = [
     'solicitante_id',
     'revista_id',
     'licitacao_id',
     'observacoes',
+    'status',
 ];
     public function arquivos()
     {
@@ -41,4 +45,11 @@ class Pedido extends Model
     {
         return $this->belongsToMany(Servico::class, 'pedido_servico')->withPivot('quantidade')->withTimestamps();
     }
+    protected function casts(): array
+    {
+        return [
+            'status' => StatusPedido::class,
+        ];
+    }
+
 }
