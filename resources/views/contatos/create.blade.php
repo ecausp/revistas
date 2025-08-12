@@ -57,7 +57,7 @@ $('#search').typeahead({
             // Mapeia os dados retornados para o formato necessário
             return process(data.map(function(item) {
                 return {
-                    id: item.id,
+                    id: item.user_id,
                     name: item.name,
                     email: item.email,
                     telefone: item.telefone,
@@ -92,6 +92,7 @@ $('#search').typeahead({
         } else {
             // usuário NÃO está associado a empresa
             $('#cadastrar').prop('disabled', false);
+            $('#empresa_id').val("{{ $empresa->id }}").prop('readonly', true); // garante empresa atual
             $('#mensagem-usuario').fadeOut();
             $('#telefone').prop('readonly', false);
         }
