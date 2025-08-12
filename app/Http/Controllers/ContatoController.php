@@ -19,24 +19,32 @@ class ContatoController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     */
+    **/
     public function store(Request $request)
     {
         $request->validate([
             'name' => 'required',
-            'email' => 'required',
+            'email' => 'required|email',
             'telefone' => 'required',
-            'empresa_id' => 'required|exists:empresas,id', 
+            'empresa_id' => 'required|exists:empresas,id',
         ]);
 
-        $user = new User();
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->telefone = $request->telefone;
-        // para contornar um usuário externo (funções do Replicado exigem um numero USP)
-        $user->codpes = 0;
-        $user->save();
+        // Tenta buscar um usuário pelo email
+        $user = User::where('email', $request->email)->first();
 
+        if (!$user) {
+            // Usuário não existe, cria novo
+            $user = new User();
+            $user->name = $request->name;
+            $user->email = $request->email;
+
+            $user->codpes = 0;
+            $user->save();
+        }
+
+        $user->telefone = $request->telefone;
+        //dd($user);
+        // Agora cria o contato associando a empresa com o usuário
         $contato = new Contato();
         $contato->user_id = $user->id;
         $contato->empresa_id = $request->empresa_id;
