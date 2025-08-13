@@ -78,21 +78,15 @@ class EmpresaController extends Controller
     // Exibir os detalhes de uma empresa
     public function show(Empresa $empresa)
     {
-                $this->authorize("admin-financeiro");
+        $this->authorize("admin-financeiro");
 
         $updated_at = $empresa->updated_at;
         $editor = User::where('id', $empresa->editor)->first();
         $updated_at = $empresa->updated_at;
         $contatos = Contato::where('empresa_id', $empresa->id)->get();
-      
-        $users = [];
-        $i = 0;
-        foreach ($contatos as $contato) {
-            $users[$i] = User::where('id', $contato->user_id)->get()->all();
-            $i++;
-        };
-        
-        return view('empresas.show', compact('updated_at','empresa','users', 'editor'));
+        //dd($contatos);
+
+        return view('empresas.show', compact('updated_at','empresa','contatos', 'editor'));
 
     }
     

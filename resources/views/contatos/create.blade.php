@@ -57,7 +57,7 @@ $('#search').typeahead({
             // Mapeia os dados retornados para o formato necessário
             return process(data.map(function(item) {
                 return {
-                    id: item.id,
+                    id: item.user_id,
                     name: item.name,
                     email: item.email,
                     telefone: item.telefone,
@@ -74,23 +74,28 @@ $('#search').typeahead({
         return item.display;
     },
     updater: function(item) {
-        // Ao selecionar um item:
         $('#search').val(item.name);
         $('#email').val(item.email).prop('readonly', true);
         $('#telefone').val(item.telefone).prop('readonly', true);
-        // desabilita o botão de cadastrar
-        $('#cadastrar').prop('disabled', true);
 
-        // Preencher o campo de empresa
-        $('#empresa_id').val(item.empresa_id).prop('readonly', true);
+        if(item.empresa_id) {
+            // usuário associado a empresa
+            $('#cadastrar').prop('disabled', true);
+            $('#empresa_id').val(item.empresa_id).prop('readonly', true);
 
-        // Atualizar e Exibir a Mensagem com os dados da empresa
-        $('#mensagem-texto').html(`
-            Este usuário já está cadastrado na empresa: <br>
-            <strong>${item.razao_social}</strong> <br>
-            CNPJ: <strong>${item.cnpj}</strong>
-        `);
-        $('#mensagem-usuario').fadeIn();
+            $('#mensagem-texto').html(`
+                Este usuário já está cadastrado na empresa: <br>
+                <strong>${item.razao_social}</strong> <br>
+                CNPJ: <strong>${item.cnpj}</strong>
+            `);
+            $('#mensagem-usuario').fadeIn();
+        } else {
+            // usuário NÃO está associado a empresa
+            $('#cadastrar').prop('disabled', false);
+            $('#empresa_id').val("{{ $empresa->id }}").prop('readonly', true); // garante empresa atual
+            $('#mensagem-usuario').fadeOut();
+            $('#telefone').prop('readonly', false);
+        }
 
         return item.name;
     }
