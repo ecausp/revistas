@@ -43,11 +43,12 @@ class ContatoController extends Controller
         }
 
         $user->telefone = $request->telefone;
+        $user->save();
+       
         // Agora cria o contato associando a empresa com o usuário
         $contato = new Contato();
         $contato->user_id = $user->id;
         $contato->empresa_id = $request->empresa_id;
-        //dd($contato);
         $contato->save();
 
         session()->flash('success', 'Cadastrado com sucesso!');

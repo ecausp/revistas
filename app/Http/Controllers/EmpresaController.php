@@ -84,7 +84,7 @@ class EmpresaController extends Controller
         $editor = User::where('id', $empresa->editor)->first();
         $updated_at = $empresa->updated_at;
         $contatos = Contato::where('empresa_id', $empresa->id)->get();
-        dd($contatos);
+        //dd($contatos);
 
         return view('empresas.show', compact('updated_at','empresa','contatos', 'editor'));
 
