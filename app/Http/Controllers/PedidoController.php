@@ -149,12 +149,14 @@ class PedidoController extends Controller
      */
     public function show(Pedido $pedido)
     {
-        $this->authorize("acesso-revista");
         $licitacao = $pedido->licitacao;
         $solicitante = $pedido->solicitante;
         $servicos = Servico::all();
 
-        if(Solicitante::where('user_id', auth()->id())->exists()|| auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro'))
+        // o show exibe QUALQUER pedido pra QUALQUER solicitante, eu preciso filtrar os pedidos que pertencem às revistas que o solicitante logado faz parte;
+
+        // 1 - se for admin ou financeiro, ou entao se for solicitante da revista que fez o pedido
+        if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro') || auth()->user()->id == $solicitante->user->id)
             return view('pedidos.show', compact('pedido', 'licitacao', 'solicitante', 'servicos'));
         else
         {
