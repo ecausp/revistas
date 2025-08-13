@@ -13,9 +13,8 @@ return new class extends Migration
     {
         Schema::create('contatos', function (Blueprint $table) {
             $table->id();
-            $table->integer('contato_id');$table->foreignId('empresa_id')
-                  ->constrained('empresas')
-                  ->onDelete('cascade');
+            $table->integer('contato_id');
+            $table->integer('empresa_id');
             $table->timestamps();
         });
     }
