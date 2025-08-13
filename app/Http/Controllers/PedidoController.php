@@ -7,7 +7,8 @@ use App\Models\Servico;
 use App\Models\Solicitante;
 use App\Models\Revista;
 use App\Models\Licitacao;
-use App\Models\User;
+use App\Models\Empresa;
+use App\Models\Contato;
 use Illuminate\Http\Request;
 
 use App\Mail\PedidoEnviadoParaEmpresaMail;
@@ -24,18 +25,29 @@ class PedidoController extends Controller
      */
     public function index()
     {
-        $this->authorize("acesso-revista");
         \UspTheme::activeUrl('pedidos');
 
+        // se o usuário é financeiro ou admin, pode ver todos os pedidos
         if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro'))
         {
             $pedidos = Pedido::all(); 
             return view('pedidos.index', compact('pedidos'));
         }
+        // se o usuário é solicitante, pode ver os pedidos da revista dele
         else if(Solicitante::where('user_id', auth()->id())->exists())
         {   
             $solicitante = Solicitante::where('user_id', auth()->id())->first();
             $pedidos = Pedido::where('revista_id', $solicitante->revista_id)->get();  
+            return view('pedidos.index', compact('pedidos'));
+        }
+        // se o usuário é contato, pode ver os pedidos que tem serviço da empresa que ele está associado
+        else if(Contato::where('user_id', auth()->id())->first())
+        {
+            $contato = Contato::where('user_id', auth()->id())->first();
+            $empresa = Empresa::where('id', $contato->empresa_id)->first();
+            $servicos = $empresa->servicos->pluck('id');
+            $pedidos = Pedido::whereHas('servicos', function ($query) use ($servicos) {
+                $query->whereIn('servicos.id', $servicos);})->get();
             return view('pedidos.index', compact('pedidos'));
         }
         else
