@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Servico;
 use App\Models\User;
+use App\Models\Contato;
+use App\Models\Empresa;
 use Illuminate\Http\Request;
 
 class ServicoController extends Controller
@@ -13,12 +15,26 @@ class ServicoController extends Controller
      */
     public function index()
     {   
-                $this->authorize("admin-financeiro");
         \UspTheme::activeUrl('servicos');
+        if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro'))
+        {
+            $servicos = Servico::all();
+            return view('servicos.index', compact('servicos'));
+        }
+        else if(Contato::where('user_id', auth()->id())->first())
+        {
+            $contato = Contato::where('user_id', auth()->id())->first();
+            $empresa = Empresa::where('id', $contato->empresa_id)->first();
+            $servicos = $empresa->servicos;
 
-        $servicos = Servico::all();
-        
-        return view('servicos.index', compact('servicos'));
+            return view('servicos.index', compact('servicos'));
+        }
+        else
+        {
+            session()->flash('error', 'Usuário não está associado a nenhuma empresa!');
+            
+            return redirect()->route('home');
+        }
     }
 
     /**
@@ -26,7 +42,7 @@ class ServicoController extends Controller
      */
     public function create()
     {
-                $this->authorize("admin-financeiro");
+        $this->authorize("admin-financeiro");
         \UspTheme::activeUrl('servicos/create');
 
         $unidades_medida = $stringArray = explode(",", env('UNIDADES_MEDIDA'));
