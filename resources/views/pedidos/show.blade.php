@@ -10,7 +10,6 @@
             <span class="text-secondary" style="font-size: .9rem; font-style: italic;">{{ $pedido->status->label() }}</span>
         </div>
     </div>
-    @can("acesso-revista")
     <div class="card-body">
         @include('pedidos.partials.cabecalho')
 
@@ -62,7 +61,6 @@
         Voltar</a>
 
 </div>
-@endcan
 
 <!-- Modal de Arquivos -->
 <div class="modal fade" id="adicionarArquivoModal" tabindex="-1" aria-labelledby="adicionarArquivoModalLabel"

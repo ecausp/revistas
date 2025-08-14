@@ -152,12 +152,19 @@ class PedidoController extends Controller
         $licitacao = $pedido->licitacao;
         $solicitante = $pedido->solicitante;
         $servicos = Servico::all();
-
         // o show exibe QUALQUER pedido pra QUALQUER solicitante, eu preciso filtrar os pedidos que pertencem às revistas que o solicitante logado faz parte;
 
         // 1 - se for admin ou financeiro, ou entao se for solicitante da revista que fez o pedido
         if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro') || auth()->user()->id == $solicitante->user->id)
             return view('pedidos.show', compact('pedido', 'licitacao', 'solicitante', 'servicos'));
+
+        // 2 - se for contato da empresa, tem que cumprir os seguintes requisitos:
+            // a) o status tem que ser "em_analise_empresa
+            // b) a empresa dele tem que estar prestando algum serviço desse pedido
+        else if(Contato::where('user_id', auth()->id())->first() && $pedido->status == "em_analise_empresa")
+        {
+            return view('pedidos.show', compact('pedido', 'licitacao', 'solicitante', 'servicos'));
+        }
         else
         {
             session()->flash('danger', 'Usuário não cadastrado como solicitante. Favor contatar financeiro.');
@@ -305,9 +312,29 @@ public function update(Request $request, Pedido $pedido)
 
         session()->flash('error', 'Pedido devolvido para elaboração.');
         
-        $solicitante = Solicitante::where('user_id', auth()->id())->first();
-        $pedidos = Pedido::where('revista_id', $solicitante->revista_id)->get();  
-        return view('pedidos.index', compact('pedidos'));
+        // se o usuário é financeiro ou admin, pode ver todos os pedidos
+        if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro'))
+        {
+            $pedidos = Pedido::all(); 
+            return view('pedidos.index', compact('pedidos'));
+        }
+        // se o usuário é solicitante, pode ver os pedidos da revista dele
+        else if(Solicitante::where('user_id', auth()->id())->exists())
+        {   
+            $solicitante = Solicitante::where('user_id', auth()->id())->first();
+            $pedidos = Pedido::where('revista_id', $solicitante->revista_id)->get();  
+            return view('pedidos.index', compact('pedidos'));
+        }
+        // se o usuário é contato, pode ver os pedidos que tem serviço da empresa que ele está associado
+        else if(Contato::where('user_id', auth()->id())->first())
+        {
+            $contato = Contato::where('user_id', auth()->id())->first();
+            $empresa = Empresa::where('id', $contato->empresa_id)->first();
+            $servicos = $empresa->servicos->pluck('id');
+            $pedidos = Pedido::whereHas('servicos', function ($query) use ($servicos) {
+                $query->whereIn('servicos.id', $servicos);})->get();
+            return view('pedidos.index', compact('pedidos'));
+        }
     }
 
     public function paraAnaliseEmpresa(Pedido $pedido)
@@ -322,10 +349,29 @@ public function update(Request $request, Pedido $pedido)
 
         session()->flash('success', 'Pedido enviado por e-mail para os contatos da empresa responsável.');
         
-        $solicitante = Solicitante::where('user_id', auth()->id())->first();
-        $pedidos = Pedido::where('revista_id', $solicitante->revista_id)->get();  
-        
-        return view('pedidos.index', compact('pedidos'));
+        // se o usuário é financeiro ou admin, pode ver todos os pedidos
+        if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro'))
+        {
+            $pedidos = Pedido::all(); 
+            return view('pedidos.index', compact('pedidos'));
+        }
+        // se o usuário é solicitante, pode ver os pedidos da revista dele
+        else if(Solicitante::where('user_id', auth()->id())->exists())
+        {   
+            $solicitante = Solicitante::where('user_id', auth()->id())->first();
+            $pedidos = Pedido::where('revista_id', $solicitante->revista_id)->get();  
+            return view('pedidos.index', compact('pedidos'));
+        }
+        // se o usuário é contato, pode ver os pedidos que tem serviço da empresa que ele está associado
+        else if(Contato::where('user_id', auth()->id())->first())
+        {
+            $contato = Contato::where('user_id', auth()->id())->first();
+            $empresa = Empresa::where('id', $contato->empresa_id)->first();
+            $servicos = $empresa->servicos->pluck('id');
+            $pedidos = Pedido::whereHas('servicos', function ($query) use ($servicos) {
+                $query->whereIn('servicos.id', $servicos);})->get();
+            return view('pedidos.index', compact('pedidos'));
+        }
     }
 
 }
