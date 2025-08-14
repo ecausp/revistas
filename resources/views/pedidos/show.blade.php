@@ -25,20 +25,15 @@
 
 <div class="container mt-5 col">
     @if($pedido->status != "em_analise_empresa")
-    <a href="{{ route('pedidos.edit', $pedido) }}" class="btn btn-primary"><i class="fas fa-edit"></i>
-        Editar</a>
+    <a href="{{ route('pedidos.edit', $pedido) }}" class="btn btn-primary"><i class="fas fa-edit"></i>Editar</a>
 
-    @php
-        $user = auth()->user();
-    @endphp
-
-        @if(($user->can('admin') || $user->can('acesso-revista')) && !$user->hasRole('financeiro'))
+    @if((auth()->user()->can('admin') || auth()->user()->can('acesso-revista')) && !auth()->user()->hasRole('financeiro'))
  
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#adicionarArquivoModal">
-        <i class="fas fa-paperclip"></i> Arquivo(s)
-    </button>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#adicionarArquivoModal">
+            <i class="fas fa-paperclip"></i> Arquivo(s)
+        </button>
 
-        @endif
+    @endif
 
     @include('pedidos.partials.delete')
 
@@ -49,7 +44,7 @@
         </button>
     </form>
 
-    @else
+    @elseif($pedido->status == "em_analise_empresa" && auth()->user()->hasRole('financeiro') || auth()->user()->can('acesso-empresa'))
     <form action="{{ route('pedidos.elaboracao', $pedido) }}" method="POST" class="d-inline">
         @csrf
         <button type="submit" class="btn btn-warning" title="Retornar para elaboracao.">
