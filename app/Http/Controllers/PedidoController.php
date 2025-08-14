@@ -343,12 +343,28 @@ public function update(Request $request, Pedido $pedido)
         $pedido->status->transitionTo(EmAnaliseEmpresa::class);
         $pedido->save();
 
-        // 2. Envia o e-mail para a empresa
-        Mail::to("jpedrotoledo@usp.br")->send(new PedidoEnviadoParaEmpresaMail($pedido));
+
+        $servicos = $pedido->servicos()->pluck('servicos.id');
+                
+        $empresas = Empresa::whereHas('servicos', function ($query) use ($servicos) {
+                $query->whereIn('servicos.id', $servicos);})->get();
+            $empresas->load('contatos'); // faz uma única query pra todos
+
+    $contatos = $empresas
+        ->pluck('contatos')   // pega a coleção de contatos de cada empresa
+        ->flatten()           // junta tudo
+        ->values();           // reindexa
+    
+
         
+        foreach($contatos as $contato){
+            Mail::to($contato->user->email)->send(new PedidoEnviadoParaEmpresaMail($pedido));
+        
+        }        
 
         session()->flash('success', 'Pedido enviado por e-mail para os contatos da empresa responsável.');
         
+        // redireciona o usuario:
         // se o usuário é financeiro ou admin, pode ver todos os pedidos
         if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro'))
         {
