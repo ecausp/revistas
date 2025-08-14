@@ -84,21 +84,43 @@ function atualizarTabelaServicosSelecionados() {
 
             const valor = parseFloat(valorBr.replace('.', '').replace(',', '.')) || 0;
 
+            if(empresa == "Esse serviço não está associado a nenhuma empresa!")
+            {
+                html += 
+                `<tr data-id="${id}">
+                    <td style="color: red;">${empresa}</td>
+                    <td>${descricao}</td>
+                    <td>${unidade}</td>
+                    <td>
+                        <input type="text" name="quantidades[${id}]" class="form-control quantidade-input milhares-mask" data-id="${id}" />
+                    </td>
 
-            html += `<tr data-id="${id}">
-                        <td>${empresa}</td>
-                        <td>${descricao}</td>
-                        <td>${unidade}</td>
-                        <td>
-                            <input type="text" name="quantidades[${id}]" class="form-control quantidade-input milhares-mask" data-id="${id}" />
-                        </td>
+                    <td class="text-right">${valor.toFixed(2).replace('.', ',')}</td>
+                    <td class="valor-total text-right" data-id="${id}">0,00</td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-danger remover-servico" data-id="1"><i class="fa fa-times" aria-hidden="true"></i></button>
+                    </td>
+                </tr>`;
+            }
+            else
+            {
+                html +=
+                `<tr data-id="${id}">
+                    <td>${empresa}</td>
+                    <td>${descricao}</td>
+                    <td>${unidade}</td>
+                    <td>
+                        <input type="text" name="quantidades[${id}]" class="form-control quantidade-input milhares-mask" data-id="${id}" />
+                    </td>
 
-                        <td class="text-right">${valor.toFixed(2).replace('.', ',')}</td>
-                        <td class="valor-total text-right" data-id="${id}">0,00</td>
-                        <td class="text-center">
-                            <button class="btn btn-sm btn-danger remover-servico" data-id="1"><i class="fa fa-times" aria-hidden="true"></i></button>
-                        </td>
-                    </tr>`;
+                    <td class="text-right">${valor.toFixed(2).replace('.', ',')}</td>
+                    <td class="valor-total text-right" data-id="${id}">0,00</td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-danger remover-servico" data-id="1"><i class="fa fa-times" aria-hidden="true"></i></button>
+                    </td>
+                </tr>`;
+
+            }
         });
 
         // Linha de total será adicionada depois do fechamento do loop
