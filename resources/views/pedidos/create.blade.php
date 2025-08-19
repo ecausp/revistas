@@ -65,6 +65,26 @@ $('form').on('submit', function() {
     });
 });
 
+$('#servico_id').on('change', function() {
+    let mostrarAviso = false;
+
+    $(this).find('option:selected').each(function() {
+        let empresa = $(this).data('empresa');
+        if (empresa.includes("não está associado")) {
+            mostrarAviso = true;
+        }
+    });
+
+    if (mostrarAviso) {
+        $('#aviso-irregular').show();
+        $('#btn-salvar').prop('disabled', true);
+    } else {
+        $('#aviso-irregular').hide();
+        $('#btn-salvar').prop('disabled', false);
+    }
+});
+
+
 function atualizarTabelaServicosSelecionados() {
     const selecionados = $('#servico_id').val(); // array de IDs selecionados
     let html = '';
