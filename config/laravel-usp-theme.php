@@ -57,7 +57,7 @@ $submenu1 = [
     [
         'type' => 'header',
         'text' => '<i class="fas fa-tasks" aria-hidden="true"></i> Serviços',
-        'can' => 'admin-financeiro'
+        'can' => 'acesso-empresa'
     ],
     [
         'text' => '<i class="fas fa-plus-circle" aria-hidden="true"></i> Cadastrar',
@@ -67,7 +67,7 @@ $submenu1 = [
     [
         'text' => '<i class="fas fa-list-ul" aria-hidden="true"></i> Listar',
         'url' => 'servicos',
-        'can' => 'admin-financeiro'
+        'can' => 'acesso-empresa'
     ],
     [
         'type' => 'divider',
@@ -115,7 +115,7 @@ $menu = [
     [
         'text' => '<i class="fas fa-tools"></i> Financeiro',
         'submenu' => $submenu1,
-        'can' => 'admin-financeiro',
+        'can' => 'acesso-empresa',
     ],
     [
         'text' => '<i class="fas fa-tools"></i> Pedidos',
