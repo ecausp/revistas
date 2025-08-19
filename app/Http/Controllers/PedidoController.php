@@ -179,6 +179,12 @@ class PedidoController extends Controller
     public function edit(Pedido $pedido)
     {
         $this->authorize("acesso-revista");
+        if($pedido->status == "em_analise_empresa")
+        {
+            session()->flash('danger', 'Pedido em análise pela empresa, não pode ser editado.');
+            return redirect()->route('home');
+
+        }
 
         if(Solicitante::where('user_id', auth()->id())->exists())
         {
