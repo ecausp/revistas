@@ -35,6 +35,7 @@ $submenu1 = [
     ],
     [
         'type' => 'divider',
+        'can' => 'admin-financeiro'
     ],
     [
         'type' => 'header',
@@ -89,6 +90,7 @@ $submenu1 = [
     ],
     [
         'type' => 'divider',
+        'can' => 'admin-financeiro'
     ],
     [
         'type' => 'header',
