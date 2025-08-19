@@ -16,11 +16,13 @@ class ServicoController extends Controller
     public function index()
     {   
         \UspTheme::activeUrl('servicos');
+        // admin e financeiro podem visualizar todos os servicos
         if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro'))
         {
             $servicos = Servico::all();
             return view('servicos.index', compact('servicos'));
         }
+        // se o usuario for contato de uma empresa, só pode ver os serviços prestados pela sua empresa
         else if(Contato::where('user_id', auth()->id())->first())
         {
             $contato = Contato::where('user_id', auth()->id())->first();
@@ -89,6 +91,27 @@ class ServicoController extends Controller
      */
     public function show(Servico $servico)
     {
+        // se o usuario logado for contato de uma empresa, só pode abrir os serviços que ele presta
+        if(Contato::where('user_id', auth()->id())->first())
+        {
+            $contato = Contato::where('user_id', auth()->id())->first();
+            $empresa_do_contato = Empresa::where('id', $contato->empresa_id)->first();
+            $empresas_prestantes = $servico->empresas->pluck('id');
+            if($empresas_prestantes->contains($empresa_do_contato->id))
+            {
+                $editor = User::where('id', $servico->editor)->first();
+                $updated_at = $servico->updated_at;
+
+                return view('servicos.show', compact('servico', 'updated_at', 'editor')); 
+            }
+            else
+            {
+                session()->flash('error', 'Usuário não autorizado a acessar esse recurso');
+        
+                return redirect()->route('home');
+
+            }
+        }
 
         $editor = User::where('id', $servico->editor)->first();
         $updated_at = $servico->updated_at;
