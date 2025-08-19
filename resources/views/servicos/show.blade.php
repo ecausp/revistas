@@ -6,7 +6,6 @@
     <div class="card-header h5">
         Serviço: {{ $servico->descricao }}
     </div>
-    @can("admin-financeiro")
     <div class="card-body">
         <p><strong>Unidade de medida: </strong>{{ $servico->unidade_medida }}</p>
         <p><strong>Valor Unitário: </strong>{{ number_format($servico->valor_unitario, 2, ',', '.') }}</p>
@@ -24,6 +23,5 @@
 
         </div>
     </div>
-    @endcan
 </div>
 @endsection

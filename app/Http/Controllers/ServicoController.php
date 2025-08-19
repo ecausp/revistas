@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Servico;
 use App\Models\User;
+use App\Models\Contato;
+use App\Models\Empresa;
 use Illuminate\Http\Request;
 
 class ServicoController extends Controller
@@ -13,12 +15,28 @@ class ServicoController extends Controller
      */
     public function index()
     {   
-                $this->authorize("admin-financeiro");
         \UspTheme::activeUrl('servicos');
+        // admin e financeiro podem visualizar todos os servicos
+        if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro'))
+        {
+            $servicos = Servico::all();
+            return view('servicos.index', compact('servicos'));
+        }
+        // se o usuario for contato de uma empresa, só pode ver os serviços prestados pela sua empresa
+        else if(Contato::where('user_id', auth()->id())->first())
+        {
+            $contato = Contato::where('user_id', auth()->id())->first();
+            $empresa = Empresa::where('id', $contato->empresa_id)->first();
+            $servicos = $empresa->servicos;
 
-        $servicos = Servico::all();
-        
-        return view('servicos.index', compact('servicos'));
+            return view('servicos.index', compact('servicos'));
+        }
+        else
+        {
+            session()->flash('error', 'Usuário não está associado a nenhuma empresa!');
+            
+            return redirect()->route('home');
+        }
     }
 
     /**
@@ -26,7 +44,7 @@ class ServicoController extends Controller
      */
     public function create()
     {
-                $this->authorize("admin-financeiro");
+        $this->authorize("admin-financeiro");
         \UspTheme::activeUrl('servicos/create');
 
         $unidades_medida = $stringArray = explode(",", env('UNIDADES_MEDIDA'));
@@ -73,7 +91,27 @@ class ServicoController extends Controller
      */
     public function show(Servico $servico)
     {
-                $this->authorize("admin-financeiro");
+        // se o usuario logado for contato de uma empresa, só pode abrir os serviços que ele presta
+        if(Contato::where('user_id', auth()->id())->first())
+        {
+            $contato = Contato::where('user_id', auth()->id())->first();
+            $empresa_do_contato = Empresa::where('id', $contato->empresa_id)->first();
+            $empresas_prestantes = $servico->empresas->pluck('id');
+            if($empresas_prestantes->contains($empresa_do_contato->id))
+            {
+                $editor = User::where('id', $servico->editor)->first();
+                $updated_at = $servico->updated_at;
+
+                return view('servicos.show', compact('servico', 'updated_at', 'editor')); 
+            }
+            else
+            {
+                session()->flash('error', 'Usuário não autorizado a acessar esse recurso');
+        
+                return redirect()->route('home');
+
+            }
+        }
 
         $editor = User::where('id', $servico->editor)->first();
         $updated_at = $servico->updated_at;
