@@ -31,16 +31,15 @@
 
 
     <div id="tabela-servicos-selecionados" class="mt-3"></div>
+    
+    <div id="aviso-irregular" class="alert alert-danger mt-2" style="display:none;">
+        Não foi possível cadastrar o pedido. Há um serviço sem empresa associada. Entre em contato com o setor financeiro.
+    </div>
+
 
     <div class="mb-1">
-        @if($servico->empresas->first() == null)
-        <p style="color: red">Esse pedido se encontra irregular. <br>
-        O Serviço solicitado não está associado a nenhuma empresa.
-        Favor entrar em contato com o setor financeiro.</p>
-        @else
         <label for="observacoes">Observações</label>
         <textarea class="form-control" id="observacoes" name="observacoes" rows="3"></textarea>
-        @endif
     </div>
 
     <div class="mb-1">
@@ -58,11 +57,7 @@
     </div>
 
     <div class="mt-5">
-        @if($servico->empresas->first() == null)
-        <button type="submit" class="btn btn-primary" disabled><i class="fas fa-save"></i> Salvar</button>
-        @else
-        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salvar</button>
-        @endif
+        <button id="btn-salvar" type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salvar</button>
         <a href="{{ route('pedidos.index') }}" class="btn btn-secondary"><i class="fas fa-chevron-left"></i>
             Voltar</a>
 
