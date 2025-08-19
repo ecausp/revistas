@@ -89,7 +89,6 @@ class ServicoController extends Controller
      */
     public function show(Servico $servico)
     {
-                $this->authorize("admin-financeiro");
 
         $editor = User::where('id', $servico->editor)->first();
         $updated_at = $servico->updated_at;
