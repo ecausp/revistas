@@ -152,19 +152,32 @@ class PedidoController extends Controller
         $licitacao = $pedido->licitacao;
         $solicitante = $pedido->solicitante;
         $servicos = Servico::all();
-        // o show exibe QUALQUER pedido pra QUALQUER solicitante, eu preciso filtrar os pedidos que pertencem às revistas que o solicitante logado faz parte;
 
-        // 1 - se for admin ou financeiro, ou entao se for solicitante da revista que fez o pedido
-        if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro') || auth()->user()->id == $solicitante->user->id)
+        // se for admin ou financeiro pode ver sem restrição
+        if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro'))
             return view('pedidos.show', compact('pedido', 'licitacao', 'solicitante', 'servicos'));
 
-        // 2 - se for contato da empresa, tem que cumprir os seguintes requisitos:
-            // a) o status tem que ser "em_analise_empresa
+        //se for contato da empresa, tem que cumprir os seguintes requisitos:
+            // a) o status tem que ser "em_analise_empresa"
             // b) a empresa dele tem que estar prestando algum serviço desse pedido
         else if(Contato::where('user_id', auth()->id())->first() && $pedido->status == "em_analise_empresa")
         {
-            return view('pedidos.show', compact('pedido', 'licitacao', 'solicitante', 'servicos'));
+            //já verificou que ele é contato e que o status é o correto, agora falta verificar se a empresa dele presta o serviço;
+            $empresa_do_contato = Contato::where('user_id', auth()->id())->first()->empresa_id;
+            $empresas_do_pedido = Empresa::whereHas('servicos', function ($query) use ($pedido) {
+                $query->whereIn('servicos.id', $pedido->servicos->pluck('id'));
+            })->pluck('id');
+            
+            // se o contato está associado a uma empresa que presta algum dos serviços do pedido, ele pode acessar a visualização
+            if ($empresas_do_pedido->contains($empresa_do_contato)) {
+                return view('pedidos.show', compact('pedido', 'licitacao', 'solicitante', 'servicos'));
+            } 
+            else {
+            session()->flash('danger', 'Usuário não cadastrado como solicitante. Favor contatar financeiro.');
+            return redirect()->route('home');
+            }
         }
+
         else
         {
             session()->flash('danger', 'Usuário não cadastrado como solicitante. Favor contatar financeiro.');
@@ -180,6 +193,13 @@ class PedidoController extends Controller
     {
         $this->authorize("acesso-revista");
 
+        // se o pedido já foi enviado para a empresa, ele não pode ser editado;
+        if($pedido->status == "em_analise_empresa")
+        {
+            session()->flash('danger', 'Pedido em análise pela empresa, não pode ser editado.');
+            return redirect()->route('home');
+        }
+
         if(Solicitante::where('user_id', auth()->id())->exists())
         {
             $solicitante = Solicitante::where('user_id', auth()->user()->id)->first();
@@ -188,25 +208,18 @@ class PedidoController extends Controller
                 $query->where('revista_id', $revista->id);})->get();
             return view('pedidos.edit', compact('pedido', 'servicos'));
         }
-        else if(auth()->user()->hasRole('admin'))
+        else
         {
             session()->flash('danger', 'Esse admin não está cadastrado como solicitante e não pode editar esse pedido.');
             return redirect()->route('pedidos.index');
         }
 
-
-        else
-        {
-            session()->flash('danger', 'Usuário não cadastrado como solicitante. Favor contatar financeiro.');
-            return redirect()->route('home');
-
-        }
     }
 
     /**
      * Update the specified resource in storage.
      */
-public function update(Request $request, Pedido $pedido)
+    public function update(Request $request, Pedido $pedido)
 {
     // Valide se quiser:
     $request->validate([
@@ -236,7 +249,7 @@ public function update(Request $request, Pedido $pedido)
         return redirect()->route('home');
 
     }
-}
+    }
 
 
     /**

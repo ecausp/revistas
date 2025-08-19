@@ -24,6 +24,7 @@
 </div>
 
 <div class="container mt-5 col">
+    <!-- se o pedido ainda não foi enviado para a empresa, ele pode ser editado/deletado e arquivos podem ser adicionados; -->
     @if($pedido->status != "em_analise_empresa")
     <a href="{{ route('pedidos.edit', $pedido) }}" class="btn btn-primary"><i class="fas fa-edit"></i>Editar</a>
 
@@ -44,6 +45,7 @@
         </button>
     </form>
 
+    <!-- se o pedido já foi enviado para a empresa e o usuario que está visualizando o pedido é do financeiro ou tem acesso da empresa, pode devolver o pedido-->
     @elseif($pedido->status == "em_analise_empresa" && auth()->user()->hasRole('financeiro') || auth()->user()->can('acesso-empresa'))
     <form action="{{ route('pedidos.elaboracao', $pedido) }}" method="POST" class="d-inline">
         @csrf
