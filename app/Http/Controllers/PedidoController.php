@@ -208,7 +208,6 @@ class PedidoController extends Controller
      */
     public function edit(Pedido $pedido)
     {
-        $this->authorize("acesso-revista");
 
         // se o pedido já foi enviado para a empresa, ele não pode ser editado;
         if($pedido->status == "em_analise_empresa")
@@ -217,7 +216,8 @@ class PedidoController extends Controller
             return redirect()->route('home');
         }
 
-        if(Solicitante::where('user_id', auth()->id())->exists())
+        // se o usuário é solicitante, só pode editar pedidos da revista dele 
+        else if(Solicitante::where('user_id', auth()->id())->exists() && $pedido->revista->id == Solicitante::where('user_id', auth()->id())->first()->revista->id)
         {
             $solicitante = Solicitante::where('user_id', auth()->user()->id)->first();
             $revista = Revista::where('id', $solicitante->revista_id)->first();
@@ -227,7 +227,7 @@ class PedidoController extends Controller
         }
         else
         {
-            session()->flash('danger', 'Esse admin não está cadastrado como solicitante e não pode editar esse pedido.');
+            session()->flash('danger', 'Esse usuário não pode editar esse pedido.');
             return redirect()->route('pedidos.index');
         }
 
