@@ -366,54 +366,46 @@ class PedidoController extends Controller
 
     public function paraAnaliseEmpresa(Pedido $pedido)
     {
-        // 1. Atualiza o status do pedido
-        $pedido->status->transitionTo(EmAnaliseEmpresa::class);
-        $pedido->save();
+
+        // só pode ser enviado se o usuário for:
+            // a) solicitante da revista 
+            // b) se a revista do pedido for a revista do usuário
+        if(Solicitante::where('user_id', auth()->id())->exists() && $pedido->revista->id == Solicitante::where('user_id', auth()->id())->first()->revista->id)
+        {
+            // 1. Atualiza o status do pedido
+            $pedido->status->transitionTo(EmAnaliseEmpresa::class);
+            $pedido->save();
 
 
-        $servicos = $pedido->servicos()->pluck('servicos.id');
-                
-        $empresas = Empresa::whereHas('servicos', function ($query) use ($servicos) {
-                $query->whereIn('servicos.id', $servicos);})->get();
+            $servicos = $pedido->servicos()->pluck('servicos.id');
+                    
+            $empresas = Empresa::whereHas('servicos', function ($query) use ($servicos) {
+                    $query->whereIn('servicos.id', $servicos);})->get();
             $empresas->load('contatos'); // faz uma única query pra todos
 
-        $contatos = $empresas
-            ->pluck('contatos')   // pega a coleção de contatos de cada empresa
-            ->flatten()           // junta tudo
-            ->values();           // reindexa
-    
-
-        foreach($contatos as $contato){
-            Mail::to($contato->user->email)->send(new PedidoEnviadoParaEmpresaMail($pedido));
+            $contatos = $empresas
+                ->pluck('contatos')   // pega a coleção de contatos de cada empresa
+                ->flatten()           // junta tudo
+                ->values();           // reindexa
         
-        }        
+            foreach($contatos as $contato){
+                Mail::to($contato->user->email)->send(new PedidoEnviadoParaEmpresaMail($pedido));
+            }        
 
-        session()->flash('success', 'Pedido enviado por e-mail para os contatos da empresa responsável.');
-        
-        // redireciona o usuario:
-        // se o usuário é financeiro ou admin, pode ver todos os pedidos
-        if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro'))
-        {
-            $pedidos = Pedido::all(); 
-            return view('pedidos.index', compact('pedidos'));
-        }
-        // se o usuário é solicitante, pode ver os pedidos da revista dele
-        else if(Solicitante::where('user_id', auth()->id())->exists())
-        {   
+            session()->flash('success', 'Pedido enviado por e-mail para os contatos da empresa responsável.');
+            
+            // redireciona o usuario:
             $solicitante = Solicitante::where('user_id', auth()->id())->first();
             $pedidos = Pedido::where('revista_id', $solicitante->revista_id)->get();  
             return view('pedidos.index', compact('pedidos'));
         }
-        // se o usuário é contato, pode ver os pedidos que tem serviço da empresa que ele está associado
-        else if(Contato::where('user_id', auth()->id())->first())
+
+        else
         {
-            $contato = Contato::where('user_id', auth()->id())->first();
-            $empresa = Empresa::where('id', $contato->empresa_id)->first();
-            $servicos = $empresa->servicos->pluck('id');
-            $pedidos = Pedido::whereHas('servicos', function ($query) use ($servicos) {
-                $query->whereIn('servicos.id', $servicos);})->get();
-            return view('pedidos.index', compact('pedidos'));
+            session()->flash('danger', 'Usuário não é solicitante da revista e não pode enviar pedidos para a empresa.');
+            return redirect()->route('home');
         }
     }
+
 
 }
