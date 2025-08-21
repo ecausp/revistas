@@ -143,7 +143,6 @@ class PedidoController extends Controller
         }
     }
 
-
     /**
      * Display the specified resource.
      */
@@ -152,6 +151,7 @@ class PedidoController extends Controller
         $licitacao = $pedido->licitacao;
         $solicitante = $pedido->solicitante;
         $servicos = Servico::all();
+        
 
         // se for admin ou financeiro pode ver sem restrição
         if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro'))
@@ -173,14 +173,31 @@ class PedidoController extends Controller
                 return view('pedidos.show', compact('pedido', 'licitacao', 'solicitante', 'servicos'));
             } 
             else {
-            session()->flash('danger', 'Usuário não cadastrado como solicitante. Favor contatar financeiro.');
+            session()->flash('danger', 'Pedido não registrado com serviços da sua empresa.');
             return redirect()->route('home');
             }
         }
+        // Se for um solicitante de uma revista, pode visualizar os pedidos da sua revista
+        else if(Solicitante::where('user_id', auth()->id())->exists())
+        {
+            $revista_do_pedido = $pedido->revista->id;
+            $revista_do_usuario = Solicitante::where('user_id', auth()->id())->first()->revista->id;
+            
+            if($revista_do_usuario == $revista_do_pedido)
+            {
+                return view('pedidos.show', compact('pedido', 'licitacao', 'solicitante', 'servicos'));
+            }        
+            else
+            {
+            session()->flash('danger', 'Esse pedido não pertence à sua revista.');
+            return redirect()->route('home');
 
+            }
+        }
+        
         else
         {
-            session()->flash('danger', 'Usuário não cadastrado como solicitante. Favor contatar financeiro.');
+            session()->flash('danger', 'Usuário não possui acesso a esse recurso. Favor contatar financeiro.');
             return redirect()->route('home');
 
         }
@@ -251,7 +268,6 @@ class PedidoController extends Controller
     }
     }
 
-
     /**
      * Remove the specified resource from storage.
      */
@@ -272,7 +288,6 @@ class PedidoController extends Controller
             return redirect()->route('home');
         }
     }
-
 
     public function updateServicos(Request $request, Pedido $pedido)
     {
@@ -313,7 +328,6 @@ class PedidoController extends Controller
 
         return response()->json(['mensagem' => 'Serviço desvinculado com sucesso!']);
     }
-
 
      public function paraElaboracao(Pedido $pedido)
     {
@@ -363,13 +377,12 @@ class PedidoController extends Controller
                 $query->whereIn('servicos.id', $servicos);})->get();
             $empresas->load('contatos'); // faz uma única query pra todos
 
-    $contatos = $empresas
-        ->pluck('contatos')   // pega a coleção de contatos de cada empresa
-        ->flatten()           // junta tudo
-        ->values();           // reindexa
+        $contatos = $empresas
+            ->pluck('contatos')   // pega a coleção de contatos de cada empresa
+            ->flatten()           // junta tudo
+            ->values();           // reindexa
     
 
-        
         foreach($contatos as $contato){
             Mail::to($contato->user->email)->send(new PedidoEnviadoParaEmpresaMail($pedido));
         
