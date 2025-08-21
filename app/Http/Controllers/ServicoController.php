@@ -112,11 +112,23 @@ class ServicoController extends Controller
 
             }
         }
+        // se for admin ou financeiro, pode ver todos
+        else if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro'))
+        {
+            $editor = User::where('id', $servico->editor)->first();
+            $updated_at = $servico->updated_at;
 
-        $editor = User::where('id', $servico->editor)->first();
-        $updated_at = $servico->updated_at;
+            return view('servicos.show', compact('servico', 'updated_at', 'editor'));
+        }
 
-        return view('servicos.show', compact('servico', 'updated_at', 'editor'));
+        else
+        {
+            session()->flash('error', 'Usuário não autorizado a acessar esse recurso');
+    
+            return redirect()->route('home');
+
+        }
+
     }
 
     /**
