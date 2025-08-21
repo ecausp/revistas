@@ -156,27 +156,6 @@ class PedidoController extends Controller
         // se for admin ou financeiro pode ver sem restrição
         if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro'))
             return view('pedidos.show', compact('pedido', 'licitacao', 'solicitante', 'servicos'));
-
-        //se for contato da empresa, tem que cumprir os seguintes requisitos:
-            // a) o status tem que ser "em_analise_empresa"
-            // b) a empresa dele tem que estar prestando algum serviço desse pedido
-        else if(Contato::where('user_id', auth()->id())->first() && $pedido->status == "em_analise_empresa")
-        {
-            //já verificou que ele é contato e que o status é o correto, agora falta verificar se a empresa dele presta o serviço;
-            $empresa_do_contato = Contato::where('user_id', auth()->id())->first()->empresa_id;
-            $empresas_do_pedido = Empresa::whereHas('servicos', function ($query) use ($pedido) {
-                $query->whereIn('servicos.id', $pedido->servicos->pluck('id'));
-            })->pluck('id');
-            
-            // se o contato está associado a uma empresa que presta algum dos serviços do pedido, ele pode acessar a visualização
-            if ($empresas_do_pedido->contains($empresa_do_contato)) {
-                return view('pedidos.show', compact('pedido', 'licitacao', 'solicitante', 'servicos'));
-            } 
-            else {
-            session()->flash('danger', 'Pedido não registrado com serviços da sua empresa.');
-            return redirect()->route('home');
-            }
-        }
         // Se for um solicitante de uma revista, pode visualizar os pedidos da sua revista
         else if(Solicitante::where('user_id', auth()->id())->exists())
         {
@@ -194,7 +173,23 @@ class PedidoController extends Controller
 
             }
         }
-        
+        // se for um contato de uma empresa, só pode visualizar os pedidos que tem serviços da sua empresa
+        else if(Contato::where('user_id', auth()->id())->exists())
+        {
+            $servico_do_pedido = $pedido->servicos->first();
+            $empresa_do_pedido = $servico_do_pedido->empresas->pluck('id');
+            $empresa_do_contato = Contato::where('user_id', auth()->id())->first()->empresa_id;
+            if($empresa_do_pedido->contains($empresa_do_contato))
+            {
+                return view('pedidos.show', compact('pedido', 'licitacao', 'solicitante', 'servicos'));
+            }
+            else
+            {
+                session()->flash('danger', 'Usuário não possui acesso a esse recurso. Favor contatar financeiro.');
+                return redirect()->route('home');
+            }
+        }
+
         else
         {
             session()->flash('danger', 'Usuário não possui acesso a esse recurso. Favor contatar financeiro.');
