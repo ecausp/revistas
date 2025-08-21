@@ -3,7 +3,6 @@ $submenuPedidos = [
         [
         'type' => 'header',
         'text' => '<i class="fa fa-shopping-cart" aria-hidden="true"></i> Pedidos',
-        'can' => 'acesso-revista'
     ],
     [
         'text' => '<i class="fas fa-plus-circle" aria-hidden="true"></i> Cadastrar',
@@ -13,7 +12,6 @@ $submenuPedidos = [
     [
         'text' => '<i class="fas fa-list-ul" aria-hidden="true"></i> Listar',
         'url' => 'pedidos',
-        'can' => 'acesso-revista'
     ]
 ];
 
@@ -122,7 +120,6 @@ $menu = [
     [
         'text' => '<i class="fas fa-tools"></i> Pedidos',
         'submenu' => $submenuPedidos,
-        'can' => 'acesso-revista',
     ],
 ];
 
