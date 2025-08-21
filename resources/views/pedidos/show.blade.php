@@ -37,14 +37,14 @@
     @endif
 
     @include('pedidos.partials.delete')
-
+    @if((auth()->user()->can('admin') || auth()->user()->can('acesso-revista')) && !auth()->user()->hasRole('financeiro'))
     <form action="{{ route('pedidos.analise-empresa', $pedido) }}" method="POST" class="d-inline">
         @csrf
         <button type="submit" class="btn btn-success" title="Enviar para análise da empresa.">
             <i class="fas fa-glasses"></i> Enviar
         </button>
     </form>
-
+    @endif
     <!-- se o pedido já foi enviado para a empresa e o usuario que está visualizando o pedido é do financeiro ou tem acesso da empresa, pode devolver o pedido-->
     @elseif($pedido->status == "em_analise_empresa" && auth()->user()->hasRole('financeiro') || auth()->user()->can('acesso-empresa'))
     <form action="{{ route('pedidos.elaboracao', $pedido) }}" method="POST" class="d-inline">
