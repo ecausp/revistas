@@ -93,13 +93,25 @@ class RevistaController extends Controller
      */
     public function show(Revista $revista)
     {
-        $this->authorize("admin-financeiro");
-
         $editor = User::where('id', $revista->editor)->first();
         $updated_at = $revista->updated_at;
         $revista->solicitantes->load('user');
 
-        return view('revistas.show', compact('revista', 'updated_at','editor' ) );
+        // se o usuário logado for admin ou financeiro, pode ver qualquer revista
+        if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro'))
+        {
+            return view('revistas.show', compact('revista', 'updated_at','editor' ) );
+        }
+        // se o usuário logado for solicitante de uma revista, pode ver somente a sua.
+        else if(Solicitante::where('user_id', auth()->id())->first()->revista_id == $revista->id)
+        {
+            return view('revistas.show', compact('revista', 'updated_at','editor' ) );
+        }
+        else
+        {
+            session()->flash('error', 'Usuário não autorizado a acessar esse recurso');
+            return redirect()->route('home');
+        }
     }
 
     /**
