@@ -23,7 +23,7 @@ class ServicoController extends Controller
             return view('servicos.index', compact('servicos'));
         }
         // se o usuario for contato de uma empresa, só pode ver os serviços prestados pela sua empresa
-        else if(Contato::where('user_id', auth()->id())->first())
+        else if(Contato::where('user_id', auth()->id())->exists())
         {
             $contato = Contato::where('user_id', auth()->id())->first();
             $empresa = Empresa::where('id', $contato->empresa_id)->first();

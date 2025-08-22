@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Revista;
+use App\Models\Solicitante;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Uspdev\Replicado\Financeiro;
@@ -18,14 +19,28 @@ class RevistaController extends Controller
      */
     public function index()
     {   
-        $this->authorize("admin-financeiro");
-
-        $revistas = Revista::all();
         \UspTheme::activeUrl('revistas');
         
-        return view('revistas.index', compact('revistas'));
-    }
+        //se é admin ou financeiro, pode ver todos no index;
+        if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro'))
+        {
+            $revistas = Revista::all();
+            return view('revistas.index', compact('revistas'));
+        }
+        //se é usuario do tipo solicitante da revista, pode ver a revista dele:
+        else if(Solicitante::where('user_id', auth()->id())->exists())
+        {
+            $revista_solicitante = Solicitante::where('user_id', auth()->id())->first()->revista_id;
+            $revistas = Revista::where('id', $revista_solicitante)->get();
+            return view('revistas.index', compact('revistas'));
 
+        }
+        else
+        {
+            session()->flash('error', 'Usuário não está associado a nenhuma revista!');
+            return redirect()->route('home');
+        }
+    }
     /*
      * Exibe um formulario para cadastro de uma nova Revista
      * Traz do Replicado uma lista com todos centros de despesas
