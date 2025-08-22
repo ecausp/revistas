@@ -52,6 +52,7 @@ $submenu1 = [
     ],
     [
         'type' => 'divider',
+        'can' => 'admin-financeiro'
     ],
     [
         'type' => 'header',
@@ -70,11 +71,12 @@ $submenu1 = [
     ],
     [
         'type' => 'divider',
+        'can' => 'admin-financeiro'
     ],
     [
         'type' => 'header',
         'text' => '<i class="fa fa-book" aria-hidden="true"></i> Revistas',
-        'can' => 'admin-financeiro'
+        'can' => 'acesso-revista'
     ],
     [
         'text' => '<i class="fas fa-plus-circle" aria-hidden="true"></i> Cadastrar',
@@ -84,7 +86,7 @@ $submenu1 = [
     [
         'text' => '<i class="fas fa-list-ul" aria-hidden="true"></i> Listar',
         'url' => 'revistas',
-        'can' => 'admin-financeiro'
+        'can' => 'acesso-revista'
     ],
     [
         'type' => 'divider',
@@ -115,7 +117,6 @@ $menu = [
     [
         'text' => '<i class="fas fa-tools"></i> Financeiro',
         'submenu' => $submenu1,
-        'can' => 'acesso-empresa',
     ],
     [
         'text' => '<i class="fas fa-tools"></i> Pedidos',
