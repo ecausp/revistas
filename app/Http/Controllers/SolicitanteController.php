@@ -69,7 +69,7 @@ public function buscarUsuario(Request $request)
             'email' => $usuario->email,
             'codpes' => $usuario->codpes ?? '',
             'ja_cadastrado' => $jaCadastrado,
-        ];
+        ];  
     });
 
     return response()->json($resposta);

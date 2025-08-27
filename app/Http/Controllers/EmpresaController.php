@@ -31,7 +31,7 @@ class EmpresaController extends Controller
     //armazenar a nova empresa
     public function store(Request $request)
     {
-                $this->authorize("admin-financeiro");
+        $this->authorize("admin-financeiro");
         
         $request->validate([
             'cnpj' => 'required',
@@ -65,14 +65,33 @@ class EmpresaController extends Controller
     }
 
     // listar todas as empresas
+
     public function index()
     {
-                $this->authorize("admin-financeiro");
         \UspTheme::activeUrl('empresas');
 
-        $empresas = Empresa::orderBy('updated_at', 'desc')->get();
+        // admin e financeiro podem ver todas as empresas
+        if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro'))
+        {
+            $empresas = Empresa::orderBy('updated_at', 'desc')->get();
+            return view('empresas.index', compact('empresas'));
+        }
 
-        return view('empresas.index', compact('empresas'));
+        // se o usuario for contato de uma empresa, pode ver só a empresa que ele está associado
+        else if(Contato::where('user_id', auth()->id())->exists())
+        {
+            $contato = Contato::where('user_id', auth()->id())->first();
+            $empresa = Empresa::where('id', $contato->empresa_id)->get();
+
+            $empresas = Empresa::orderBy('updated_at', 'desc')->get();
+            return view('empresas.index', compact('empresas'));
+        }
+        else
+        {
+            session()->flash('error', 'Usuário não está associado a nenhuma empresa!');
+            
+            return redirect()->route('home');
+        }
     }
     
     // Exibir os detalhes de uma empresa
@@ -140,8 +159,6 @@ class EmpresaController extends Controller
         session()->flash('success', 'Atualizado com sucesso!');
         return redirect()->route('empresas.index');
     }
-    
-    
     
     public function destroy(Empresa $empresa)
     {
