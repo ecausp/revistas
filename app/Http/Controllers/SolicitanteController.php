@@ -13,7 +13,15 @@ class SolicitanteController extends Controller
 {
     public function create(Revista $revista)
     {
-        return view('solicitantes.create', compact('revista'));
+        if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro'))
+        {
+            return view('solicitantes.create', compact('revista'));
+        }
+        else
+        {
+            session()->flash('error', 'Usuário não autorizado a acessar esse recurso');
+            return redirect()->route('home');
+        }
     }
 
     /**
@@ -21,6 +29,8 @@ class SolicitanteController extends Controller
      */
     public function store(Request $request)
     {
+
+        $this->authorize('admin-financeiro');
         $solicitante = new Solicitante();
         $solicitante->user_id = $request->user_id;
         $solicitante->revista_id = $request->revista_id;
@@ -59,7 +69,7 @@ public function buscarUsuario(Request $request)
             'email' => $usuario->email,
             'codpes' => $usuario->codpes ?? '',
             'ja_cadastrado' => $jaCadastrado,
-        ];
+        ];  
     });
 
     return response()->json($resposta);

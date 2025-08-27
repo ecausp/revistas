@@ -13,8 +13,17 @@ class ContatoController extends Controller
 {
     public function create(Empresa $empresa)
     {
-        $this->authorize('admin-financeiro');
-        return view('contatos.create', compact('empresa'));
+
+        if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro'))
+        {
+            return view('contatos.create', compact('empresa'));
+        }
+        else
+        {
+            session()->flash('error', 'Usuário não autorizado a acessar esse recurso');
+            return redirect()->route('home');
+        }
+
     }
 
     /**
@@ -22,6 +31,8 @@ class ContatoController extends Controller
     **/
     public function store(Request $request)
     {
+
+        $this->authorize('admin-financeiro');
         $request->validate([
             'name' => 'required',
             'email' => 'required|email',
@@ -59,6 +70,8 @@ class ContatoController extends Controller
    // faz o autocomplete no nome do usuário quando tenta cadastrar um novo;
     public function autocomplete(Request $request)
     {
+
+        $this->authorize('admin-financeiro');
         $query = $request->input('query');
 
         $users = DB::table('users')

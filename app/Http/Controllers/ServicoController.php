@@ -23,7 +23,7 @@ class ServicoController extends Controller
             return view('servicos.index', compact('servicos'));
         }
         // se o usuario for contato de uma empresa, só pode ver os serviços prestados pela sua empresa
-        else if(Contato::where('user_id', auth()->id())->first())
+        else if(Contato::where('user_id', auth()->id())->exists())
         {
             $contato = Contato::where('user_id', auth()->id())->first();
             $empresa = Empresa::where('id', $contato->empresa_id)->first();
@@ -112,11 +112,23 @@ class ServicoController extends Controller
 
             }
         }
+        // se for admin ou financeiro, pode ver todos
+        else if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro'))
+        {
+            $editor = User::where('id', $servico->editor)->first();
+            $updated_at = $servico->updated_at;
 
-        $editor = User::where('id', $servico->editor)->first();
-        $updated_at = $servico->updated_at;
+            return view('servicos.show', compact('servico', 'updated_at', 'editor'));
+        }
 
-        return view('servicos.show', compact('servico', 'updated_at', 'editor'));
+        else
+        {
+            session()->flash('error', 'Usuário não autorizado a acessar esse recurso');
+    
+            return redirect()->route('home');
+
+        }
+
     }
 
     /**
