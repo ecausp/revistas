@@ -38,7 +38,7 @@ $submenu1 = [
     [
         'type' => 'header',
         'text' => '<i class="fa fa-building" aria-hidden="true"></i> Empresas',
-        'can' => 'admin-financeiro'
+        'can' => 'acesso-empresa'
     ],
     [
         'text' => '<i class="fas fa-plus-circle" aria-hidden="true"></i> Cadastrar',
@@ -48,11 +48,11 @@ $submenu1 = [
     [
         'text' => '<i class="fas fa-list-ul" aria-hidden="true"></i> Listar',
         'url' => 'empresas',
-        'can' => 'admin-financeiro'
+        'can' => 'acesso-empresa'
     ],
     [
         'type' => 'divider',
-        'can' => 'admin-financeiro'
+        'can' => 'acesso-empresa'
     ],
     [
         'type' => 'header',
