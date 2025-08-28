@@ -39,7 +39,7 @@
                     @endif
 
                     <td>{{ $limite->servico->descricao }}</td>
-                    <td>{{ number_format($limite->quantidade, 0, ',', '.') }}</td>
+                    <td class="text-right">{{ number_format($limite->quantidade, 0, ',', '.') }}</td>
                     <td class="text-right">{{ number_format($limite->valor_unitario, 2, ',', '.') }}</td>
                     <td class="text-right">{{ number_format(($limite->quantidade * $limite->valor_unitario), 2, ',', '.') }} </td>
 
