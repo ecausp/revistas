@@ -36,6 +36,10 @@ class SolicitanteController extends Controller
         $solicitante->revista_id = $request->revista_id;
         $solicitante->save();
 
+        $user = User::where('id', $request->user_id)->first();
+        $user->givePermissionTo(['revistas.revista']);
+        $user->save();
+
         session()->flash('success', 'Cadastrado com sucesso!');
         return redirect()->route('revistas.index');
     }
