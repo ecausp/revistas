@@ -11,7 +11,7 @@
 <div class="mb-1">
     <label for="valor_total" class="form-label">Valor Total</label>
     <input type="text" class="form-control money" name="valor_total" id="valor_total"
-        value="{{ old('valor_total', isset($licitacao) ? $licitacao->valor_total : '') }}" placeholder="000.000.000.000.000,00" required>
+        value="{{ old('valor_total', isset($licitacao) ? $licitacao->valor_total : '') }}" placeholder="0.000.000.000.000,00" required>
 </div>
 
 <div class="container mt-5 col">
