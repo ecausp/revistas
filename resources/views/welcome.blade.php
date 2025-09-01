@@ -1,5 +1,10 @@
 @extends('layouts.app')
+<style>
+    .nav {
+        margin-bottom: 0px !important;
+    }
 
+</style>
 @section('content')
 
 @include('partials.messages')
