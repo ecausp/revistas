@@ -19,7 +19,7 @@ class PedidoEnviadoParaEmpresaMail extends Mailable
 
     public function build()
     {
-        return $this->subject("Pedido #{$this->pedido->id} - {$this->pedido->revista->nome}")
+        return $this->subject("Pedido #{$this->pedido->id} - {$this->pedido->revista->name}")
                     ->view('emails.pedido_enviado_para_empresa_mail');
     }
 }
