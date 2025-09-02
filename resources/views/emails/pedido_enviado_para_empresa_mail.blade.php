@@ -11,7 +11,7 @@
     Não responda este e-mail!
   </p>
   <p style="margin: 10px 0; color: #555;">
-    Acesse o <a href="https://laravel.ddev.site/pedidos" style="color: #007BFF; text-decoration: none; font-weight: bold;">
+    Acesse o <a href="https://laravel.ddev.site" style="color: #007BFF; text-decoration: none; font-weight: bold;">
       Sistema de Orçamento das Revistas
     </a> para verificar os detalhes deste pedido.
   </p>
