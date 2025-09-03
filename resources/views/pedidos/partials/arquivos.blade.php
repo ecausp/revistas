@@ -28,6 +28,7 @@
 
                     <!-- o arquivo só pode ser deletado se o pedido ainda não tiver sido enviado-->
                     @if($pedido->status != "em_analise_empresa")
+                        @if(auth()->user()->hasRole('admin') || auth()->user()->hasRole('financeiro'))
                     <form action="{{ route('arquivos.destroy', $arquivo) }}" method="POST"
                         onsubmit="return confirm('Tem certeza que deseja excluir este arquivo?')">
                         @csrf
@@ -36,6 +37,7 @@
                             <i class="fa fa-times"></i>
                         </button>
                     </form>
+                        @endif
                     @endif
                 </td>
             </tr>
