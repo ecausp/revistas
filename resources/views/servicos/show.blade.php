@@ -13,11 +13,13 @@
         @include('partials.editor')
 
         <div class="container mt-5 col">
+
+            @if(auth()->user()->hasRole('admin') || auth()->user()->hasRole('financeiro'))
             <a href="{{ route('servicos.edit', $servico) }}" class="btn btn-primary"><i class="fas fa-edit"></i>
                 Editar</a>
 
             @include('servicos.partials.delete')
-
+            @endif
             <a href="{{ route('servicos.index') }}" class="btn btn-secondary"><i class="fas fa-chevron-left"></i>
                 Voltar</a>
 

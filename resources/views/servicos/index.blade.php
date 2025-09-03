@@ -30,8 +30,11 @@
                     <td>
                         <a href="{{ route('servicos.show', $servico) }}" class="btn btn-primary"><i
                                 class="fas fa-eye"></i> </a>
+                                
+                        @if(auth()->user()->hasRole('admin') || auth()->user()->hasRole('financeiro'))
                         <a href="{{ route('servicos.edit', $servico) }}" class="btn btn-primary"><i
                                 class="fas fa-edit"></i></a>
+                        @endif
                     </td>
                 </tr>
                 @endforeach
