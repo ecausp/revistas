@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\PedidoDevolvidoParaRevistaMail;
 use App\Models\Pedido;
 use App\Models\Servico;
 use App\Models\Solicitante;
@@ -327,9 +328,12 @@ class PedidoController extends Controller
      public function paraElaboracao(Pedido $pedido)
     {
         // Troca o status
-        $pedido->status->transitionTo(EmElaboracao::class);
 
+        $pedido->status->transitionTo(EmElaboracao::class);
         $pedido->save();
+        foreach($pedido->revista->solicitantes as $solicitante){
+            Mail::to($solicitante->user->email)->send(new PedidoDevolvidoParaRevistaMail($pedido));
+        }      
 
 
         session()->flash('error', 'Pedido devolvido para elaboração.');
