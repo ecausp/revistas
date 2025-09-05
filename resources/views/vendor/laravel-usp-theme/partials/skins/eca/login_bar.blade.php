@@ -9,6 +9,7 @@
         color: #FFFFFF;
         padding-top: 5px;
         margin-bottom: 5px;
+        height: 30px;
     }
 
     /* .login_logout_link formata os links correspondentes que estão nos includes */
