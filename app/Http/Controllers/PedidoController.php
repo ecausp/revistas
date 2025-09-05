@@ -328,11 +328,10 @@ class PedidoController extends Controller
      public function paraElaboracao(Pedido $pedido)
     {
         // Troca o status
+
         $pedido->status->transitionTo(EmElaboracao::class);
-
         $pedido->save();
-
-        foreach($pedido->solicitante as $solicitante){
+        foreach($pedido->revista->solicitantes as $solicitante){
             Mail::to($solicitante->user->email)->send(new PedidoDevolvidoParaRevistaMail($pedido));
         }      
 

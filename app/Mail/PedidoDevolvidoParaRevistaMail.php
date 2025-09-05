@@ -19,7 +19,7 @@ class PedidoDevolvidoParaRevistaMail extends Mailable
 
     public function build()
     {
-        return $this->subject("Pedido #{$this->pedido->id} - {$this->pedido->revista->name}")
+        return $this->subject("Pedido #{$this->pedido->id} - {$this->pedido->revista->name} - devolvido")
                     ->view('emails.pedido_devolvido_para_revista_mail');
     }
 }
