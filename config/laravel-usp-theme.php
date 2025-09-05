@@ -113,14 +113,17 @@ $menu = [
     [
         # este item de menu será substituido no momento da renderização
         'key' => 'menu_dinamico',
+        'can' => 'logado',
     ],
     [
         'text' => '<i class="fas fa-tools"></i> Financeiro',
         'submenu' => $submenu1,
+        'can' => 'logado',
     ],
     [
         'text' => '<i class="fas fa-tools"></i> Pedidos',
         'submenu' => $submenuPedidos,
+        'can' => 'logado',
     ],
 ];
 
