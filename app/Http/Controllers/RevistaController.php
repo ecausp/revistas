@@ -65,21 +65,49 @@ class RevistaController extends Controller
     public function store(Request $request)
     {
         $this->authorize("admin-financeiro");
-
+        $codpes = $request->responsavel_centro_despesa;
+        $responsavel_centro_despesa = Pessoa::dump($codpes);
+        $email = Pessoa::email($codpes);
+        
         $request->validate([
             'name' => 'required',
             'centro_despesa' => 'required',
             'responsavel_centro_despesa' => 'required',
         ]);
 
-        $Revista = new Revista();
-        $revista = [
-            'editor' => $request->user()->id,
-            "name" => $request->name,
-            "centro_despesa" => $request->centro_despesa,
-            'responsavel_centro_despesa' => $request->responsavel_centro_despesa,
-        ];
-        Revista::create($revista);
+        $revista = new Revista();
+        $revista->editor = $request->user()->id;
+        $revista->name = $request->name;
+        $revista->centro_despesa = $request->centro_despesa;
+        $revista->responsavel_centro_despesa = $responsavel_centro_despesa['nompesttd'];
+        $revista->save();
+
+
+        # cria o user:
+         // Tenta buscar um usuário pelo codpes
+        $user = User::where('codpes', $codpes)->first();
+
+        if (!$user) {
+            // Usuário não existe, cria novo
+            $user = new User();
+            $user->name = $responsavel_centro_despesa['nompesttd'];
+            $user->email = $email;
+            $user->telefone = 0;
+            $user->codpes = $codpes;
+            $user->save();
+        }
+
+        $user->givePermissionTo(['revistas.revista']);
+        $user->save();
+
+
+
+        # cria o solicitante:
+        $solicitante = new Solicitante();
+        $solicitante->user_id =  $user->id; 
+        $solicitante->revista_id = $revista->id;
+        $solicitante->save();
+
         session()->flash('success', 'Cadastrado com sucesso!');
         return redirect()->route('revistas.index');
     }
