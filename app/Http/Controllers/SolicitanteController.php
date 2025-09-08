@@ -62,31 +62,29 @@ class SolicitanteController extends Controller
     }
 
 
-    public function buscarUsuario(Request $request)
+        public function buscarUsuario(Request $request)
     {
         $nome = $request->query('nome', '');
-
-        logger()->debug('step1', ['nome' => $nome]);
+        $revista_id = $request->query('revista_id'); // pega o id da revista enviado pelo frontend
 
         // Pega a lista de servidores do ReplicadoTemp
         $servidores = ReplicadoTemp::listarServidoresDocentes();
 
-
-        logger()->debug('step2', [
-            'servidores_count' => count($servidores),
-            'first' => $servidores[0] ?? null
-        ]);
-
+        // Filtra servidores pelo nome
         $matches = array_filter($servidores, function ($pessoa) use ($nome) {
             return stripos($pessoa['nompesttd'], $nome) !== false;
         });
 
-        logger()->debug('step3', [
-            'matched' => count($matches),
-            'sample' => array_slice($matches, 0, 5)
-        ]);
+        // Monta o resultado
+        $result = array_map(function ($pessoa) use ($revista_id) {
 
-        $result = array_map(function ($pessoa) {
+            // Verifica se já existe um solicitante para essa revista com esse codpes
+            $jaCadastrado = Solicitante::where('revista_id', $revista_id)
+                ->whereHas('user', function($q) use ($pessoa) {
+                    $q->where('codpes', $pessoa['codpes']);
+                })
+                ->exists();
+
             return [
                 'id' => $pessoa['codpes'],
                 'name' => $pessoa['nompesttd'],
@@ -95,7 +93,7 @@ class SolicitanteController extends Controller
                 'email' => $pessoa['codema'],
                 'numseqpes' => $pessoa['numseqpes'],
                 'display' => $pessoa['nompesttd'] . ' (' . ($pessoa['tipvin'] ?? '') . ')',
-                'ja_cadastrado' => false
+                'ja_cadastrado' => $jaCadastrado
             ];
         }, $matches);
 

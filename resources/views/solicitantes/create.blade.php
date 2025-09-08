@@ -11,9 +11,17 @@
         <form action="{{ route('solicitantes.store') }}" method="POST">
             @csrf
             @include('solicitantes.partials.forms')
+
+            <input type="hidden" id="revista_id" name="revista_id" value="{{ $revista->id }}">
         </form>
     </div>
 </div>
+
+<div id="mensagem-usuario" class="alert alert-warning" style="display:none;">
+    <span id="mensagem-texto"></span>
+    <button type="button" id="fechar-mensagem" class="btn btn-sm btn-secondary">Fechar</button>
+</div>
+
 @endsection
 
 @section('styles')
@@ -29,43 +37,45 @@
 document.addEventListener('DOMContentLoaded', function() {
     const route = '/buscar-usuario';
 
-$('#search').typeahead({
-    minLength: 3,
-    autoSelect: true,
-    source: function(query, process) {
-        return $.get(route, { nome: query }, function(data) {
-            if (Array.isArray(data)) {
-                return process(data.map(item => ({
-                    ...item,
-                    display: `${item.name} (${item.email})`
-                })));
+    $('#search').typeahead({
+        minLength: 3,
+        autoSelect: true,
+        source: function(query, process) {
+            return $.get(route, { 
+                nome: query, 
+                revista_id: $('#revista_id').val() 
+            }, function(data) {
+                if (Array.isArray(data)) {
+                    return process(data.map(item => ({
+                        ...item,
+                        display: `${item.name} (${item.email})`
+                    })));
+                } else {
+                    return process([]);
+                }
+            });
+        },
+        displayText: function(item) {
+            return item.display;
+        },
+        afterSelect: function(item) {
+            $('#search').val(item.name);
+            $('#email').val(item.email);
+            $('#codpes').val(item.codpes);
+            $('#user_id').val(item.id);
+
+            if (item.ja_cadastrado) {
+                $('#mensagem-texto').html(
+                    `Este solicitante já está cadastrado na revista <strong>{{ $revista->name }}</strong>.`
+                );
+                $('#mensagem-usuario').fadeIn();
+                $('#cadastrar').prop('disabled', true);
             } else {
-                return process([]);
+                $('#mensagem-usuario').hide();
+                $('#cadastrar').prop('disabled', false);
             }
-        });
-    },
-    displayText: function(item) {
-        return item.display; // apenas para exibir no dropdown
-    },
-    afterSelect: function(item) {
-        $('#search').val(item.name); // envia apenas o nome
-        $('#email').val(item.email);
-        $('#codpes').val(item.codpes);
-        $('#user_id').val(item.id);
-
-        if (item.ja_cadastrado) {
-            $('#mensagem-texto').html(
-                `Este solicitante já está cadastrado na revista <br><strong>${$('#revista_id option:selected').text() || ''}</strong>`
-            );
-            $('#mensagem-usuario').fadeIn();
-            $('#cadastrar').prop('disabled', true);
-        } else {
-            $('#mensagem-usuario').hide();
-            $('#cadastrar').prop('disabled', false);
         }
-    }
-});
-
+    });
 
     // Botão fechar da mensagem
     $('#fechar-mensagem').on('click', function() {
@@ -74,5 +84,4 @@ $('#search').typeahead({
     });
 });
 </script>
-
 @endsection
