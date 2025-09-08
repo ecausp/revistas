@@ -33,10 +33,6 @@ class SolicitanteController extends Controller
     public function store(Request $request)
     {
         $this->authorize('admin-financeiro');
-        $solicitante = new Solicitante();
-        $solicitante->user_id = $request->user_id;
-        $solicitante->revista_id = $request->revista_id;
-        $solicitante->save();
 
 
         // Tenta buscar um usuário pelo email
@@ -54,6 +50,12 @@ class SolicitanteController extends Controller
 
         $user->givePermissionTo(['revistas.revista']);
         $user->save();
+
+        $solicitante = new Solicitante();
+        $solicitante->user_id =  $user->id; 
+        $solicitante->revista_id = $request->revista_id;
+        $solicitante->save();
+
 
         session()->flash('success', 'Cadastrado com sucesso!');
         return redirect()->route('revistas.index');

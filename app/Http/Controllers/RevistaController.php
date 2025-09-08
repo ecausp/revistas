@@ -96,7 +96,6 @@ class RevistaController extends Controller
         $editor = User::where('id', $revista->editor)->first();
         $updated_at = $revista->updated_at;
         $revista->solicitantes->load('user');
-
         // se o usuário logado for admin ou financeiro, pode ver qualquer revista
         if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro'))
         {
