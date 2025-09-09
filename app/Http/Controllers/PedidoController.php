@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\PedidoDevolvidoParaRevistaMail;
 use App\Models\Pedido;
 use App\Models\Servico;
 use App\Models\Solicitante;
@@ -12,6 +11,7 @@ use App\Models\Empresa;
 use App\Models\Contato;
 use Illuminate\Http\Request;
 
+use App\Mail\PedidoDevolvidoParaRevistaMail;
 use App\Mail\PedidoEnviadoParaEmpresaMail;
 use Illuminate\Support\Facades\Mail;
 

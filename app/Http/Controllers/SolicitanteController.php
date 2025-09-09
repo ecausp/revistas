@@ -9,6 +9,9 @@ use App\Models\Revista;
 use App\Models\Solicitante;
 use App\Models\User;
 
+use App\Util\ReplicadoTemp;
+
+
 class SolicitanteController extends Controller
 {
     public function create(Revista $revista)
@@ -29,53 +32,75 @@ class SolicitanteController extends Controller
      */
     public function store(Request $request)
     {
-
         $this->authorize('admin-financeiro');
+
+
+        // Tenta buscar um usuário pelo email
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            // Usuário não existe, cria novo
+            $user = new User();
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $user->telefone = 0;
+            $user->codpes = $request->codpes;
+            $user->save();
+        }
+
+        $user->givePermissionTo(['revistas.revista']);
+        $user->save();
+
         $solicitante = new Solicitante();
-        $solicitante->user_id = $request->user_id;
+        $solicitante->user_id =  $user->id; 
         $solicitante->revista_id = $request->revista_id;
         $solicitante->save();
 
-        $user = User::where('id', $request->user_id)->first();
-        $user->givePermissionTo(['revistas.revista']);
-        $user->save();
 
         session()->flash('success', 'Cadastrado com sucesso!');
         return redirect()->route('revistas.index');
     }
 
 
-public function buscarUsuario(Request $request)
-{
-    $nome = $request->get('nome');
-    $revistaId = $request->get('revista_id');
+        public function buscarUsuario(Request $request)
+    {
+        $nome = $request->query('nome', '');
+        $revista_id = $request->query('revista_id'); // pega o id da revista enviado pelo frontend
 
-    if (!$nome) {
-        return response()->json([]);
+        // Pega a lista de servidores do ReplicadoTemp
+        $servidores = ReplicadoTemp::listarServidoresDocentes();
+
+        // Filtra servidores pelo nome
+        $matches = array_filter($servidores, function ($pessoa) use ($nome) {
+            return stripos($pessoa['nompesttd'], $nome) !== false;
+        });
+
+        // Monta o resultado
+        $result = array_map(function ($pessoa) use ($revista_id) {
+
+            // Verifica se já existe um solicitante para essa revista com esse codpes
+            $jaCadastrado = Solicitante::where('revista_id', $revista_id)
+                ->whereHas('user', function($q) use ($pessoa) {
+                    $q->where('codpes', $pessoa['codpes']);
+                })
+                ->exists();
+
+            return [
+                'id' => $pessoa['codpes'],
+                'name' => $pessoa['nompesttd'],
+                'codpes' => $pessoa['codpes'],
+                'tipvin' => $pessoa['tipvin'],
+                'email' => $pessoa['codema'],
+                'numseqpes' => $pessoa['numseqpes'],
+                'display' => $pessoa['nompesttd'] . ' (' . ($pessoa['tipvin'] ?? '') . ')',
+                'ja_cadastrado' => $jaCadastrado
+            ];
+        }, $matches);
+
+        return response()->json(array_values($result));
     }
 
-    $usuarios = User::whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($nome) . '%'])
-        ->limit(10)
-        ->get();
 
-    $resposta = $usuarios->map(function ($usuario) use ($revistaId) {
-        $jaCadastrado = false;
 
-        if ($revistaId) {
-            $jaCadastrado = Solicitante::where('user_id', $usuario->id)
-                ->where('revista_id', $revistaId)
-                ->exists();
-        }
 
-        return [
-            'id' => $usuario->id,
-            'name' => $usuario->name,
-            'email' => $usuario->email,
-            'codpes' => $usuario->codpes ?? '',
-            'ja_cadastrado' => $jaCadastrado,
-        ];  
-    });
-
-    return response()->json($resposta);
-}
 }

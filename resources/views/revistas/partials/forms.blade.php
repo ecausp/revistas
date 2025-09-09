@@ -21,22 +21,22 @@
 </div>
 
 <div class="mb-1">
-    <label for="responsavel_centro_despesa" class="form-label">Responsável pelo Centro de Despesa </label>
-    @if (isset($revista))
-    <select class="form-control select2" name="responsavel_centro_despesa" id="responsavel_centro_despesa">
-        <option value="{{ $revista->responsavel_centro_despesa }}" selected>{{ $revista->responsavel_centro_despesa }}
-        </option>
-        @else
-        <select class="form-control select2" name="responsavel_centro_despesa" id="responsavel_centro_despesa"
-            placeholder="Responsável pelo Centro de Despesa..." required>
-            <option value="" selected>Responsável pelo Centro de despesa...</option>
-            @endif
-            @foreach ($responsaveis_centro_despesa as $responsavel_centro_despesa)
-            <option value="{{ $responsavel_centro_despesa['nompesttd'] }}">
-                {{ $responsavel_centro_despesa['nompesttd'] }}
+    <label for="responsavel_centro_despesa" class="form-label">Responsável pelo Centro de Despesa</label>
+    <select class="form-control select2" name="responsavel_centro_despesa" id="responsavel_centro_despesa" required>
+        @if (isset($revista))
+            <option value="{{ $revista->responsavel_centro_despesa }}" selected>
+                {{ $revista->responsavel_centro_despesa }}
             </option>
-            @endforeach
-        </select>
+        @else
+            <option value="" selected>Escolha um responsável...</option>
+        @endif
+
+        @foreach ($responsaveis_centro_despesa as $responsavel)
+            <option value="{{ $responsavel['codpes'] }}">
+                {{ $responsavel['nompesttd'] }}
+            </option>
+        @endforeach
+    </select>
 </div>
 
 <div class="container mt-5 col">

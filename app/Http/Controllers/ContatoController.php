@@ -9,6 +9,10 @@ use App\Models\Empresa;
 use App\Models\Contato;
 use App\Models\User;
 
+use App\Mail\ContatoCadastradoMail;
+use Illuminate\Support\Facades\Mail;
+
+
 class ContatoController extends Controller
 {
     public function create(Empresa $empresa)
@@ -63,6 +67,11 @@ class ContatoController extends Controller
         $contato->empresa_id = $request->empresa_id;
 
         $contato->save();
+
+        // Notifica o contato que ele foi cadastrado
+
+        $empresa = Empresa::where('id', $contato->empresa_id)->first();
+        Mail::to($contato->user->email)->send(new ContatoCadastradoMail($empresa));
 
         session()->flash('success', 'Cadastrado com sucesso!');
         return redirect()->route('empresas.index');
