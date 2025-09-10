@@ -45,11 +45,27 @@ class Pedido extends Model
     {
         return $this->belongsToMany(Servico::class, 'pedido_servico')->withPivot('quantidade')->withTimestamps();
     }
+
+    public function historicos()
+    {
+        return $this->hasMany(PedidoHistorico::class, 'id_pedido');
+    }
+
     protected function casts(): array
     {
         return [
             'status' => StatusPedido::class,
         ];
+    }
+
+    // Helper para criar um novo  historico a cada vez que o pedido for alterado;
+    public function adicionarHistorico(string $status, ?string $observacao = null)
+    {
+        return $this->historicos()->create([
+            'status_pedido' => $status,
+            'id_pessoa'     => auth()->id(), // pega automaticamente o usuário logado
+            'observacao'    => $observacao,
+        ]);
     }
 
 }

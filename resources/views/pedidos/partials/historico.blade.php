@@ -1,34 +1,73 @@
-<div class="card mt-3">
-    <ul class="list-group list-group-flush" style="font-size: 0.95em;">
-        <li class="list-group-item">
-            Pago em: 99/99/9999 - 99:99:99<br />
-            Por: Fulano de tal<br />
-            Financeiro
-        </li>
-        <li class="list-group-item">
-            Conferido em: 99/99/9999 - 99:99:99<br />
-            Por: Beltrano<br />
-            Empresa XXXXXXXX
-        </li>   
-        <li class="list-group-item">
-            Executado em: 99/99/9999 - 99:99:99<br />
-            Por: Ciclano<br />
-            Revista XXXXXXXX
-        </li>      
-        <li class="list-group-item">
-            Analisado em: 99/99/9999 - 99:99:99<br />
-            Por: Fulano de tal<br />
-            Financeiro
-        </li>
-        <li class="list-group-item">
-            Analisado em: 99/99/9999 - 99:99:99<br />
-            Por: Ciclano<br />
-            Empresa XXXXXXXX
-        </li>   
-        <li class="list-group-item">
-            Elaborado em: 99/99/9999 - 99:99:99<br />
-            Por: Beltrano<br />
-            Revista XXXXXXXX
-        </li>                               
-    </ul>    
-</div>
+@php
+    $statusAtual = $pedido->status;
+    
+    // Mapeamento de status e classes de cor
+    $status = [
+        'em_elaboracao' => [
+            'label' => 'Revista',
+            'icon' => 'fa-plus',
+            'sub_label' => 'Em Elaboração',
+            'color' => 'warning',
+        ],
+        'em_analise_empresa' => [
+            'label' => 'Empresa',
+            'icon' => 'fa-glasses',
+            'sub_label' => 'Em Análise',
+            'color' => 'success',
+        ],
+        'em_analise_financeiro' => [
+            'label' => 'Financeiro',
+            'icon' => 'fa-glasses',
+            'sub_label' => 'Em Análise',
+            'color' => 'info',
+        ],
+        'em_execucao' => [
+            'label' => 'Empresa',
+            'icon' => 'fa-tools',
+            'sub_label' => 'Em Execução',
+            'color' => 'sucess',
+        ],
+        'em_conferencia' => [
+            'label' => 'Revista',
+            'icon' => 'fa-user-check',
+            'sub_label' => 'Em Conferência',
+            'color' => 'warning',
+        ],
+        'pago' => [
+            'label' => 'Financeiro',
+            'icon' => 'fa-hand-holding-usd',
+            'sub_label' => 'Pago',
+            'color' => 'info',
+        ],
+    ];
+
+    $ordemStatus = array_keys($status);
+@endphp
+
+<table class="w-80 mx-auto">
+    <tr>
+        @foreach($status as $nomeStatus => $itemStatus)
+            @php
+                $posicaoAtual = array_search($statusAtual, $ordemStatus);
+                $posicaoItem = array_search($nomeStatus, $ordemStatus);
+                $isPassadoOuAtual = $posicaoItem <= $posicaoAtual;
+
+                $corStatus = $isPassadoOuAtual ? $itemStatus['color'] : 'secondary';
+            @endphp
+
+            {{-- Célula do status --}}
+            <td class="text-{{ $corStatus }} text-center p-2">
+                <span style="font-size: .8em; font-style: italic;">{{ $itemStatus['label'] }}</span><br />
+                <i class="fas {{ $itemStatus['icon'] }} border border-{{ $corStatus }} rounded-pill p-2" style="width: 35px; height: 35px; font-size: 1.2em;"></i><br />
+                <span class="text-{{ $corStatus }}" style="font-size: .8em; font-style: italic;">{{ $itemStatus['sub_label'] }}</span>
+            </td>
+
+            {{-- Adiciona a seta entre os status, exceto no último --}}
+            @if (!$loop->last)
+                <td class="text-center p-2">
+                    <i class="fas fa-long-arrow-alt-right text-secondary p-2" style="width: 45px; height: 45px;"></i>
+                </td>
+            @endif
+        @endforeach
+    </tr>
+</table>
