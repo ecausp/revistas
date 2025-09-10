@@ -45,6 +45,12 @@ class Pedido extends Model
     {
         return $this->belongsToMany(Servico::class, 'pedido_servico')->withPivot('quantidade')->withTimestamps();
     }
+
+    public function historicos()
+    {
+        return $this->hasMany(PedidoHistorico::class, 'id_pedido');
+    }
+
     protected function casts(): array
     {
         return [
