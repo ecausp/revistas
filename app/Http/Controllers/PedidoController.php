@@ -335,6 +335,7 @@ class PedidoController extends Controller
             Mail::to($solicitante->user->email)->send(new PedidoDevolvidoParaRevistaMail($pedido));
         }      
 
+        $pedido->adicionarHistorico($pedido->status, $pedido->observacoes);
 
         session()->flash('error', 'Pedido devolvido para elaboração.');
         
@@ -376,6 +377,7 @@ class PedidoController extends Controller
             $pedido->save();
 
 
+        $pedido->adicionarHistorico($pedido->status, $pedido->observacoes);
             $servicos = $pedido->servicos()->pluck('servicos.id');
                     
             $empresas = Empresa::whereHas('servicos', function ($query) use ($servicos) {
