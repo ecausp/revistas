@@ -23,6 +23,12 @@ class PedidoHistorico extends Model
         return $this->belongsTo(Pedido::class, 'id_pedido');
     }
 
+    public function historicosPedidos()
+    {
+        return $this->hasMany(PedidoHistorico::class, 'id_pessoa');
+    }
+
+
     public function pessoa()
     {
         return $this->belongsTo(User::class, 'id_pessoa');
