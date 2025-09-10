@@ -58,4 +58,14 @@ class Pedido extends Model
         ];
     }
 
+    // Helper para criar um novo  historico a cada vez que o pedido for alterado;
+    public function adicionarHistorico(string $status, ?string $observacao = null)
+    {
+        return $this->historicos()->create([
+            'status_pedido' => $status,
+            'id_pessoa'     => auth()->id(), // pega automaticamente o usuário logado
+            'observacao'    => $observacao,
+        ]);
+    }
+
 }
