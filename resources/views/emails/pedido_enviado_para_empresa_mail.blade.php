@@ -2,7 +2,10 @@
   <h1 style="color: #333; font-size: 22px; margin-bottom: 10px;">Pedido #{{ $pedido->id }}</h1>
 
   <p style="margin: 5px 0;"><strong>Revista:</strong> {{ $pedido->revista->name }}</p>
-  <p style="margin: 5px 0;"><strong>Status atual:</strong> {{ $pedido->status->label() }}</p>
+  <p style="margin: 5px 0;"><strong>Status atual:</strong> {{ $pedido->status->label() }}
+  {!! $pedido->status->icon() !!}
+</p>
+ 
   <p style="margin: 5px 0;"><strong>Observações:</strong> {{ $pedido->observacoes ?? 'Nenhuma observação' }}</p>
 
   <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">
