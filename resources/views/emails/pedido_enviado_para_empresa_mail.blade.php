@@ -2,8 +2,9 @@
   <h1 style="color: #333; font-size: 22px; margin-bottom: 10px;">Pedido #{{ $pedido->id }}</h1>
 
   <p style="margin: 5px 0;"><strong>Revista:</strong> {{ $pedido->revista->name }}</p>
-  <p style="margin: 5px 0;"><strong>Status atual:</strong> {{ $pedido->status->label() }}</p>
-  <p style="margin: 5px 0;"><strong>Observações:</strong> {{ $pedido->observacoes ?? 'Nenhuma observação' }}</p>
+  <p style="margin: 5px 0;"><strong>Status atual:</strong> <span style="color: #26a269">{{ $pedido->status->label() }}</span>
+</p>
+ 
 
   <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">
 
@@ -11,7 +12,7 @@
     Não responda este e-mail!
   </p>
   <p style="margin: 10px 0; color: #555;">
-    Acesse o <a href="https://laravel.ddev.site" style="color: #007BFF; text-decoration: none; font-weight: bold;">
+    Acesse o <a href={{ config('app.url')}} style="color: #007BFF; text-decoration: none; font-weight: bold;">
       Sistema de Orçamento das Revistas
     </a> para verificar os detalhes deste pedido.
   </p>
