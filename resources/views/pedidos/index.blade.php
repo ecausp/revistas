@@ -30,7 +30,7 @@
                     <td>{{ $pedido->licitacao->descricao }} - {{ $pedido->licitacao->ano }}</td>
     	            <td>
                         <div class="d-flex align-items-center">
-                            <i class="{{$pedido->status->icon()}}" style="{{ $pedido->status->icon_style() }}"></i>
+                            <i class="{{$pedido->status->icon()}} mr-2" style="{{ $pedido->status->icon_style() }}"></i>
                             <span class="text-secondary" style="font-size: .9rem; font-style: italic;">{{ $pedido->status->label() }}</span>
                         </div>
                     </td>

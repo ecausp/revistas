@@ -6,7 +6,7 @@
     <div class="card-header h5">
         <div class="d-flex align-items-center">
             Pedido {{ $pedido->id }}
-            <i class="{{ $pedido->status->icon() }}" style="{{ $pedido->status->icon_style() }}"></i>
+            <i class="{{ $pedido->status->icon() }} ml-5 mr-2" style="{{ $pedido->status->icon_style() }}"></i>
             <span class="text-secondary" style="font-size: .9rem; font-style: italic;">{{ $pedido->status->label() }}</span>
         </div>
     </div>
