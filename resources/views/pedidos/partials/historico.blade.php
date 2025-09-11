@@ -53,19 +53,27 @@
                 $isPassadoOuAtual = $posicaoItem <= $posicaoAtual;
 
                 $corStatus = $isPassadoOuAtual ? $itemStatus['color'] : 'secondary';
+                $corDescricao = $isPassadoOuAtual ? 'dark' : 'secondary';
             @endphp
 
             {{-- Célula do status --}}
             <td class="text-{{ $corStatus }} text-center p-2">
                 <span style="font-size: .8em; font-style: italic;">{{ $itemStatus['label'] }}</span><br />
-                <i class="fas {{ $itemStatus['icon'] }} border border-{{ $corStatus }} rounded-pill p-2" style="width: 35px; height: 35px; font-size: 1.2em;"></i><br />
-                <span class="text-{{ $corStatus }}" style="font-size: .8em; font-style: italic;">{{ $itemStatus['sub_label'] }}</span>
+                <i class="mt-2 text-{{ $corStatus }} fas {{ $itemStatus['icon'] }} border border-{{ $corStatus }} rounded-pill p-2" style="width: 35px; height: 35px; font-size: 1.2em;"></i><br />
+                <span class="text-{{ $corDescricao }}" style="font-size: .8em; font-style: italic;">{{ $itemStatus['sub_label'] }}</span>
             </td>
 
             {{-- Adiciona a seta entre os status, exceto no último --}}
             @if (!$loop->last)
+                @php
+                    // Posição do próximo status
+                    $posicaoProximo = array_search(array_keys($status)[$loop->index + 1], $ordemStatus);
+
+                    // Se o próximo status já passou, seta 'dark', senão 'secondary'
+                    $corSeta = $posicaoAtual >= $posicaoProximo ? 'dark' : 'secondary';
+                @endphp
                 <td class="text-center p-2">
-                    <i class="fas fa-long-arrow-alt-right text-secondary p-2" style="width: 45px; height: 45px;"></i>
+                    <i class="fas fa-long-arrow-alt-right text-{{ $corSeta }} p-2" style="width: 45px; height: 45px;"></i>
                 </td>
             @endif
         @endforeach
