@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Mail\ContatoCadastradoMail;
 use Illuminate\Support\Facades\Mail;
 
+use Spatie\Permission\Models\Permission;
 
 class ContatoController extends Controller
 {
@@ -58,6 +59,11 @@ class ContatoController extends Controller
         }
 
         $user->telefone = $request->telefone;
+
+        $user->givePermissionTo(
+            Permission::where('guard_name', User::$hierarquiaNs)->where('name', 'user')->first()
+        );
+
         $user->givePermissionTo(['revistas.empresa']);
         $user->save();
        
