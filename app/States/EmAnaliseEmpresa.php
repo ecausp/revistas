@@ -15,13 +15,7 @@ class EmAnaliseEmpresa extends StatusPedido
 
     public function icon(): string
     {
-        $svg = <<<SVG
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="green" viewBox="0 0 576 512" style="vertical-align: middle;">
-                <path d="M143.3 96c-14 0-26.5...Z"/>
-                </svg>
-                SVG;
-        $encoded = base64_encode($svg);
-        return '<img src="data:image/svg+xml;base64,' . $encoded . '" width="20" height="20" alt="status">';
+        return 'fas fa-glasses text-success border border-success rounded-pill p-2 mr-2 ml-5';
     }
 
     public function icon_style(): string
