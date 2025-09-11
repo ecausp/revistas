@@ -5,9 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+use App\States\StatusPedido;
+use Spatie\ModelStates\HasStates;
+
+
 class PedidoHistorico extends Model
 {
     use HasFactory;
+    use HasStates;
+    protected $casts = [
+        'status_pedido' => StatusPedido::class,
+    ];
     protected $table = 'pedido_historico';
 
     protected $fillable = [
@@ -23,14 +31,9 @@ class PedidoHistorico extends Model
         return $this->belongsTo(Pedido::class, 'id_pedido');
     }
 
-    public function historicosPedidos()
-    {
-        return $this->hasMany(PedidoHistorico::class, 'id_pessoa');
-    }
-
-
     public function pessoa()
     {
         return $this->belongsTo(User::class, 'id_pessoa');
     }
+
 }
