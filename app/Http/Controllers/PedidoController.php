@@ -131,7 +131,7 @@ class PedidoController extends Controller
         }
 
         $pedido->servicos()->sync($dadosParaSync);
-        
+        $pedido->adicionarHistorico($pedido->status, $pedido->observacoes);
         if(Solicitante::where('user_id', auth()->id())->exists()|| auth()->user()->hasRole('admin'))
         {
             session()->flash('success', 'Pedido cadastrado com sucesso!');
