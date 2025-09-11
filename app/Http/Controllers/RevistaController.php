@@ -10,6 +10,7 @@ use Uspdev\Replicado\Financeiro;
 use Uspdev\Replicado\Pessoa;
 use App\Util\ReplicadoTemp;
 
+use Spatie\Permission\Models\Permission;
 class RevistaController extends Controller
 {
     /*
@@ -96,7 +97,10 @@ class RevistaController extends Controller
             $user->codpes = $codpes;
             $user->save();
         }
-
+        
+        $user->givePermissionTo(
+            Permission::where('guard_name', User::$hierarquiaNs)->where('name', 'user')->first()
+        );
         $user->givePermissionTo(['revistas.revista']);
         $user->save();
 
