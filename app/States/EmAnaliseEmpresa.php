@@ -15,11 +15,16 @@ class EmAnaliseEmpresa extends StatusPedido
 
     public function icon(): string
     {
-        return 'fas fa-glasses text-success border border-success rounded-pill p-2 mr-2 ml-5';
+        return 'fas fa-glasses text-success border border-success rounded-pill p-2';
     }
 
     public function icon_style(): string
     {
         return 'font-size: 1rem; width: 32px; height: 32px';
+    }
+
+    public function color(): string
+    {
+        return 'success';
     }
 }

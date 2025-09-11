@@ -154,6 +154,7 @@ class PedidoController extends Controller
         $solicitante = $pedido->solicitante;
         $servicos = Servico::all();
         $historico = PedidoHistorico::where('id_pedido', $pedido->id)->get();
+        //dd($historico);
         // se for admin ou financeiro pode ver sem restrição
         if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro'))
             return view('pedidos.show', compact('historico','pedido', 'licitacao', 'solicitante', 'servicos'));

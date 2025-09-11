@@ -11,7 +11,7 @@
         </div>
     </div>
     <div class="card-body">
-        @include('pedidos.partials.historico')
+        @include('pedidos.partials.status')
         @include('pedidos.partials.cabecalho')
 
         <p><strong>Observações:</strong> {{ $pedido->observacoes }}</p>
@@ -20,9 +20,11 @@
         </div>
         
         @include('pedidos.partials.arquivos')
-    
+
+        @include('pedidos.partials.historico')
       </div>
 </div>
+
 
 <div class="mt-3">
     <small class="text-muted">Atualizado em {{ date_format($pedido->updated_at, 'd/m/Y H:i') }}
