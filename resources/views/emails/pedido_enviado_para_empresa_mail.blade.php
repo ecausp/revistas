@@ -3,11 +3,6 @@
 
   <p style="margin: 5px 0;"><strong>Revista:</strong> {{ $pedido->revista->name }}</p>
   <p style="margin: 5px 0;"><strong>Status atual:</strong> <span style="color: #26a269">{{ $pedido->status->label() }}</span>
-  
-    <img src="{{ asset('icons/'. $pedido->status .'.png') }}"
-         alt="status"
-         width="20" height="20"
-         style="vertical-align:middle; margin-left:5px;">
 </p>
  
 
