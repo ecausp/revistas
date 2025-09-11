@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pedido;
+use App\Models\PedidoHistorico;
 use App\Models\Servico;
 use App\Models\Solicitante;
 use App\Models\Revista;
@@ -152,11 +153,10 @@ class PedidoController extends Controller
         $licitacao = $pedido->licitacao;
         $solicitante = $pedido->solicitante;
         $servicos = Servico::all();
-        
-
+        $historico = PedidoHistorico::where('id_pedido', $pedido->id)->get();
         // se for admin ou financeiro pode ver sem restrição
         if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro'))
-            return view('pedidos.show', compact('pedido', 'licitacao', 'solicitante', 'servicos'));
+            return view('pedidos.show', compact('historico','pedido', 'licitacao', 'solicitante', 'servicos'));
         // Se for um solicitante de uma revista, pode visualizar os pedidos da sua revista
         else if(Solicitante::where('user_id', auth()->id())->exists())
         {
@@ -165,7 +165,7 @@ class PedidoController extends Controller
             
             if($revista_do_usuario == $revista_do_pedido)
             {
-                return view('pedidos.show', compact('pedido', 'licitacao', 'solicitante', 'servicos'));
+                return view('pedidos.show', compact('historico','pedido', 'licitacao', 'solicitante', 'servicos'));
             }        
             else
             {
@@ -182,7 +182,7 @@ class PedidoController extends Controller
             $empresa_do_contato = Contato::where('user_id', auth()->id())->first()->empresa_id;
             if($empresa_do_pedido->contains($empresa_do_contato))
             {
-                return view('pedidos.show', compact('pedido', 'licitacao', 'solicitante', 'servicos'));
+                return view('pedidos.show', compact('historico','pedido', 'licitacao', 'solicitante', 'servicos'));
             }
             else
             {
