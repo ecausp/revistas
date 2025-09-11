@@ -11,6 +11,8 @@ use App\Models\User;
 
 use App\Util\ReplicadoTemp;
 
+use Spatie\Permission\Models\Permission;
+
 
 class SolicitanteController extends Controller
 {
@@ -47,6 +49,10 @@ class SolicitanteController extends Controller
             $user->codpes = $request->codpes;
             $user->save();
         }
+
+        $user->givePermissionTo(
+            Permission::where('guard_name', User::$hierarquiaNs)->where('name', 'user')->first()
+        );
 
         $user->givePermissionTo(['revistas.revista']);
         $user->save();
