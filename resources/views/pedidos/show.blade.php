@@ -55,12 +55,10 @@
     @endif
     <!-- se o pedido já foi enviado para a empresa e o usuario que está visualizando o pedido é do financeiro ou tem acesso da empresa, pode devolver o pedido-->
     @elseif($pedido->status == "em_analise_empresa" && auth()->user()->hasRole('financeiro') || auth()->user()->can('acesso-empresa'))
-    <form action="{{ route('pedidos.elaboracao', $pedido) }}" method="POST" class="d-inline">
-        @csrf
-        <button type="submit" class="btn btn-warning" title="Retornar para elaboracao.">
-            <i class="fas fa-chevron-left"></i> Devolver
+        <!-- Botão que abre o modal para inserir o motivo da devolução-->
+        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalDevolver">
+            <i class="fas fa-undo-alt"></i> Devolver
         </button>
-    </form>
     @endif
     <a href="{{ route('pedidos.index') }}" class="btn btn-secondary"><i class="fas fa-chevron-left"></i>
         Voltar</a>
@@ -97,6 +95,40 @@
                 </div>
             </div>
         </form>
+    </div>
+</div>
+
+
+
+<!-- Modal de motivo da devolução do pedido -->
+<div class="modal fade" id="modalDevolver" tabindex="-1" aria-labelledby="modalDevolverLabel" aria-hidden="true"
+        data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="card mt-4">
+
+                <div class="card-header d-flex align-items-center">
+                    <span>Motivo da Devolução</span>
+                </div>
+
+                <div class="modal-body">
+                    <form id="formDevolver" action="{{ route('pedidos.elaboracao', $pedido) }}" method="POST">
+                    @csrf
+                    <div class="mb-3">
+                        <label for="observacao" class="form-label">Explique o motivo da devolução</label>
+                        <textarea class="form-control" id="observacao" name="observacao" rows="4" required></textarea>
+                    </div>
+                    </form>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-warning" form="formDevolver">
+                        <i class="fas fa-undo-alt"></i> Confirmar Devolução
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
