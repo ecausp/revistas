@@ -114,10 +114,10 @@
                 <div class="modal-body">
                     <form id="formDevolver" action="{{ route('pedidos.elaboracao', $pedido) }}" method="POST">
                     @csrf
-                    <div class="mb-3">
-                        <label for="observacao" class="form-label">Explique o motivo da devolução</label>
-                        <textarea class="form-control" id="observacao" name="observacao" rows="4" required></textarea>
-                    </div>
+                        <div class="mb-3">
+                            <label for="observacao" class="form-label">Explique o motivo da devolução</label>
+                            <textarea class="form-control" id="observacao" name="observacao" rows="4" required></textarea>
+                        </div>
                     </form>
                 </div>
 
