@@ -131,7 +131,7 @@ class PedidoController extends Controller
         }
 
         $pedido->servicos()->sync($dadosParaSync);
-        
+        $pedido->adicionarHistorico($pedido->status, $pedido->observacoes);
         if(Solicitante::where('user_id', auth()->id())->exists()|| auth()->user()->hasRole('admin'))
         {
             session()->flash('success', 'Pedido cadastrado com sucesso!');
@@ -326,17 +326,18 @@ class PedidoController extends Controller
         return response()->json(['mensagem' => 'Serviço desvinculado com sucesso!']);
     }
 
-     public function paraElaboracao(Pedido $pedido)
+     public function paraElaboracao(Request $request, Pedido $pedido)
     {
-        // Troca o status
 
+        // Troca o status
         $pedido->status->transitionTo(EmElaboracao::class);
         $pedido->save();
+
         foreach($pedido->revista->solicitantes as $solicitante){
             Mail::to($solicitante->user->email)->send(new PedidoDevolvidoParaRevistaMail($pedido));
         }      
 
-        $pedido->adicionarHistorico($pedido->status, $pedido->observacoes);
+        $pedido->adicionarHistorico($pedido->status, $request->observacao);
 
         session()->flash('error', 'Pedido devolvido para elaboração.');
         
