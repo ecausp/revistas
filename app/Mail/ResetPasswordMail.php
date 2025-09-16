@@ -19,9 +19,11 @@ class ResetPasswordMail extends Mailable
 
     public function build()
     {
-        return $this->from(config('mail.from.address'), config('mail.from.name'))
-                    ->subject('Redefinição de Senha')
-                    ->view('emails.reset-password')
-                    ->with(['resetUrl' => $this->resetUrl]);
+        return $this->from(
+        config('mail.noreply.address'),
+        config('mail.noreply.name'))
+        ->subject('Redefinição de Senha')
+        ->view('emails.reset-password')
+        ->with(['resetUrl' => $this->resetUrl]);
     }
 }

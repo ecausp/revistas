@@ -19,7 +19,10 @@ class ContatoCadastradoMail extends Mailable
 
     public function build()
     {
-        return $this->subject("Contato cadastrado na Empresa #{$this->empresa->razao_social}")
-                    ->view('emails.contato_cadastrado_na_empresa_mail');
+        return $this->from(
+        config('mail.noreply.address'),
+        config('mail.noreply.name'))->
+        subject("Contato cadastrado na Empresa #{$this->empresa->razao_social}")
+        ->view('emails.contato_cadastrado_na_empresa_mail');
     }
 }
