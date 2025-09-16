@@ -20,8 +20,8 @@ class PedidoEnviadoParaEmpresaMail extends Mailable
     public function build()
     {
         return $this->from(
-        config('mail.noreply.address'),
-        config('mail.noreply.name'))->
+        'noreply@usp.br',
+        config('mail.from.name'))->
         subject("Pedido #{$this->pedido->id} - {$this->pedido->revista->name} - recebido")
         ->view('emails.pedido_enviado_para_empresa_mail');
     }

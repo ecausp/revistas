@@ -95,11 +95,6 @@ return [
         'name' => env('MAIL_FROM_NAME'),
     ],
 
-    'noreply' => [
-        'address' => 'noreply@usp.br',
-        'name' => env('MAIL_FROM_NAME'),
-],
-
     /*
     |--------------------------------------------------------------------------
     | Markdown Mail Settings
