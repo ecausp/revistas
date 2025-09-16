@@ -92,8 +92,13 @@ return [
 
     'from' => [
         'address' => env('MAIL_FROM_ADDRESS', 'webeca@usp.br'),
-        'name' => env('MAIL_FROM_NAME', 'Example'),
+        'name' => env('MAIL_FROM_NAME'),
     ],
+
+    'noreply' => [
+        'address' => 'noreply@usp.br',
+        'name' => env('MAIL_FROM_NAME'),
+],
 
     /*
     |--------------------------------------------------------------------------
