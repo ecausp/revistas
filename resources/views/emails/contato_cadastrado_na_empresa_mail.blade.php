@@ -1,7 +1,6 @@
 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 8px; background-color: #fafafa;">
-  <h1 style="color: #333; font-size: 22px; margin-bottom: 10px;">Se você está recebendo este e-mail é porque foi cadastrado como contato da empresa {{ $empresa->razao_social }}</h1>
+  <h1 style="color: #333; font-size: 22px; margin-bottom: 10px;">Seu acesso ao sistema está habilitado como contato da empresa {{ $empresa->razao_social }}</h1>
 
-  <p style="margin: 5px 0;"><strong>CNPJ:</strong> {{ $empresa->cnpj }}</p>
   <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">
 
   <p style="color: #d9534f; font-weight: bold; margin: 10px 0;">
