@@ -49,7 +49,7 @@ Para alterar o modo com que esses dados falsos são gerados, modificar o arquivo
 ## E-mail
 
 Em desenvolvimento: 
-- No servidor de homologação: Utilizando a plataforma [Mailtrap](https://mailtrap.io/) é possível capturar os e-mails enviados sem que estes cheguem à caixa de entrada dos destinatários, possibilitando assim testar e analisar o envio de e-mails antes de se colocar em produção.
+- No servidor de homologação: Utilizando a plataforma [Mailtrap](https://help.mailtrap.io/article/109-getting-started-with-mailtrap-email-testing) é possível capturar os e-mails enviados sem que estes cheguem à caixa de entrada dos destinatários, possibilitando assim testar e analisar o envio de e-mails antes de se colocar em produção.
 - No seu pc de desenvolvimento: [DDEV](https://docs.ddev.com/en/stable/users/quickstart/#laravel-git-clone) e [Mailpit](https://docs.ddev.com/en/stable/users/usage/developer-tools/#email-capture-and-review-mailpit).
 
 Em produção: O gmail utiliza [senhas de app](https://support.google.com/accounts/answer/185833?hl=pt-BR) desde maio/2022. Siga os passos para gerar uma senha de app para sua aplicação.
