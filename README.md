@@ -1,10 +1,14 @@
 # Sistema de Orçamento das Revistas
 
+## Motivação
+
+Este sistema surgiu da necessidade local da ECA-USP em gerenciar os pedidos de serviços de editora e gráfica. De início, pensamos em utilizar o sistema da FFLCH [uspdev/grafica](https://github.com/uspdev/grafica), observamos que a ECA possui um fluxo e organizacional diferente. Na FFLCH existem os setores Gráfica e Editora, já na ECA não temos estes setores e contratamos terceiros. Desta maneira, desenvolvemos este sistema para atender a demanda local, mas gerenralizando, caso outra unidade tenha o mesmo fluxo.
+
 ## Conceito
 
-As revistas podem realizar pedidos referentes aos serviços de editora e gráfica.
+As revistas podem realizar pedidos seguindo o [fluxo](graficaDiagramaUML.png) abaixo:
 
-1. O Financeiro faz uma consulta para serviços de gráfica e editoração e cria uma Licitação. Na conclusão, obtém a Empresa vencedora e cadastra no sistema o valor total licitado, vigência, distribuição dos limites (serviços e quantidades) entre as revistas, tipos de serviços, quantidades, valore unitário de cada serviço, contato e credenciais de acesso desta Empresa.
+1. O Financeiro faz uma consulta para serviços de gráfica e editoração e cria uma Licitação. Na conclusão, obtém a Empresa vencedora e cadastra no sistema o valor total licitado, vigência, distribuição dos limites (serviços e quantidades) entre as revistas, tipos de serviços, quantidades, valor unitário de cada serviço, contato e credenciais de acesso desta Empresa.
 2. A Revista recebe notificação da conclusão da Licitação;
 3. A Revista cria o Pedido de Serviço, visualiza as tabelas de valores contratados, recursos financeiros disponíveis e gerencia os pedidos;
 4. A Empresa verifica se os serviços solicitados nos pedidos estão de acordo;
