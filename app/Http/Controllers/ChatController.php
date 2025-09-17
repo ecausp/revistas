@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 
 use App\Models\Pedido;
 
+use App\Mail\ChatEnviadoMail;
+use Illuminate\Support\Facades\Mail;
 class ChatController extends Controller
 {
     // garante que os métodos só podem ser acessados por um usuário logado;
@@ -44,7 +46,7 @@ class ChatController extends Controller
     {
         foreach ($this->participantesDoChat($pedido) as $user) {
             if ($user->id !== $autor->id) {
-                Mail::to($user->email)->send(new ChatMail($pedido, $chat));
+                Mail::to($user->email)->send(new ChatEnviadoMail($pedido, $chat));
             }
         }
     }
@@ -84,7 +86,7 @@ class ChatController extends Controller
                 'message'  => $data['message'],
     ]);
 
-        //$this->notificarParticipantes($chat, $pedido, $user);
+        $this->notificarParticipantes($chat, $pedido, $user);
 
         return redirect()->back()->with('success', 'Mensagem enviada!');
     }
