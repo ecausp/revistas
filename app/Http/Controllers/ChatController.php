@@ -20,16 +20,18 @@ class ChatController extends Controller
     {
         $usuarios = collect();
 
-        if ($pedido->revista) {
-            $usuarios = $usuarios->merge($pedido->revista->solicitantes);
-        }
+        $usuarios = $pedido->revista->solicitantes->map(fn($s) => $s->user);
 
-        if ($pedido->servico && $pedido->servico->empresa) {
-            $usuarios = $usuarios->merge($pedido->servico->empresa->contatos);
+        foreach ($pedido->servicos as $servico) {
+            foreach ($servico->empresas as $empresa) {
+                $usuarios = $usuarios->merge(
+                    $empresa->contatos->map(fn($c) => $c->user)
+                );
+            }
         }
-
-        return $usuarios->unique('id');
+        return $usuarios;
     }
+
 
     // verifica se o usuario logado pode acessar o chat
     private function podeAcessarChat($user, $pedido): bool
@@ -57,30 +59,32 @@ class ChatController extends Controller
         //
     }
 
-    public function store(Request $request)
+    public function store(Request $request, Pedido $pedido)
     {
         $data = $request->validate([
-            'pedido_id' => 'required|exists:pedidos,id',
-            'mensagem'  => 'required|string|max:2000',
+            'message'  => 'required|string|max:2000',
         ]);
 
-        $pedido = Pedido::with(['revista.solicitantes', 'servico.empresa.contatos'])->findOrFail($data['pedido_id']);
         $user = auth()->user();
-        
-        if ($pedido->status !== 'em_analise_empresa') {
-            session()->flash('danger', 'Usuário não possui acesso a esse recurso. Favor contatar financeiro.');
+        if ($pedido->status->label() != "Em Análise (Empresa)") {
+            session()->flash('danger', 'Status errado');
             return redirect()->route('home');
         }
         
-        else if (!$this->userCanAccessPedido($user, $pedido)) {
+        else if (!$this->podeAcessarChat($user, $pedido)) {
             session()->flash('danger', 'Usuário não possui acesso a esse recurso. Favor contatar financeiro.');
             return redirect()->route('home');
         }
 
         $data['user_id'] = $user->id;
-        $chat = Chat::create($data);
+            
+        $chat = Chat::create([
+                'pedido_id' => $pedido->id,
+                'user_id'  => $user->id,
+                'message'  => $data['message'],
+    ]);
 
-        $this->notificarParticipantes($chat, $pedido, $user);
+        //$this->notificarParticipantes($chat, $pedido, $user);
 
         return redirect()->back()->with('success', 'Mensagem enviada!');
     }
