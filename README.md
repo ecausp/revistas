@@ -2,9 +2,12 @@
 
 ## Motivação
 
-Este sistema surgiu da necessidade local da ECA-USP em gerenciar os pedidos de serviços de editora e gráfica. 
+Este sistema surgiu da necessidade local da ECA-USP em gerenciar os pedidos de serviços de editora e gráfica.
+
 De início, pensamos em utilizar o sistema da FFLCH [uspdev/grafica](https://github.com/uspdev/grafica), observamos que a ECA possui um fluxo e organizacional diferente. 
+
 Na FFLCH existem os setores Gráfica e Editora, já na ECA não temos estes setores e contratamos terceiros. 
+
 Desta maneira, desenvolvemos este sistema para atender a demanda local, mas gerenralizando, caso outra unidade tenha o mesmo fluxo.
 
 ## Conceito
