@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Chat;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 use App\Models\Pedido;
@@ -31,6 +32,7 @@ class ChatController extends Controller
                 );
             }
         }
+
         return $usuarios;
     }
 
@@ -38,7 +40,7 @@ class ChatController extends Controller
     // verifica se o usuario logado pode acessar o chat
     private function podeAcessarChat($user, $pedido): bool
     {
-        return $this->participantesDoChat($pedido)->contains('id', $user->id);
+        return ($this->participantesDoChat($pedido)->contains('id', $user->id) || auth()->user()->hasRole(roles: 'financeiro'));
     }
 
     // envia e-mail para os participantes que há uma nova mensagem no chat.

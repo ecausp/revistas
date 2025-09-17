@@ -1,21 +1,29 @@
 .chat-message.user {
+
+    font-size: 0.9em;
     background-color: #cfe2ff; /* azul pastel */
     color: #084298;
 }
 
 .chat-message.contato {
+
+    font-size: 0.9em;
     background-color: #d4edda; /* verde pastel */
     color: #155724;
 }
 
 .chat-message.solicitante {
+
+    font-size: 0.9em;
     background-color: #fff3cd; /* amarelo clarinho */
     color: #856404;
 }
 
 .chat-message {
-    padding: 8px 12px;
+    padding: 8px 8px;
     border-radius: 10px;
-    margin-bottom: 6px;
+    margin-bottom: 2px;
     width: 100%;
+    display: inline-block; 
+    word-wrap: break-word;
 }

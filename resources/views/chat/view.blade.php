@@ -3,9 +3,9 @@
 @if($pedido->status == 'em_analise_empresa')
 <div class="card mt-4">
     <div class="card-header h5">
-        Chat do Pedido
+        Chat
     </div>
-    <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+    <div class="card-body" style="">
         @forelse($pedido->chats as $chat)
             @php
             if ($chat->user_id === auth()->id()) {
@@ -21,7 +21,7 @@
         @endphp
 
             <div class="mb-3 {{ $align }}">
-                <div class="small text-muted">
+                <div class="small">
                     <strong>{{ $chat->user->name }}</strong> - {{ $chat->created_at->format('d/m/Y H:i') }}
                 </div>
                 <div class="chat-message {{ $class }}">
@@ -38,8 +38,8 @@
             <input type="hidden" name="pedido_id" value="{{ $pedido->id }}">
             <div class="input-group">
                 <textarea name="message" class="form-control" placeholder="Escreva sua mensagem..." required></textarea>
-                <button class="btn btn-primary" type="submit">Enviar</button>
             </div>
+            <button class="btn btn-primary mt-2" type="submit">Enviar</button>
         </form>
     </div>
 </div>
