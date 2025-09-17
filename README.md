@@ -2,7 +2,10 @@
 
 ## Motivação
 
-Este sistema surgiu da necessidade local da ECA-USP em gerenciar os pedidos de serviços de editora e gráfica. De início, pensamos em utilizar o sistema da FFLCH [uspdev/grafica](https://github.com/uspdev/grafica), observamos que a ECA possui um fluxo e organizacional diferente. Na FFLCH existem os setores Gráfica e Editora, já na ECA não temos estes setores e contratamos terceiros. Desta maneira, desenvolvemos este sistema para atender a demanda local, mas gerenralizando, caso outra unidade tenha o mesmo fluxo.
+Este sistema surgiu da necessidade local da ECA-USP em gerenciar os pedidos de serviços de editora e gráfica. 
+De início, pensamos em utilizar o sistema da FFLCH [uspdev/grafica](https://github.com/uspdev/grafica), observamos que a ECA possui um fluxo e organizacional diferente. 
+Na FFLCH existem os setores Gráfica e Editora, já na ECA não temos estes setores e contratamos terceiros. 
+Desta maneira, desenvolvemos este sistema para atender a demanda local, mas gerenralizando, caso outra unidade tenha o mesmo fluxo.
 
 ## Conceito
 
@@ -39,3 +42,11 @@ php artisan db:seed --class=LicitacaoSeeder
 
 Para alterar a quantidade de dados gerados, modificar o arquivo `database\seeders\LicitacaoSeeder.php`;
 Para alterar o modo com que esses dados falsos são gerados, modificar o arquivo `database\factories\LicitacaoFactory.php`;
+
+## E-mail
+
+Em desenvolvimento: 
+- No servidor de homologação: Utilizando a plataforma [Mailtrap](https://mailtrap.io/) é possível capturar os e-mails enviados sem que estes cheguem à caixa de entrada dos destinatários, possibilitando assim testar e analisar o envio de e-mails antes de se colocar em produção.
+- No seu pc de desenvolvimento: [DDEV](https://docs.ddev.com/en/stable/users/quickstart/#laravel-git-clone) e [Mailpit](https://docs.ddev.com/en/stable/users/usage/developer-tools/#email-capture-and-review-mailpit).
+
+Em produção: O gmail utiliza [senhas de app](https://support.google.com/accounts/answer/185833?hl=pt-BR) desde maio/2022. Siga os passos para gerar uma senha de app para sua aplicação.
