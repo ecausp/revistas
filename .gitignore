@@ -14,15 +14,17 @@ yarn-error.log
 
 public/vendor
 
-# init lando
+# lando
 .lando.yml
-# lando dockerfile php extensions
 Dockerfile.custom
-# lando php.ini
 php.ini
 
 # dev
 /documentos
 
-# DDEV
+# ddev
 /.ddev
+
+# docker
+docker-compose.yaml
+/docker-compose
