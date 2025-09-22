@@ -1,29 +1,45 @@
-.chat-message.user {
-
-    font-size: 0.9em;
-    background-color: #cfe2ff; /* azul pastel */
-    color: #084298;
+.card-body > .mb-3 {
+    display: flex;
+    flex-direction: column;
 }
 
-.chat-message.contato {
-
-    font-size: 0.9em;
-    background-color: #d4edda; /* verde pastel */
-    color: #155724;
+.card-body > .mb-3 {
+    display: flex;
+    flex-direction: column;
 }
 
-.chat-message.solicitante {
+.card-body > .mb-3.text-end {
+    align-items: flex-end;
+}
+.card-body > .mb-3.text-start {
+    align-items: flex-start;
+}
 
-    font-size: 0.9em;
-    background-color: #fff3cd; /* amarelo clarinho */
-    color: #856404;
+.card-body > .mb-3.text-end .chat-message {
+    align-self: flex-end;
+}
+.card-body > .mb-3.text-start .chat-message {
+    align-self: flex-start;
 }
 
 .chat-message {
     padding: 8px 8px;
     border-radius: 10px;
     margin-bottom: 2px;
-    width: 100%;
-    display: inline-block; 
+    max-width: 80%;
+    display: block; 
     word-wrap: break-word;
+}
+
+.chat-message.user {
+    margin-left: auto;
+    margin-right: 0;
+}
+
+/* mensagens de outros: vão pra esquerda */
+.chat-message.contato,
+.chat-message.solicitante,
+.chat-message.financeiro {
+    margin-right: auto;
+    margin-left: 0;
 }
