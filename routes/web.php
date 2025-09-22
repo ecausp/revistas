@@ -97,4 +97,8 @@ Route::post('/pedidos/{pedido}/analise-empresa', [PedidoController::class, 'para
 
 # 2 - retorna para a elaboracao
 Route::post('/pedidos/{pedido}/elaboracao', [PedidoController::class, 'paraElaboracao'])
-    ->name('pedidos.elaboracao');    
+    ->name('pedidos.elaboracao');
+
+# 3 - envia para analise do financeiro
+Route::post('/pedidos/{pedido}/analise-financeiro', [PedidoController::class, 'paraAnaliseFinanceiro'])
+    ->name('pedidos.analise-financeiro');
