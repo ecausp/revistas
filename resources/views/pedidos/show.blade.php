@@ -63,7 +63,7 @@
         <form action="{{ route('pedidos.analise-financeiro', $pedido) }}" method="POST" class="d-inline">
         @csrf
             <button type="submit" class="btn btn-success" title="Enviar para análise do financeiro.">
-                <i class="fas fa-glasses"></i> Enviar
+                <i class="fas fa-glasses"></i> Aprovar
             </button>
         </form>
     @endif
