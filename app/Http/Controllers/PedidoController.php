@@ -432,7 +432,7 @@ class PedidoController extends Controller
                 Mail::to($financeiro->email)->send(new PedidoEnviadoParaFinanceiroMail($pedido));
             }        
 
-            session()->flash('success', 'Pedido enviado por e-mail para os contatos da empresa responsável.');
+            session()->flash('success', 'Pedido enviado por e-mail para os responsáveis do setor financeiro.');
             
             // redireciona o usuario:
             $contato = Contato::where('user_id', auth()->id())->first();
@@ -444,7 +444,7 @@ class PedidoController extends Controller
         }
         else
         {
-            session()->flash('danger', 'Usuário não é solicitante da revista e não pode enviar pedidos para a empresa.');
+            session()->flash('danger', 'Usuário não é representante da empresa e não pode enviar pedidos para o setor financeiro.');
             return redirect()->route('home');
         }
     }
