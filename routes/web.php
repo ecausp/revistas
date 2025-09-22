@@ -12,6 +12,7 @@ use App\Http\Controllers\ContatoController;
 use App\Http\Controllers\RevistaController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PedidoController;
+use App\Http\Controllers\ChatController;
 
 
 use App\Models\User;
@@ -89,6 +90,8 @@ Route::get('/arquivos/{id}/ver', [ArquivoController::class, 'view'])->name('arqu
 Route::put('/pedidos/{pedido}/servicos', [PedidoController::class, 'updateServicos'])->name('pedidos.updateServicos');
 Route::delete('/pedidos/{pedido}/servicos/{servico}', [PedidoController::class, 'removerServicoDoPedido'])->name('pedidos.servicos.remover');
 
+Route::post('/pedidos/{pedido}/chat', [ChatController::class, 'store'])->name('chat.store');
+
 
 // ALTERAÇÕES DE STATUS
 # 1 - envia para analise da empresa
@@ -98,3 +101,4 @@ Route::post('/pedidos/{pedido}/analise-empresa', [PedidoController::class, 'para
 # 2 - retorna para a elaboracao
 Route::post('/pedidos/{pedido}/elaboracao', [PedidoController::class, 'paraElaboracao'])
     ->name('pedidos.elaboracao');    
+

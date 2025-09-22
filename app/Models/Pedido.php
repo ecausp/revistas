@@ -51,6 +51,11 @@ class Pedido extends Model
         return $this->hasMany(PedidoHistorico::class, 'id_pedido');
     }
 
+    public function chats()
+    {
+        return $this->hasMany(Chat::class);
+    }
+
     protected function casts(): array
     {
         return [

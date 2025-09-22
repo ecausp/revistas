@@ -1,0 +1,45 @@
+.card-body > .mb-3 {
+    display: flex;
+    flex-direction: column;
+}
+
+.card-body > .mb-3 {
+    display: flex;
+    flex-direction: column;
+}
+
+.card-body > .mb-3.text-end {
+    align-items: flex-end;
+}
+.card-body > .mb-3.text-start {
+    align-items: flex-start;
+}
+
+.card-body > .mb-3.text-end .chat-message {
+    align-self: flex-end;
+}
+.card-body > .mb-3.text-start .chat-message {
+    align-self: flex-start;
+}
+
+.chat-message {
+    padding: 8px 8px;
+    border-radius: 10px;
+    margin-bottom: 2px;
+    max-width: 80%;
+    display: block; 
+    word-wrap: break-word;
+}
+
+.chat-message.user {
+    margin-left: auto;
+    margin-right: 0;
+}
+
+/* mensagens de outros: vão pra esquerda */
+.chat-message.contato,
+.chat-message.solicitante,
+.chat-message.financeiro {
+    margin-right: auto;
+    margin-left: 0;
+}
