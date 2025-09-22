@@ -62,6 +62,13 @@
         <button type="button" class="btn btn-warning" title="Devolver para a revista" data-bs-toggle="modal" data-bs-target="#modalDevolver">
             <i class="fas fa-undo-alt"></i> Devolver
         </button>
+        <!-- ou então, o pedido pode ser aprovado e enviado para analise do financeiro: !-->
+        <form action="{{ route('pedidos.analise-financeiro', $pedido) }}" method="POST" class="d-inline">
+        @csrf
+            <button type="submit" class="btn btn-success" title="Enviar para análise do financeiro.">
+                <i class="fas fa-glasses"></i> Aprovar
+            </button>
+        </form>
     @endif
     <a href="{{ route('pedidos.index') }}" class="btn btn-secondary"><i class="fas fa-chevron-left"></i>
         Voltar</a>

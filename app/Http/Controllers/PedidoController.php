@@ -10,15 +10,18 @@ use App\Models\Revista;
 use App\Models\Licitacao;
 use App\Models\Empresa;
 use App\Models\Contato;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 use App\Mail\PedidoDevolvidoParaRevistaMail;
 use App\Mail\PedidoEnviadoParaEmpresaMail;
+use App\Mail\PedidoEnviadoParaFinanceiroMail;
 use Illuminate\Support\Facades\Mail;
 
 #states
 use App\States\EmElaboracao;
 use App\States\EmAnaliseEmpresa;
+use App\States\EmAnaliseFinanceiro;
 
 class PedidoController extends Controller
 {
@@ -410,5 +413,40 @@ class PedidoController extends Controller
         }
     }
 
+    public function paraAnaliseFinanceiro(Pedido $pedido)
+    {
+
+        // só pode ser enviado se o usuário for contato da empresa que recebeu o pedido
+        $contatos = $pedido->servicos()->first()->empresas()->first()->contatos;
+        if(Contato::where('user_id', auth()->id())->exists() && $contatos->contains('user_id', auth()->id()))
+        {
+            // 1. Atualiza o status do pedido
+            $pedido->status->transitionTo(EmAnaliseFinanceiro::class);
+            $pedido->save();
+
+            $pedido->adicionarHistorico($pedido->status, $pedido->observacoes);
+        
+
+            $financeiros = User::role('financeiro')->get();
+            foreach($financeiros as $financeiro){
+                Mail::to($financeiro->email)->send(new PedidoEnviadoParaFinanceiroMail($pedido));
+            }        
+
+            session()->flash('success', 'Pedido enviado por e-mail para os responsáveis do setor financeiro.');
+            
+            // redireciona o usuario:
+            $contato = Contato::where('user_id', auth()->id())->first();
+            $empresa = Empresa::where('id', $contato->empresa_id)->first();
+            $servicos = $empresa->servicos->pluck('id');
+            $pedidos = Pedido::whereHas('servicos', function ($query) use ($servicos) {
+            $query->whereIn('servicos.id', $servicos);})->get();
+            return view('pedidos.index', compact('pedidos'));
+        }
+        else
+        {
+            session()->flash('danger', 'Usuário não é representante da empresa e não pode enviar pedidos para o setor financeiro.');
+            return redirect()->route('home');
+        }
+    }
 
 }
