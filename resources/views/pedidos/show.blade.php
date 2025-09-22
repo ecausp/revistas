@@ -22,6 +22,9 @@
         @include('pedidos.partials.arquivos')
 
         @include('pedidos.partials.historico')
+
+        @include('chat.view', ['pedido' => $pedido])
+
       </div>
 </div>
 
@@ -56,7 +59,7 @@
     <!-- se o pedido já foi enviado para a empresa e o usuario que está visualizando o pedido é do financeiro ou tem acesso da empresa, pode devolver o pedido-->
     @elseif($pedido->status == "em_analise_empresa" && auth()->user()->hasRole('financeiro') || auth()->user()->can('acesso-empresa'))
         <!-- Botão que abre o modal para inserir o motivo da devolução-->
-        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalDevolver">
+        <button type="button" class="btn btn-warning" title="Devolver para a revista" data-bs-toggle="modal" data-bs-target="#modalDevolver">
             <i class="fas fa-undo-alt"></i> Devolver
         </button>
         <!-- ou então, o pedido pode ser aprovado e enviado para analise do financeiro: !-->
@@ -130,7 +133,7 @@
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-warning" form="formDevolver">
+                    <button type="submit" class="btn btn-warning" title="Devolver para a revista" form="formDevolver">
                         <i class="fas fa-undo-alt"></i> Confirmar Devolução
                     </button>
                 </div>
