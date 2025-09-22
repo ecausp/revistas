@@ -65,7 +65,7 @@
         <!-- ou então, o pedido pode ser aprovado e enviado para analise do financeiro: !-->
         <form action="{{ route('pedidos.analise-financeiro', $pedido) }}" method="POST" class="d-inline">
         @csrf
-            <button type="submit" class="btn btn-success" title="Enviar para análise do financeiro.">
+            <button type="submit" class="btn btn-info" title="Enviar para análise do financeiro.">
                 <i class="fas fa-glasses"></i> Aprovar
             </button>
         </form>
