@@ -70,8 +70,8 @@ class ChatController extends Controller
         ]);
 
         $user = auth()->user();
-        if ($pedido->status->label() != "Em Análise (Empresa)") {
-            session()->flash('danger', 'Status errado');
+        if ($pedido->status->label() == "Em Elaboração") {
+            session()->flash('danger', 'O chat está indisponível para o pedido no status de elaboração');
             return redirect()->route('home');
         }
         
