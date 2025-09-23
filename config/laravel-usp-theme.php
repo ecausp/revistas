@@ -1,6 +1,6 @@
 <?php
 $submenuPedidos = [
-        [
+    [
         'type' => 'header',
         'text' => '<i class="fa fa-shopping-cart" aria-hidden="true"></i> Pedidos',
     ],

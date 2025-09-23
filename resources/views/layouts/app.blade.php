@@ -18,7 +18,7 @@
 @parent
 @endsection
 
-@include('partials.aviso_teste')
+@include('partials.aviso')
 
 @section('styles')
 @parent

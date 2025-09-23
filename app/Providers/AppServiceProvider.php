@@ -27,7 +27,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        User::observe(UserObserver::class);
-        view()->share('aviso_de_testes', env('AVISO_DE_TESTES', ''));
+
     }
 }
