@@ -47,7 +47,7 @@ class ServicoController extends Controller
         $this->authorize("admin-financeiro");
         \UspTheme::activeUrl('servicos/create');
 
-        $unidades_medida = $stringArray = explode(",", env('UNIDADES_MEDIDA'));
+        $unidades_medida = $stringArray = explode(",", config('revistas.unidadesMedida'));
 
         return view('servicos.create', compact('unidades_medida'));
     }
@@ -138,7 +138,7 @@ class ServicoController extends Controller
     {
                 $this->authorize("admin-financeiro");
 
-        $unidades_medida = $stringArray = explode(",", env('UNIDADES_MEDIDA'));
+        $unidades_medida = $stringArray = explode(",", config('revistas.unidadesMedida'));
         return view('servicos.edit', compact('servico', 'unidades_medida'));
     }
 

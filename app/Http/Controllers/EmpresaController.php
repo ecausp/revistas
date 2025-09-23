@@ -21,7 +21,7 @@ class EmpresaController extends Controller
         
         $licitacoes = Licitacao::orderBy('ano', 'desc')->orderBy('descricao')->get();
         $servicos = Servico::orderBy('descricao', 'desc')->get();
-        $unidades_medida = $stringArray = explode(",", env('UNIDADES_MEDIDA'));
+        $unidades_medida = $stringArray = explode(",", config('revistas.unidadesMedida'));
         
         \UspTheme::activeUrl('empresas/create');
         
@@ -144,7 +144,7 @@ class EmpresaController extends Controller
 
         $licitacoes = Licitacao::orderBy('ano', 'desc')->orderBy('descricao')->get();
         $servicos = Servico::orderBy('descricao', 'desc')->get();
-        $unidades_medida = $stringArray = explode(",", env('UNIDADES_MEDIDA'));
+        $unidades_medida = $stringArray = explode(",", config('revistas.unidadesMedida'));
         // pega os serviços que estão associados a essa empresa;
         $servicos_associados = $empresa->servicos->pluck('id')->toArray();
 
