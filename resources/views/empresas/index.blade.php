@@ -13,7 +13,7 @@
     <div class="card-body">
         <a href="{{ route('empresas.create') }}" class="btn btn-primary mb-3"><i class="fas fa-plus"></i> Empresa</a>
         <table
-            class="table datatable-simples dt-fixed-header dt-paging-50 responsive no-footer table-striped responsive tabela">
+            class="table table-hover datatable-simples dt-fixed-header dt-paging-50 responsive no-footer table-striped responsive tabela">
             <thead>
                 <tr>
                     <th>CNPJ</th>

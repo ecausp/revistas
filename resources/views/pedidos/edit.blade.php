@@ -107,7 +107,7 @@ function atualizarTabelaServicosSelecionados() {
     let somaTotal = 0;
 
     if (selecionados && selecionados.length > 0) {
-        html += '<table class="table datatable-simples dt-fixed-header dt-paging-50 responsive no-footer table-striped responsive mb-0">';
+        html += '<table class="table table-hover datatable-simples dt-fixed-header dt-paging-50 responsive no-footer table-striped responsive mb-0">';
         html += '<thead><tr><th>Empresa</th><th>Descrição</th><th>Unidade</th><th>Quantidade</th><th>Valor Unitário R$</th><th>Valor Total R$</th><th></th></tr></thead><tbody>';
 
         selecionados.forEach(id => {

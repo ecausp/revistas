@@ -14,7 +14,7 @@
         <a href="{{ route('licitacoes.create') }}" class="btn btn-primary mb-3"><i class="fas fa-plus"></i>
             Licitação</a>
         <table
-            class="table datatable-simples dt-fixed-header dt-paging-50 responsive no-footer table-striped responsive">
+            class="table table-hover datatable-simples dt-fixed-header dt-paging-50 responsive no-footer table-striped responsive">
             <thead>
                 <tr>
                     <th>Descrição</th>

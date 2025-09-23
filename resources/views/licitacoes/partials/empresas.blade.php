@@ -1,6 +1,6 @@
 @if ($licitacao->empresas->count() > 0)
 <div class="card mt-2 mb-3">
-    <table class="table table-striped">
+    <table class="table table-hover table-striped">
         <thead>
             <tr>
                 <th colspan="4">Empresas</th>
@@ -36,7 +36,7 @@
             </tr>
             <tr class="collapse" id="servicos-{{ $empresa->id }}">
                 <td colspan="4">
-                    <table class="table table-sm table-bordered mt-2">
+                    <table class="table table-hover table-sm table-bordered mt-2">
                         <thead class="table-light">
                             <tr>
                                 <th>Serviço</th>

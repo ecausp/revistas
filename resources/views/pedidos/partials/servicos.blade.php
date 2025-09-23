@@ -6,7 +6,7 @@
     </div>
 </div>
 
-    <table class="table datatable-simples dt-fixed-header dt-paging-50 responsive no-footer table-striped responsive mb-0">
+    <table class="table table-hover datatable-simples dt-fixed-header dt-paging-50 responsive no-footer table-striped responsive mb-0">
         <thead>
             <tr>
                 <th style="width: 17%;">Empresa</th>
