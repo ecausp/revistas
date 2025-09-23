@@ -38,7 +38,7 @@
                     <td>
                         <a href="{{ route('pedidos.show', $pedido) }}" class="btn btn-primary"><i
                                 class="fas fa-eye"></i> </a>
-                        @if($pedido->status == "em_elaboracao")        
+                        @if ($pedido->status == "em_elaboracao" and (auth()->user()->can('acesso-revista')))        
                             <a href="{{ route('pedidos.edit', $pedido ) }}" class="btn btn-primary"><i
                                 class="fas fa-edit"></i></a>
                         @endif        
