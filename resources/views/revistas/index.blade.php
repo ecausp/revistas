@@ -3,7 +3,6 @@
 
 @section('content')
 
-@include('partials.aviso_teste')
 
 @include('partials.messages')
 
