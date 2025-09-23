@@ -3,6 +3,8 @@
 
 @section('content')
 
+@include('partials.aviso_teste')
+
 @include('partials.messages')
 
 <div class="card">
