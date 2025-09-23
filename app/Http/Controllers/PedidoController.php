@@ -471,7 +471,7 @@ class PedidoController extends Controller
             Mail::to($contato->user->email)->send(new PedidoEnviadoParaEmpresaMail($pedido));
         }     
 
-        $pedido->adicionarHistorico($pedido->status, "Empenho Efetuado");
+        $pedido->adicionarHistorico($pedido->status, "Empenho efetuado");
 
         session()->flash('error', 'Pedido enviado para execução.');
         
