@@ -7,6 +7,8 @@
 </style>
 @section('content')
 
+@include('partials.aviso_teste')
+
 @include('partials.messages')
 <div class="card">
     <div class="card-header h5">
