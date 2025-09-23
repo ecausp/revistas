@@ -384,13 +384,12 @@ class PedidoController extends Controller
             $pedido->save();
 
 
-        $pedido->adicionarHistorico($pedido->status);
-            $servicos = $pedido->servicos()->pluck('servicos.id');
-                    
+            $pedido->adicionarHistorico($pedido->status);
+            
+            $servicos = $pedido->servicos()->pluck('servicos.id');        
             $empresas = Empresa::whereHas('servicos', function ($query) use ($servicos) {
                     $query->whereIn('servicos.id', $servicos);})->get();
             $empresas->load('contatos'); // faz uma única query pra todos
-
             $contatos = $empresas
                 ->pluck('contatos')   // pega a coleção de contatos de cada empresa
                 ->flatten()           // junta tudo
@@ -459,9 +458,18 @@ class PedidoController extends Controller
         $pedido->status->transitionTo(EmExecucao::class);
         $pedido->save();
 
-        foreach($pedido->revista->solicitantes as $solicitante){
-            Mail::to($solicitante->user->email)->send(new PedidoEnviadoParaExecucaoMail($pedido));
-        }      
+        $servicos = $pedido->servicos()->pluck('servicos.id');        
+        $empresas = Empresa::whereHas('servicos', function ($query) use ($servicos) {
+                $query->whereIn('servicos.id', $servicos);})->get();
+        $empresas->load('contatos'); // faz uma única query pra todos
+        $contatos = $empresas
+            ->pluck('contatos')   // pega a coleção de contatos de cada empresa
+            ->flatten()           // junta tudo
+            ->values();           // reindexa
+    
+        foreach($contatos as $contato){
+            Mail::to($contato->user->email)->send(new PedidoEnviadoParaEmpresaMail($pedido));
+        }     
 
         $pedido->adicionarHistorico($pedido->status, "Empenho Efetuado");
 
