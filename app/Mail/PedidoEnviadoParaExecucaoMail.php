@@ -11,7 +11,6 @@ class PedidoEnviadoParaExecucaoMail extends Mailable
     use Queueable, SerializesModels;
 
     public $pedido;
-
     public function __construct($pedido)
     {
         $this->pedido = $pedido;
