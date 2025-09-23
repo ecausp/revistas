@@ -55,6 +55,27 @@
         @endif
     @endif
 
+    <!-- se o status do pedido for "em analise financeiro": -->
+    @if($pedido->status == "em_analise_financeiro")
+        <!-- se o usuário for do financeiro: -->
+        @if(auth()->user()->hasRole('financeiro'))
+            <!-- [1] - devolver o pedido-->
+            <!-- Botão que abre o modal para inserir o motivo da devolução-->
+            <button type="button" class="btn btn-warning" title="Devolver para a revista" data-bs-toggle="modal" data-bs-target="#modalDevolver">
+                <i class="fas fa-undo-alt"></i> Devolver
+            </button>
+
+            <!-- [2] - aprovar o pedido-->
+            <form action="{{ route('pedidos.execucao', $pedido) }}" method="POST" class="d-inline">
+            @csrf
+                <button type="submit" class="btn btn-success" title="Enviar para execução.">
+                    <i class="fas fa-tools"></i> Aprovar
+                </button>
+            </form>
+        
+        @endif
+    @endif
+
 
     <a href="{{ route('pedidos.index') }}" class="btn btn-secondary"><i class="fas fa-chevron-left"></i>Voltar</a>
 

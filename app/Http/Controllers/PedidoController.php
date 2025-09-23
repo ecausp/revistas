@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 use App\Mail\PedidoDevolvidoParaRevistaMail;
 use App\Mail\PedidoEnviadoParaEmpresaMail;
 use App\Mail\PedidoEnviadoParaFinanceiroMail;
+use App\Mail\PedidoEnviadoParaExecucaoMail;
 use Illuminate\Support\Facades\Mail;
 
 #states

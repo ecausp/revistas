@@ -1,4 +1,3 @@
-{{-- Card Histórico do Pedido (Colapsável) --}}
 <div class="card mt-4">
         <div class="card-header h5">
         <div class="d-flex align-items-center" style="cursor: pointer;">

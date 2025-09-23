@@ -11,7 +11,6 @@ class PedidoEnviadoParaEmpresaMail extends Mailable
     use Queueable, SerializesModels;
 
     public $pedido;
-    protected $iconePath;
     public function __construct($pedido)
     {
         $this->pedido = $pedido;
