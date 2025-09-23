@@ -105,3 +105,7 @@ Route::post('/pedidos/{pedido}/elaboracao', [PedidoController::class, 'paraElabo
 # 3 - envia para analise do financeiro
 Route::post('/pedidos/{pedido}/analise-financeiro', [PedidoController::class, 'paraAnaliseFinanceiro'])
     ->name('pedidos.analise-financeiro');
+
+# 4 - envia o pedido para execuçao
+Route::post('/pedidos/{pedido}/execucao', [PedidoController::class, 'paraExecucao'])
+    ->name('pedidos.execucao');

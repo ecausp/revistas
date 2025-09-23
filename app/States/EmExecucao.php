@@ -12,8 +12,20 @@ class EmExecucao extends StatusPedido
         return 'Em Execução (Empresa)';
     }
 
+    public function icon(): string
+    {
+        #icone de um sinal "+" em amarelo
+        return 'fas fa-tools text-success border border-success rounded-pill p-2';
+    }
+
+    public function icon_style(): string
+    {
+        return 'font-size: 1rem; width: 32px; height: 32px';
+    }
+
     public function color(): string
     {
-        return 'green';
+        return 'success';
     }
+
 }

@@ -11,11 +11,13 @@ use App\Models\Licitacao;
 use App\Models\Empresa;
 use App\Models\Contato;
 use App\Models\User;
+use App\States\EmExecucao;
 use Illuminate\Http\Request;
 
 use App\Mail\PedidoDevolvidoParaRevistaMail;
 use App\Mail\PedidoEnviadoParaEmpresaMail;
 use App\Mail\PedidoEnviadoParaFinanceiroMail;
+use App\Mail\PedidoEnviadoParaExecucaoMail;
 use Illuminate\Support\Facades\Mail;
 
 #states
@@ -446,6 +448,47 @@ class PedidoController extends Controller
         {
             session()->flash('danger', 'Usuário não é representante da empresa e não pode enviar pedidos para o setor financeiro.');
             return redirect()->route('home');
+        }
+    }
+
+
+     public function paraExecucao(Request $request, Pedido $pedido)
+    {
+
+        // Troca o status
+        $pedido->status->transitionTo(EmExecucao::class);
+        $pedido->save();
+
+        foreach($pedido->revista->solicitantes as $solicitante){
+            Mail::to($solicitante->user->email)->send(new PedidoEnviadoParaExecucaoMail($pedido));
+        }      
+
+        $pedido->adicionarHistorico($pedido->status, "Empenho Efetuado");
+
+        session()->flash('error', 'Pedido enviado para execução.');
+        
+        // se o usuário é financeiro ou admin, pode ver todos os pedidos
+        if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro'))
+        {
+            $pedidos = Pedido::all(); 
+            return view('pedidos.index', compact('pedidos'));
+        }
+        // se o usuário é solicitante, pode ver os pedidos da revista dele
+        else if(Solicitante::where('user_id', auth()->id())->exists())
+        {   
+            $solicitante = Solicitante::where('user_id', auth()->id())->first();
+            $pedidos = Pedido::where('revista_id', $solicitante->revista_id)->get();  
+            return view('pedidos.index', compact('pedidos'));
+        }
+        // se o usuário é contato, pode ver os pedidos que tem serviço da empresa que ele está associado
+        else if(Contato::where('user_id', auth()->id())->first())
+        {
+            $contato = Contato::where('user_id', auth()->id())->first();
+            $empresa = Empresa::where('id', $contato->empresa_id)->first();
+            $servicos = $empresa->servicos->pluck('id');
+            $pedidos = Pedido::whereHas('servicos', function ($query) use ($servicos) {
+                $query->whereIn('servicos.id', $servicos);})->get();
+            return view('pedidos.index', compact('pedidos'));
         }
     }
 

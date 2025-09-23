@@ -25,7 +25,7 @@
             'label' => 'Empresa',
             'icon' => 'fa-tools',
             'sub_label' => 'Em Execução',
-            'color' => 'sucess',
+            'color' => 'success',
         ],
         'em_conferencia' => [
             'label' => 'Revista',

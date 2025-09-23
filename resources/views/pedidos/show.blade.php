@@ -37,46 +37,7 @@
     <br />por {{ $pedido->solicitante->user->name }} - {{ $pedido->solicitante->user->email }}</small>
 </div>
 
-<div class="container mt-5 col">
-    <!-- se o pedido ainda não foi enviado para a empresa, ele pode ser editado/deletado e arquivos podem ser adicionados; -->
-    @if($pedido->status != "em_analise_empresa")
-    <a href="{{ route('pedidos.edit', $pedido) }}" class="btn btn-primary"><i class="fas fa-edit"></i>Editar</a>
-
-    @if((auth()->user()->can('admin') || auth()->user()->can('acesso-revista')) && !auth()->user()->hasRole('financeiro'))
- 
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#adicionarArquivoModal">
-            <i class="fas fa-paperclip"></i> Arquivo(s)
-        </button>
-
-    @endif
-
-    @include('pedidos.partials.delete')
-    @if((auth()->user()->can('admin') || auth()->user()->can('acesso-revista')) && !auth()->user()->hasRole('financeiro'))
-    <form action="{{ route('pedidos.analise-empresa', $pedido) }}" method="POST" class="d-inline">
-        @csrf
-        <button type="submit" class="btn btn-success" title="Enviar para análise da empresa.">
-            <i class="fas fa-glasses"></i> Enviar
-        </button>
-    </form>
-    @endif
-    <!-- se o pedido já foi enviado para a empresa e o usuario que está visualizando o pedido é do financeiro ou tem acesso da empresa, pode devolver o pedido-->
-    @elseif($pedido->status == "em_analise_empresa" && auth()->user()->hasRole('financeiro') || auth()->user()->can('acesso-empresa'))
-        <!-- Botão que abre o modal para inserir o motivo da devolução-->
-        <button type="button" class="btn btn-warning" title="Devolver para a revista" data-bs-toggle="modal" data-bs-target="#modalDevolver">
-            <i class="fas fa-undo-alt"></i> Devolver
-        </button>
-        <!-- ou então, o pedido pode ser aprovado e enviado para analise do financeiro: !-->
-        <form action="{{ route('pedidos.analise-financeiro', $pedido) }}" method="POST" class="d-inline">
-        @csrf
-            <button type="submit" class="btn btn-info" title="Enviar para análise do financeiro.">
-                <i class="fas fa-glasses"></i> Aprovar
-            </button>
-        </form>
-    @endif
-    <a href="{{ route('pedidos.index') }}" class="btn btn-secondary"><i class="fas fa-chevron-left"></i>
-        Voltar</a>
-
-</div>
+@include('pedidos.partials.botoes')
 
 <!-- Modal de Arquivos -->
 <div class="modal fade" id="adicionarArquivoModal" tabindex="-1" aria-labelledby="adicionarArquivoModalLabel"
