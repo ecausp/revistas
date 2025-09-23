@@ -27,7 +27,7 @@
                     </a>
 
                     <!-- o arquivo só pode ser deletado se o pedido ainda não tiver sido enviado-->
-                    @if($pedido->status != "em_analise_empresa")
+                    @if($pedido->status == "em_elaboracao")
                         @if(auth()->user()->hasRole('admin') || auth()->user()->hasRole('financeiro') || auth()->user()->can('acesso-revista'))
                     <form action="{{ route('arquivos.destroy', $arquivo) }}" method="POST"
                         onsubmit="return confirm('Tem certeza que deseja excluir este arquivo?')">
