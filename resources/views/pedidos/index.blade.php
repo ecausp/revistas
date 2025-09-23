@@ -38,9 +38,10 @@
                     <td>
                         <a href="{{ route('pedidos.show', $pedido) }}" class="btn btn-primary"><i
                                 class="fas fa-eye"></i> </a>
-                        <a href="{{ route('pedidos.edit', $pedido ) }}" class="btn btn-primary"><i
+                        @if($pedido->status == "em_elaboracao")        
+                            <a href="{{ route('pedidos.edit', $pedido ) }}" class="btn btn-primary"><i
                                 class="fas fa-edit"></i></a>
-
+                        @endif        
                     </td>
                 </tr>
                 @endforeach
