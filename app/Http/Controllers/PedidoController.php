@@ -134,7 +134,7 @@ class PedidoController extends Controller
         }
 
         $pedido->servicos()->sync($dadosParaSync);
-        $pedido->adicionarHistorico($pedido->status, $pedido->observacoes);
+        $pedido->adicionarHistorico($pedido->status);
         if(Solicitante::where('user_id', auth()->id())->exists()|| auth()->user()->hasRole('admin'))
         {
             session()->flash('success', 'Pedido cadastrado com sucesso!');
@@ -157,7 +157,7 @@ class PedidoController extends Controller
         $solicitante = $pedido->solicitante;
         $servicos = Servico::all();
         $historico = PedidoHistorico::where('id_pedido', $pedido->id)->orderBy('created_at', 'desc')->get();
-        //dd($historico);
+
         // se for admin ou financeiro pode ver sem restrição
         if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro'))
             return view('pedidos.show', compact('historico','pedido', 'licitacao', 'solicitante', 'servicos'));
@@ -382,7 +382,7 @@ class PedidoController extends Controller
             $pedido->save();
 
 
-        $pedido->adicionarHistorico($pedido->status, $pedido->observacoes);
+        $pedido->adicionarHistorico($pedido->status);
             $servicos = $pedido->servicos()->pluck('servicos.id');
                     
             $empresas = Empresa::whereHas('servicos', function ($query) use ($servicos) {
@@ -424,7 +424,7 @@ class PedidoController extends Controller
             $pedido->status->transitionTo(EmAnaliseFinanceiro::class);
             $pedido->save();
 
-            $pedido->adicionarHistorico($pedido->status, $pedido->observacoes);
+            $pedido->adicionarHistorico($pedido->status);
         
 
             $financeiros = User::role('financeiro')->get();
