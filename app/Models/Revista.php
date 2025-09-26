@@ -28,5 +28,10 @@ class Revista extends Model
         return $this->hasMany(Pedido::class);
 
     }
+
+    public function saldos()
+    {
+        return $this->hasMany(Saldo::class);
+    }
     
 }

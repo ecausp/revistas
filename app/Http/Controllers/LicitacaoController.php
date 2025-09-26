@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Licitacao;
+use App\Models\Revista;
 use App\Models\User;
+use App\Models\Solicitante;
+use App\Models\Saldo;
 
 use Illuminate\Http\Request;
 
@@ -49,7 +52,6 @@ class LicitacaoController extends Controller
     // listar todas as licitacoes
     public function index()
     {
-        $this->authorize("admin-financeiro");
         \UspTheme::activeUrl('licitacoes');
 
         $licitacoes = Licitacao::orderBy('ano', 'desc')->orderBy('descricao')->get();
@@ -60,12 +62,20 @@ class LicitacaoController extends Controller
     // Exibir os detalhes de uma licitação
     public function show(Licitacao $licitacao)
     {
-        $this->authorize("admin-financeiro");
-
+        $saldos = NULL;
         $editor = User::where('id', $licitacao->editor)->first();
         $updated_at = $licitacao->updated_at;
-
-        return view('licitacoes.show', compact("licitacao", 'updated_at', "editor"));
+        if(auth()->user()->hasRole(roles: 'financeiro'))
+        {
+            $saldos = Saldo::all();
+        }
+        // verificar se é user revista e qual revista ele faz parte pra ver só a sua revista;
+        else if(Solicitante::where('user_id', auth()->id())->exists())
+        {
+            $solicitante = Solicitante::where('user_id', auth()->id())->first();
+            $saldos = Saldo::where('revista_id', $solicitante->revista_id)->get();
+        }
+        return view('licitacoes.show', compact("licitacao", 'updated_at', "editor", 'saldos'));
     }
 
     // Exibir o formulário para editar uma licitação
