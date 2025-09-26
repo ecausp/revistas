@@ -28,6 +28,14 @@
         Empresa(s)</a>
     @endif
 
+    @if(auth()->user()->hasRole('financeiro') && isset($licitacao))
+    <a href="{{ route('saldos.create', ['licitacao' => $licitacao->id]) }}" 
+       class="btn btn-success">
+        <i class="fa fa-money"></i> Gerenciar Saldo
+    </a>
+    @endif
+
+
     <a href="{{ route('licitacoes.index') }}" class="btn btn-secondary"><i class="fas fa-chevron-left"></i>
         Voltar</a>
 </div>
