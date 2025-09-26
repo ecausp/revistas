@@ -13,7 +13,7 @@ use App\Http\Controllers\RevistaController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\ChatController;
-use App\Http\Controllers\SaldoChatController;
+use App\Http\Controllers\SaldoController;
 
 
 

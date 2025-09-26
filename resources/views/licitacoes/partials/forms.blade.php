@@ -31,7 +31,7 @@
     @if(auth()->user()->hasRole('financeiro') && isset($licitacao))
     <a href="{{ route('saldos.create', ['licitacao' => $licitacao->id]) }}" 
        class="btn btn-success">
-        <i class="fa fa-money"></i> Gerenciar Saldo
+        <i class="fas fa-money-bill"></i> Saldos
     </a>
     @endif
 
