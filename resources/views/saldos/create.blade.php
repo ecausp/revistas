@@ -3,8 +3,9 @@
 @section('content')
 <div class="container">
     <h1>Saldo da Licitação: {{ $licitacao->id }}</h1>
-    <p>AQUI VAI SER A CRIAÇÃO DO SALDO</p>
 </div>
+
+<input type="hidden" id="licitacao_id" value="{{ $licitacao->id }}">
 
 <div class="mb-3">
     <label for="revistas" class="form-label">Revistas</label>
@@ -51,32 +52,88 @@
 
 @section('javascripts_bottom')
 <script>
-$('.select2').on('change', function() {
-    var selected = $(this).val(); // array de IDs selecionadas
-    selected.forEach(function(revistaId) {
-        if($('#tabela-saldos tbody tr[data-revista-id="'+revistaId+'"]').length == 0){
-            var revistaName = $('#revistas option[value="'+revistaId+'"]').text();
-            var newRow = $(`
-                <tr data-revista-id="${revistaId}">
-                    <td>${revistaName}</td>
-                    <td><input type="text" class="form-control money recurso-recebido" placeholder="0,00"></td>
-                    <td><input type="text" class="form-control money recurso-estagio" placeholder="0,00"></td>
-                    <td>
-                        <button class="btn btn-success btn-sm salvar"><i class="fas fa-check"></i></button>
-                    </td>
-                </tr>
-            `);
+$(document).ready(function(){
 
-            // adiciona a linha na tabela
-            $('#tabela-saldos tbody').append(newRow);
+    // Inicializa Select2
+    $('.select2').select2();
 
-            // aplica a máscara moeda aos novos inputs
-            newRow.find('.money').mask('0.000.000.000.000,00', { reverse: true });
-        }
+    // Formato moeda
+    $('.money').mask('0.000.000.000.000,00', { reverse: true });
+
+    // Função para atualizar saldo (recurso recebido - recurso estágio)
+    function atualizarSaldo(row){
+        var recursoRecebido = parseFloat(row.find('.recurso-recebido').val().replace(/\./g, '').replace(',', '.')) || 0;
+        var recursoEstagio = parseFloat(row.find('.recurso-estagio').val().replace(/\./g, '').replace(',', '.')) || 0;
+        var saldo = recursoRecebido - recursoEstagio;
+        row.find('.saldo').text(saldo.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2}));
+    }
+
+    // Atualiza saldo ao digitar
+    $('#tabela-saldos').on('input', '.recurso-recebido, .recurso-estagio', function(){
+        var row = $(this).closest('tr');
+        atualizarSaldo(row);
     });
+
+    // Adicionar novas linhas quando selecionar revistas no select2
+    $('#revistas').on('change', function() {
+        var selected = $(this).val(); // array de IDs selecionadas
+        selected.forEach(function(revistaId) {
+            // só adiciona se ainda não existir na tabela
+            if ($('#tabela-saldos tbody tr[data-revista-id="'+revistaId+'"]').length == 0) {
+                var revistaName = $('#revistas option[value="'+revistaId+'"]').text();
+                $('#tabela-saldos tbody').append(`
+                    <tr data-revista-id="${revistaId}">
+                        <td>${revistaName}</td>
+                        <td><input type="text" class="form-control money recurso-recebido" placeholder="0,00"></td>
+                        <td><input type="text" class="form-control money recurso-estagio" placeholder="0,00"></td>
+                        <td>
+                            <button class="btn btn-success btn-sm salvar"><i class="fas fa-check"></i></button>
+                        </td>
+                    </tr>
+                `);
+
+                // reaplica a máscara moeda nos novos inputs
+                $('.money').mask('0.000.000.000.000,00', { reverse: true });
+            }
+        });
+    });
+
+    // Salvar saldo via botão
+    $('#tabela-saldos').on('click', '.salvar', function(e) {
+        e.preventDefault();
+        var row = $(this).closest('tr');
+        var revistaId = row.data('revista-id');
+        var recursoRecebido = parseFloat(row.find('.recurso-recebido').val().replace(/\./g, '').replace(',', '.')) || 0;
+        var recursoEstagio = parseFloat(row.find('.recurso-estagio').val().replace(/\./g, '').replace(',', '.')) || 0;
+        var licitacaoId = $('#licitacao_id').val();
+
+        $.ajax({
+            url: "{{ route('saldos.store') }}",
+            method: 'POST',
+            data: {
+                _token: "{{ csrf_token() }}",
+                licitacao_id: licitacaoId,
+                revista_id: revistaId,
+                recurso_recebido: recursoRecebido,
+                recurso_estagio: recursoEstagio
+            },
+            success: function(response) {
+                if(response.success){
+                    alert('Saldo salvo com sucesso!');
+                } else {
+                    alert('Erro ao salvar saldo.');
+                }
+            },
+            error: function(){
+                alert('Erro ao salvar saldo.');
+            }
+        });
+    });
+
 });
 </script>
 @endsection
+
 
 
 @endsection
