@@ -454,6 +454,18 @@ class PedidoController extends Controller
      public function paraExecucao(Request $request, Pedido $pedido)
     {
 
+        $licitacao = $pedido->licitacao;
+        $revista = $pedido->revista;
+        $saldos = $revista->saldos;
+        dd($pedido->servicos->first());
+
+
+        foreach($saldos as $saldo)
+        {
+            if($saldo->licitacao_id == $licitacao->id)
+                dd($saldo);
+        }
+
         // Troca o status
         $pedido->status->transitionTo(EmExecucao::class);
         $pedido->save();
@@ -473,7 +485,13 @@ class PedidoController extends Controller
 
         $pedido->adicionarHistorico($pedido->status, "Empenho efetuado");
 
-        session()->flash('error', 'Pedido enviado para execução.');
+        session()->flash('success', 'Pedido enviado para execução.');
+
+
+        // se o pedido foi empenhado, precisa atualizar o saldo das revistas que fizeram esse pedido
+        
+
+
         
         // se o usuário é financeiro ou admin, pode ver todos os pedidos
         if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro'))
