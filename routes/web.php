@@ -55,6 +55,7 @@ Route::get('/licitacoes/{licitacao}/saldos/create', [SaldoController::class, 'cr
      ->name('saldos.create')
      ->middleware('auth');
 Route::post('/saldos', [SaldoController::class, 'store'])->name('saldos.store');
+Route::get('/saldos/{saldo}', [SaldoController::class, 'show'])->name('saldos.show');
 
 
 # rota para conseguir pegar a empresa que está cadastrando esse contato;
