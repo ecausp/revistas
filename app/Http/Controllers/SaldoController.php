@@ -43,4 +43,21 @@ class SaldoController extends Controller
         ]);
     }
 
+
+    public function show(Saldo $saldo)
+    {
+        $revista = $saldo->revista;
+
+        $revista->load('pedidos.servicos');
+
+        $servicos = $revista->pedidos->flatMap(function ($pedido) {
+            return $pedido->servicos->map(function ($servico) use ($pedido) {
+                $servico->pedido_id = $pedido->id;
+                return $servico;
+            });
+        });
+
+        return view('saldos.show', compact('saldo', 'servicos'));
+    }
+
 }

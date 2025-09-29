@@ -19,7 +19,12 @@
                 <td>{{ $saldo->revista->name}}</td>
                 <td>{{ number_format($saldo->recurso_recebido, 2, ',', '.') }}</td>
                 <td>{{ number_format($saldo->recurso_estagio, 2, ',', '.') }}</td>
-                <td>{{ number_format($saldo->valor_contratado, 2, ',', '.') }}</td>
+                <td>
+                    {{ number_format($saldo->valor_contratado, 2, ',', '.') }}
+                    <button class="btn btn-primary" onclick="window.location='{{ route('saldos.show', $saldo->id) }}'">
+                        <i class="fas fa-list"></i>
+                    </button>
+                </td>
                 <td>{{ number_format(($saldo->recurso_recebido - $saldo->recurso_estagio - $saldo->valor_contratado), 2, ',', '.') }}</td>
             </tr>
             @endforeach
