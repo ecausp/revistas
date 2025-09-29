@@ -5,10 +5,14 @@
 
 <div class="card">
     <div class="card-header h5">
-        Detalhamento do Valor Contratado para a Revista {{ $saldo->revista->name }} na Licitação {{ $saldo->licitacao->descricao }}
+        Serviços contratados
     </div>
 
     <div class="card-body">
+
+    <span><strong>Licitação: </strong></span><span>{{ $saldo->licitacao->descricao }} / {{ $saldo->licitacao->ano }}</span><br />  
+    <span><strong>Revista: </strong></span><span>{{ $saldo->revista->name }}</span>
+
     <table class="table table-hover datatable-simples dt-fixed-header dt-paging-50 responsive no-footer table-striped responsive">
         <thead>
             <tr>
