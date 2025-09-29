@@ -3,13 +3,14 @@
 @section('content')
 <div class="card">
     <div class="card-header h5">
-        <span>Saldos da Licitação: {{$licitacao->descricao }} - {{ $licitacao->ano }}</span>
+        <span>Recursos financeiros: {{$licitacao->descricao }} - {{ $licitacao->ano }}</span>
     </div>
 
     <div class="card-body">
         <input type="hidden" id="licitacao_id" value="{{ $licitacao->id }}">
 
         <div class="mb-3">
+            <label for="revistas" class="form-label font-weight-bold">Revistas</label>
             <select name="revistas[]" id="revistas" class="form-control select2" multiple="multiple">
                 @foreach($revistas as $revista)
                     <option value="{{ $revista->id }}"
@@ -25,8 +26,8 @@
                 <thead>
                     <tr>
                         <th>Revista</th>
-                        <th>Recurso Recebido</th>
-                        <th>Recurso de Estágio</th>
+                        <th>Recurso recebido</th>
+                        <th>Recurso reseervado para estágio</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
@@ -43,7 +44,7 @@
                                 value="{{ number_format($saldo->recurso_estagio, 2, ',', '.') }}">
                         </td>
                         <td>
-                            <button class="btn btn-success btn-sm salvar"><i class="fas fa-check"></i></button>
+                            <button class="btn btn-success btn-sm salvar" title="Salvar"><i class="fas fa-check"></i></button>
                         </td>
                     </tr>
                 @endforeach
