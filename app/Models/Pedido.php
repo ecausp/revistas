@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\ModelStates\HasStates;
 
+use App\Models\PedidoServico;
 class Pedido extends Model
 {
     use HasFactory;
@@ -41,10 +42,12 @@ class Pedido extends Model
         return $this->belongsTo(Licitacao::class);
     }
 
-        public function servicos()
+    public function servicos()
     {
-        return $this->belongsToMany(Servico::class, 'pedido_servico')->withPivot('quantidade')->withTimestamps();
+        return $this->belongsToMany(Servico::class, 'pedido_servico')
+                    ->withPivot('quantidade', 'valor_unitario');
     }
+
 
     public function historicos()
     {
@@ -71,6 +74,19 @@ class Pedido extends Model
             'id_pessoa'     => auth()->id(), // pega automaticamente o usuário logado
             'observacao'    => $observacao,
         ]);
+    }
+
+
+    public function valorTotalPedido()
+    {
+        $servicos = PedidoServico::where('pedido_id', $this->id)->get();
+        $valor_total = 0;
+        foreach($servicos as $servico)
+        {
+            $valor_total = $valor_total + ($servico->quantidade * $servico->valor_unitario);
+        }
+        return $valor_total;
+
     }
 
 }

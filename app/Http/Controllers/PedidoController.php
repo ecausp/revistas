@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Pedido;
 use App\Models\PedidoHistorico;
+use App\Models\PedidoServico;
 use App\Models\Servico;
 use App\Models\Solicitante;
 use App\Models\Revista;
@@ -102,11 +103,11 @@ class PedidoController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+
     public function store(Request $request)
     {
         $this->authorize("acesso-revista");
 
-        // Validação básica
         $validated = $request->validate([
             'solicitante_id' => 'required|exists:solicitantes,id',
             'revista_id' => 'required|exists:revistas,id',
@@ -127,16 +128,30 @@ class PedidoController extends Controller
         ]);
 
         $pedido->status = new EmElaboracao($pedido);
+
         
-        // Relacionando serviços e quantidades
+        // 1. Carrega os serviços com base nos IDs validados.
+        $servicosSelecionados = Servico::whereIn('id', $validated['servicos'])->get()->keyBy('id');
+
+        // 2. Relacionando serviços, quantidades E valor unitário
         $dadosParaSync = [];
         foreach ($validated['servicos'] as $servicoId) {
+            $servico = $servicosSelecionados->get($servicoId);
             $qtd = $validated['quantidades'][$servicoId] ?? 1;
-            $dadosParaSync[$servicoId] = ['quantidade' => $qtd];
+
+            if ($servico) {
+                $dadosParaSync[$servicoId] = [
+                    'quantidade' => $qtd,
+                    'valor_unitario' => $servico->valor_unitario,
+                ];
+            }
         }
 
         $pedido->servicos()->sync($dadosParaSync);
+
+
         $pedido->adicionarHistorico($pedido->status);
+
         if(Solicitante::where('user_id', auth()->id())->exists()|| auth()->user()->hasRole('admin'))
         {
             session()->flash('success', 'Pedido cadastrado com sucesso!');
@@ -457,13 +472,17 @@ class PedidoController extends Controller
         $licitacao = $pedido->licitacao;
         $revista = $pedido->revista;
         $saldos = $revista->saldos;
-        dd($pedido->servicos->first());
+        $total = $pedido->valorTotalPedido();
+
 
 
         foreach($saldos as $saldo)
         {
             if($saldo->licitacao_id == $licitacao->id)
-                dd($saldo);
+            {
+                $saldo->valor_contratado = $saldo->valor_contradado + $total;
+                $saldo->save(); 
+            }
         }
 
         // Troca o status
