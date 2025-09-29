@@ -25,10 +25,10 @@
             <table class="table table-hover table-striped" id="tabela-saldos">
                 <thead>
                     <tr>
-                        <th>Revista</th>
-                        <th>Recurso recebido</th>
-                        <th>Recurso reseervado para estágio</th>
-                        <th>Ações</th>
+                        <th class="text-center">Revista</th>
+                        <th class="text-center">Recurso recebido</th>
+                        <th class="text-center">Recurso reseervado para estágio</th>
+                        <th class="text-center">Ações</th>
                     </tr>
                 </thead>
                 <tbody>

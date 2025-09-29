@@ -6,11 +6,11 @@
                 <th colspan="3">Recursos financeiros</th>
             </tr>
             <tr>
-                <th>Revista</th>
-                <th>Recurso recebido (R$)</th>
-                <th>Recurso reservado para estágio (R$)</th>
-                <th>Valor contratado (R$)</th>
-                <th>Saldo (R$)</th>
+                <th class="text-center">Revista</th>
+                <th class="text-center">Recurso recebido (R$)</th>
+                <th class="text-center">Recurso reservado para estágio (R$)</th>
+                <th class="text-center">Valor contratado (R$)</th>
+                <th class="text-center">Saldo (R$)</th>
             </tr>
         </thead>
         <tbody>
