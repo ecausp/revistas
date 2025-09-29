@@ -72,6 +72,7 @@ class LicitacaoController extends Controller
         // verificar se é user revista e qual revista ele faz parte pra ver só a sua revista;
         else if(Solicitante::where('user_id', auth()->id())->exists())
         {
+
             $solicitante = Solicitante::where('user_id', auth()->id())->first();
             $saldos = Saldo::where('revista_id', $solicitante->revista_id)->get();
         }
