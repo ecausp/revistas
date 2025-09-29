@@ -1,4 +1,4 @@
-@if ($saldos->count() > 0)
+@if (isset($saldos) && $saldos->count() > 0)
 <div class="card mt-2 mb-3">
     <table class="table table-hover table-striped">
         <thead>
