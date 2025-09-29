@@ -27,4 +27,9 @@ class Licitacao extends Model
     {
         return $this->hasOne(Pedido::class);
     }
+
+    public function saldos()
+    {
+        return $this->hasMany(Saldo::class);
+    }
 }

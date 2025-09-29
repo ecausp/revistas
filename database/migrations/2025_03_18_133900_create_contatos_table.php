@@ -13,8 +13,14 @@ return new class extends Migration
     {
         Schema::create('contatos', function (Blueprint $table) {
             $table->id();
-            $table->integer('contato_id');
-            $table->integer('empresa_id');
+            
+            $table->unsignedBigInteger('contato_id'); 
+            $table->unsignedBigInteger('empresa_id'); 
+            
+            $table->foreignId('user_id')
+                  ->constrained('users')
+                  ->onDelete('cascade');
+            
             $table->timestamps();
         });
     }

@@ -6,35 +6,25 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('pedido_historico', function (Blueprint $table) {
-            $table->id();
-
-            $table->foreignId('id_pedido')
-                ->constrained('pedidos')
-                ->onDelete('cascade');
-
-            $table->string('status_pedido');
-
-            $table->foreignId('id_pessoa')
-                ->constrained('users')
-                ->restrictOnDelete();
-
-            $table->text('observacao')->nullable();
-
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('pedido_historico')) {
+            Schema::create('pedido_historico', function (Blueprint $table) {
+                $table->id();
+                $table->unsignedBigInteger('id_pedido');
+                $table->string('status_pedido');
+                $table->unsignedBigInteger('id_pessoa');
+                $table->text('observacao')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        //
+        if (Schema::hasTable('pedido_historico')) {
+            Schema::dropIfExists('pedido_historico');
+        }
     }
 };
+

@@ -8,12 +8,12 @@
     <div class="card-header h5">
         Licitação: {{ $licitacao->descricao }}
     </div>
-    @can("admin-financeiro")
     <div class="card-body">
         <p><strong>Ano:</strong> {{ $licitacao->ano }}</p>
         <p><strong>Valor Total (R$):</strong> {{ number_format($licitacao->valor_total, 2, ',', '.') }}</p>
 
         @include('licitacoes.partials.empresas')
+        @include('licitacoes.partials.saldos')
         @include('partials.editor')
 
         <div class="container mt-5 col">
@@ -28,7 +28,6 @@
         </div>
 
     </div>
-    @endcan
 </div>
 @endsection
 

@@ -12,8 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('pedidos', function (Blueprint $table) {
-            $table->integer('solicitante_id');
-            $table->integer('revista_id');
+            if (!Schema::hasColumn('pedidos', 'solicitante_id')) {
+                $table->unsignedBigInteger('solicitante_id')->nullable(false);
+            }
+
+            if (!Schema::hasColumn('pedidos', 'revista_id')) {
+                $table->unsignedBigInteger('revista_id')->nullable(false);
+            }
         });
     }
 
@@ -23,7 +28,13 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('pedidos', function (Blueprint $table) {
-            //
+            if (Schema::hasColumn('pedidos', 'solicitante_id')) {
+                $table->dropColumn('solicitante_id');
+            }
+
+            if (Schema::hasColumn('pedidos', 'revista_id')) {
+                $table->dropColumn('revista_id');
+            }
         });
     }
 };

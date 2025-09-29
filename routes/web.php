@@ -13,6 +13,8 @@ use App\Http\Controllers\RevistaController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\SaldoController;
+
 
 
 use App\Models\User;
@@ -47,6 +49,13 @@ Route::resource('revistas', RevistaController::class);
 Route::resource('limites', LimiteController::class);
 Route::resource('pedidos', PedidoController::class);
 Route::resource('arquivos', ArquivoController::class);
+
+# rotas para cadastro de saldos
+Route::get('/licitacoes/{licitacao}/saldos/create', [SaldoController::class, 'create'])
+     ->name('saldos.create')
+     ->middleware('auth');
+Route::post('/saldos', [SaldoController::class, 'store'])->name('saldos.store');
+
 
 # rota para conseguir pegar a empresa que está cadastrando esse contato;
 Route::get('/contatos/create/{empresa}', ContatoController::class . '@create')->name('contatos.create');

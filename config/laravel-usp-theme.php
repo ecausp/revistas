@@ -19,7 +19,7 @@ $submenu1 = [
     [
         'type' => 'header',
         'text' => '<i class="fa fa-shopping-cart" aria-hidden="true"></i> Licitações',
-        'can' => 'admin-financeiro'
+        'can' => 'acesso-revista'
     ],
     [
         'text' => '<i class="fas fa-plus-circle" aria-hidden="true"></i> Cadastrar',
@@ -29,7 +29,7 @@ $submenu1 = [
     [
         'text' => '<i class="fas fa-list-ul" aria-hidden="true"></i> Listar',
         'url' => 'licitacoes',
-        'can' => 'admin-financeiro'
+        'can' => 'acesso-revista'
     ],
     [
         'type' => 'divider',

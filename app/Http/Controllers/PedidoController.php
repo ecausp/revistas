@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Pedido;
 use App\Models\PedidoHistorico;
+use App\Models\PedidoServico;
 use App\Models\Servico;
 use App\Models\Solicitante;
 use App\Models\Revista;
@@ -102,11 +103,11 @@ class PedidoController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+
     public function store(Request $request)
     {
         $this->authorize("acesso-revista");
 
-        // Validação básica
         $validated = $request->validate([
             'solicitante_id' => 'required|exists:solicitantes,id',
             'revista_id' => 'required|exists:revistas,id',
@@ -127,16 +128,30 @@ class PedidoController extends Controller
         ]);
 
         $pedido->status = new EmElaboracao($pedido);
+
         
-        // Relacionando serviços e quantidades
+        // 1. Carrega os serviços com base nos IDs validados.
+        $servicosSelecionados = Servico::whereIn('id', $validated['servicos'])->get()->keyBy('id');
+
+        // 2. Relacionando serviços, quantidades E valor unitário
         $dadosParaSync = [];
         foreach ($validated['servicos'] as $servicoId) {
+            $servico = $servicosSelecionados->get($servicoId);
             $qtd = $validated['quantidades'][$servicoId] ?? 1;
-            $dadosParaSync[$servicoId] = ['quantidade' => $qtd];
+
+            if ($servico) {
+                $dadosParaSync[$servicoId] = [
+                    'quantidade' => $qtd,
+                    'valor_unitario' => $servico->valor_unitario,
+                ];
+            }
         }
 
         $pedido->servicos()->sync($dadosParaSync);
+
+
         $pedido->adicionarHistorico($pedido->status);
+
         if(Solicitante::where('user_id', auth()->id())->exists()|| auth()->user()->hasRole('admin'))
         {
             session()->flash('success', 'Pedido cadastrado com sucesso!');
@@ -454,6 +469,22 @@ class PedidoController extends Controller
      public function paraExecucao(Request $request, Pedido $pedido)
     {
 
+        $licitacao = $pedido->licitacao;
+        $revista = $pedido->revista;
+        $saldos = $revista->saldos;
+        $total = $pedido->valorTotalPedido();
+
+
+
+        foreach($saldos as $saldo)
+        {
+            if($saldo->licitacao_id == $licitacao->id)
+            {
+                $saldo->valor_contratado = $saldo->valor_contradado + $total;
+                $saldo->save(); 
+            }
+        }
+
         // Troca o status
         $pedido->status->transitionTo(EmExecucao::class);
         $pedido->save();
@@ -473,7 +504,13 @@ class PedidoController extends Controller
 
         $pedido->adicionarHistorico($pedido->status, "Empenho efetuado");
 
-        session()->flash('error', 'Pedido enviado para execução.');
+        session()->flash('success', 'Pedido enviado para execução.');
+
+
+        // se o pedido foi empenhado, precisa atualizar o saldo das revistas que fizeram esse pedido
+        
+
+
         
         // se o usuário é financeiro ou admin, pode ver todos os pedidos
         if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro'))
