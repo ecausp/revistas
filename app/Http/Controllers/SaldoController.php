@@ -38,9 +38,8 @@ class SaldoController extends Controller
             ]
         );
 
-        return response()->json([
-            'success' => true
-        ]);
+        return redirect()->back()
+            ->with('success', 'Saldo salvo com sucesso!');
     }
 
 
