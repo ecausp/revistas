@@ -52,7 +52,7 @@ class SaldoController extends Controller
         $solicitante = Solicitante::where('user_id', $id)->first();
         $revista = $saldo->revista;
 
-        if($solicitante->revista_id == $revista->id || auth()->user()->hasRole('financeiro'))
+        if(auth()->user()->hasRole('financeiro')|| $solicitante->revista_id == $revista->id)
         {
             $revista->load('pedidos.servicos');
 
