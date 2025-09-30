@@ -6,6 +6,7 @@ use App\Models\Licitacao;
 use App\Models\Revista;
 use App\Models\Saldo;
 
+use App\Models\Solicitante;
 use Illuminate\Http\Request;
 
 class SaldoController extends Controller
@@ -45,18 +46,33 @@ class SaldoController extends Controller
 
     public function show(Saldo $saldo)
     {
+        // se o usuario logado for solicitante da empresa, pode visualizar.
+        // se não for, então redireciona.
+        $id = auth()->user()->id;
+        $solicitante = Solicitante::where('user_id', $id)->first();
         $revista = $saldo->revista;
 
-        $revista->load('pedidos.servicos');
+        if($solicitante->revista_id == $revista->id || auth()->user()->hasRole('financeiro'))
+        {
+            $revista->load('pedidos.servicos');
 
-        $servicos = $revista->pedidos->flatMap(function ($pedido) {
-            return $pedido->servicos->map(function ($servico) use ($pedido) {
-                $servico->pedido_id = $pedido->id;
-                return $servico;
+            $servicos = $revista->pedidos->flatMap(function ($pedido) {
+                return $pedido->servicos->map(function ($servico) use ($pedido) {
+                    $servico->pedido_id = $pedido->id;
+                    return $servico;
+                });
             });
-        });
 
-        return view('saldos.show', compact('saldo', 'servicos'));
+            return view('saldos.show', compact('saldo', 'servicos'));
+    
+        }
+        else
+        {
+            session()->flash('error', 'Usuário não autorizado a acessar esse recurso');
+        
+            return redirect()->route('home');
+        }
+        
     }
 
 }
