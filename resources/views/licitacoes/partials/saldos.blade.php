@@ -21,9 +21,11 @@
                 <td class="text-right">{{ number_format($saldo->recurso_estagio, 2, ',', '.') }}</td>
                 <td class="text-right">
                     {{ number_format($saldo->valor_contratado, 2, ',', '.') }}
-                    <button class="btn btn-primary" onclick="window.location='{{ route('saldos.show', $saldo->id) }}'" title="Detalhamento dos serviços contradados">
-                        <i class="fas fa-list"></i>
-                    </button>
+                    @if ($saldo->valor_contratado > 0)
+                        <button class="btn btn-primary" onclick="window.location='{{ route('saldos.show', $saldo->id) }}'" title="Detalhamento dos serviços contradados">
+                            <i class="fas fa-list"></i>
+                        </button>
+                    @endif
                 </td>
                 <td class="text-right">{{ number_format(($saldo->recurso_recebido - $saldo->recurso_estagio - $saldo->valor_contratado), 2, ',', '.') }}</td>
             </tr>
