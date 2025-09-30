@@ -3,13 +3,13 @@
     <table class="table table-hover table-striped">
         <thead>
             <tr>
-                <th colspan="3">Recursos financeiros</th>
+                <th colspan="3">Recursos Financeiros</th>
             </tr>
             <tr>
                 <th class="text-center">Revista</th>
-                <th class="text-center">Recurso recebido (R$)</th>
-                <th class="text-center">Recurso reservado para estágio (R$)</th>
-                <th class="text-center">Valor contratado (R$)</th>
+                <th class="text-center">Recurso Recebido (R$)</th>
+                <th class="text-center">Recurso Reservado para Estágio (R$)</th>
+                <th class="text-center">Valor Contratado (R$)</th>
                 <th class="text-center">Saldo (R$)</th>
             </tr>
         </thead>
