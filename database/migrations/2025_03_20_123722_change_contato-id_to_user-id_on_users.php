@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('contatos', function (Blueprint $table) {
-            $table->renameColumn('contato_id', 'user_id');
-        });
+        //Schema::table('contatos', function (Blueprint $table) {
+            //$table->renameColumn('contato_id', 'user_id');
+        //});
     }
 
     /**
