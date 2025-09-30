@@ -51,6 +51,13 @@
                 </tbody>
             </table>
         </div>
+
+        <div class="container mt-3 col">
+            <a href="{{ route('licitacoes.show', $licitacao->id) }}" class="btn btn-secondary">
+                <i class="fas fa-chevron-left"></i> Voltar
+            </a>
+        </div>
+
     </div>
 </div>
 
