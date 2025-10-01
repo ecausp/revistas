@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Spatie\Permission\Models\Permission;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -45,4 +46,34 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public static function criarUsuario($codpes, $nome, $email)
+    {
+        // busca pelo codpes pra ver se já existe
+        $user = self::where('codpes', $codpes)->first();
+
+        // caso não exista, cria um novo
+        if (!$user) {
+            $user = self::create([
+                'name' => $nome,
+                'email' => $email,
+                'telefone' => 0,
+                'codpes' => $codpes,
+            ]);
+        }
+
+        return $user;
+    }
+
+    public function atribuirPermissaoRevista()
+    {
+        $this->givePermissionTo(
+            Permission::where('guard_name', self::$hierarquiaNs)
+            ->where('name', 'user')
+            ->first()
+        );
+
+        $this->givePermissionTo(['revistas.revista']);
+        $this->save();
+    }
 }
