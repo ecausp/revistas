@@ -167,6 +167,7 @@ class RevistaController extends Controller
      */
     public function update(Request $request, Revista $revista)
     {
+
         $this->authorize("admin-financeiro");
 
         $request->validate([
@@ -175,11 +176,14 @@ class RevistaController extends Controller
             'responsavel_centro_despesa' => 'required',
         ]);
         
+        $codpes = $request->responsavel_centro_despesa;
+        $responsavel_centro_despesa = Pessoa::dump($codpes);
+
         $revista_editada = [
             "editor" => $request->user()->id,
             "name" => $request->name,
             "centro_despesa" => $request->centro_despesa,
-            "responsavel_centro_despesa" => $request->responsavel_centro_despesa,
+            "responsavel_centro_despesa" => $responsavel_centro_despesa['nompesttd'],
         ];
         
         $revista->update($revista_editada);
