@@ -18,14 +18,22 @@ class Solicitante extends Model
 
     public function revista()
     {
-
         return $this->belongsTo(Revista::class);
-
     }
 
     public function user()
-{
-    return $this->belongsTo(User::class);
-}
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    
+    public static function criarSolicitante(User $user, Revista $revista)
+    {
+        return self::create([
+            'user_id' => $user->id,
+            'revista_id' => $revista->id,
+        ]);
+    }
+    
 
 }
