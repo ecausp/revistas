@@ -17,7 +17,7 @@ class EmpresaController extends Controller
     //exibir o form para criar uma nova empresa
     public function create()
     {
-                $this->authorize("admin-financeiro");
+        $this->authorize("admin-financeiro");
         
         $licitacoes = Licitacao::orderBy('ano', 'desc')->orderBy('descricao')->get();
         $servicos = Servico::orderBy('descricao', 'desc')->get();
@@ -97,7 +97,7 @@ class EmpresaController extends Controller
     public function show(Empresa $empresa)
     {
         // se for admin-financeiro, pode ver qualquer empresa.
-        if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro'))
+        if(auth()->user()->hasAnyPermission(['revistas.revista']))
         {
             $updated_at = $empresa->updated_at;
             $editor = User::where('id', $empresa->editor)->first();

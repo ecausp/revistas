@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Revista;
 use App\Models\Solicitante;
 use App\Models\User;
+use App\Models\Saldo;
 use Illuminate\Http\Request;
 use Uspdev\Replicado\Financeiro;
 use Uspdev\Replicado\Pessoa;
@@ -22,25 +23,17 @@ class RevistaController extends Controller
     {   
         \UspTheme::activeUrl('revistas');
         
-        //se é admin ou financeiro, pode ver todos no index;
-        if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro'))
-        {
-            $revistas = Revista::all();
-            return view('revistas.index', compact('revistas'));
-        }
-        //se é usuario do tipo solicitante da revista, pode ver a revista dele:
-        else if(Solicitante::where('user_id', auth()->id())->exists())
-        {
-            $revista_solicitante = Solicitante::where('user_id', auth()->id())->first()->revista_id;
-            $revistas = Revista::where('id', $revista_solicitante)->get();
-            return view('revistas.index', compact('revistas'));
+        // pega todas as revistas visíveis para o usuário logado
+        $revistas = auth()->user()->revistasVisiveis();
 
-        }
-        else
-        {
-            session()->flash('error', 'Usuário não está associado a nenhuma revista!');
+        // se o usuário não pode ver nenhuma revista, retorna erro
+        if ($revistas->isEmpty()) {
+                session()->flash('error', 'Usuário não está associado a nenhuma revista!');
             return redirect()->route('home');
         }
+
+        // se ele pode ver alguma revista, carrega elas.
+        return view('revistas.index', compact('revistas'));
     }
     /*
      * Exibe um formulario para cadastro de uma nova Revista
@@ -89,7 +82,7 @@ class RevistaController extends Controller
         $user->atribuirPermissaoRevista();
 
         # cria o solicitante:
-        $solicitante = Solicitante::criarSolicitante($user, $revista);
+        Solicitante::criarSolicitante($user, $revista);
 
         session()->flash('success', 'Cadastrado com sucesso!');
         return redirect()->route('revistas.index');
@@ -107,21 +100,15 @@ class RevistaController extends Controller
         $editor = User::where('id', $revista->editor)->first();
         $updated_at = $revista->updated_at;
         $revista->solicitantes->load('user');
-        // se o usuário logado for admin ou financeiro, pode ver qualquer revista
-        if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro'))
-        {
-            return view('revistas.show', compact('revista', 'updated_at','editor' ) );
-        }
-        // se o usuário logado for solicitante de uma revista, pode ver somente a sua.
-        else if(Solicitante::where('user_id', auth()->id())->first()->revista_id == $revista->id)
-        {
-            return view('revistas.show', compact('revista', 'updated_at','editor' ) );
-        }
-        else
-        {
+        $saldos = Saldo::where('revista_id', $revista->id)->get();
+        
+        // só deixa ver se a revista está dentro das visíveis do usuário
+        if (!auth()->user()->revistasVisiveis()->contains('id', $revista->id)) {
             session()->flash('error', 'Usuário não autorizado a acessar esse recurso');
             return redirect()->route('home');
         }
+
+        return view('revistas.show', compact('revista', 'updated_at','editor', 'saldos'));
     }
 
     /**

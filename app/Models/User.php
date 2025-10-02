@@ -76,4 +76,19 @@ class User extends Authenticatable
         $this->givePermissionTo(['revistas.revista']);
         $this->save();
     }
+
+    public function revistasVisiveis()
+    {
+        // se o usuário é admin ou usuario, pode ver todas as revistas
+        if ($this->hasAnyRole(['admin', 'financeiro'])) {
+            return Revista::all();
+        }
+        //se o usuário é solicitante de uma revista, só pode ver a revista que ele faz parte
+        if (Solicitante::where('user_id', $this->id)->exists()) {
+            $revistaId = Solicitante::where('user_id', $this->id)->first()->revista_id;
+            return Revista::where('id', $revistaId)->get();
+        }
+        // se não se encaixa em nenhum criterio, não pode visualizar nenhuma revista
+        return collect();
+    }
 }
