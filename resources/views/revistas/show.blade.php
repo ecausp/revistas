@@ -12,7 +12,7 @@
         <p><strong>Responsável pelo Centro de Despesa: </strong>{{ $revista->responsavel_centro_despesa }}</p>
 
         @include('revistas.partials.solicitantes')
-
+        @include('revistas.partials.saldos')
         @include('partials.editor')
 
         <div class="container mt-5 col">
