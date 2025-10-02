@@ -14,7 +14,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\SaldoController;
-
+use App\Http\Controllers\HomeController;
 
 
 use App\Models\User;
@@ -32,9 +32,8 @@ use App\Models\Licitacao;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-})->name("home");
+Route::get('/', [HomeController::class, 'index'])->name('home');
+
 
 // Permite usar Gate::check('user')na view 404
 Route::fallback(function(){
