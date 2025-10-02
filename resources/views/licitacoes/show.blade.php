@@ -17,11 +17,13 @@
         @include('partials.editor')
 
         <div class="container mt-5 col">
-            <a href="{{ route('licitacoes.edit', $licitacao) }}" class="btn btn-primary"><i class="fas fa-edit"></i>
-                Editar</a>
+            @if(auth()->user()->hasAnyRole(['admin', 'financeiro']))
+                <a href="{{ route('licitacoes.edit', $licitacao) }}" class="btn btn-primary"><i class="fas fa-edit"></i>
+                    Editar</a>
 
-            @include('licitacoes.partials.delete')
-
+                @include('licitacoes.partials.delete')
+                
+            @endif
             <a href="{{ route('licitacoes.index') }}" class="btn btn-secondary"><i class="fas fa-chevron-left"></i>
                 Voltar</a>
 

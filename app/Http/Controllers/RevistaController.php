@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Revista;
 use App\Models\Solicitante;
 use App\Models\User;
+use App\Models\Saldo;
 use Illuminate\Http\Request;
 use Uspdev\Replicado\Financeiro;
 use Uspdev\Replicado\Pessoa;
@@ -99,14 +100,15 @@ class RevistaController extends Controller
         $editor = User::where('id', $revista->editor)->first();
         $updated_at = $revista->updated_at;
         $revista->solicitantes->load('user');
-
+        $saldos = Saldo::where('revista_id', $revista->id)->get();
+        
         // só deixa ver se a revista está dentro das visíveis do usuário
         if (!auth()->user()->revistasVisiveis()->contains('id', $revista->id)) {
             session()->flash('error', 'Usuário não autorizado a acessar esse recurso');
             return redirect()->route('home');
         }
 
-        return view('revistas.show', compact('revista', 'updated_at','editor' ));
+        return view('revistas.show', compact('revista', 'updated_at','editor', 'saldos'));
     }
 
     /**
