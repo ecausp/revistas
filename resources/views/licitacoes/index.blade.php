@@ -10,8 +10,11 @@
         Licitações
     </div>
     <div class="card-body">
-        <a href="{{ route('licitacoes.create') }}" class="btn btn-primary mb-3"><i class="fas fa-plus"></i>
+        @if(auth()->user()->hasRole('financeiro'))
+            <a href="{{ route('licitacoes.create') }}" class="btn btn-primary mb-3"><i class="fas fa-plus"></i>
             Licitação</a>
+        @endif
+
         <table
             class="table table-hover datatable-simples dt-fixed-header dt-paging-50 responsive no-footer table-striped responsive">
             <thead>
@@ -31,8 +34,10 @@
                     <td>
                         <a href="{{ route('licitacoes.show', $licitacao) }}" class="btn btn-primary"><i
                                 class="fas fa-eye"></i> </a>
+                        @if(auth()->user()->hasRole('financeiro'))
                         <a href="{{ route('licitacoes.edit', $licitacao) }}" class="btn btn-primary"><i
                                 class="fas fa-edit"></i></a>
+                        @endif        
                     </td>
                 </tr>
                 @endforeach
