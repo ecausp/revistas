@@ -21,7 +21,7 @@
 </div>
 
 <div class="mb-1">
-    <label for="responsavel_centro_despesa" class="form-label">Responsável pelo Centro de Despesa</label>
+    <label for="responsavel_centro_despesa" class="form-label">Editor</label>
     <select class="form-control select2" name="responsavel_centro_despesa" id="responsavel_centro_despesa" required>
         @if (isset($revista))
             <option value="{{ $revista->responsavel_centro_despesa }}" selected>

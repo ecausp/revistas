@@ -15,7 +15,7 @@
             <p><strong>Centro de Despesa:</strong> {{ $pedido->revista->centro_despesa }} </p>
         </div>
         <div class="col-md-6">
-            <p><strong>Responsável pelo Centro de Despesa:</strong>
+            <p><strong>Editor:</strong>
                 {{ $pedido->revista->responsavel_centro_despesa }} </p>
         </div>
     </div>
@@ -37,7 +37,7 @@
             <p><strong>Centro de Despesa:</strong> {{ $solicitante->revista->centro_despesa }} </p>
         </div>
         <div class="col-md-6">
-            <p><strong>Responsável pelo Centro de Despesa:</strong>
+            <p><strong>Editor:</strong>
                 {{ $solicitante->revista->responsavel_centro_despesa }} </p>
         </div>
     </div>
