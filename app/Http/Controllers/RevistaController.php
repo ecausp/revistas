@@ -150,13 +150,15 @@ class RevistaController extends Controller
             'email_revista' => 'required',
         ]);
 
-        $codpes = $request->responsavel_centro_despesa;
-        $responsavel = Pessoa::dump($codpes);
-        $nomeResponsavel = $responsavel['nompesttd'];
-        $email = Pessoa::email($codpes);
+
+        // array com os responsáveis vindos do formulário
+        $responsaveisArray = $request->responsavel_centro_despesa;
+
+        // converte para string e atualiza a revista
+        $responsaveisString = Revista::conveterResponsaveis($responsaveisArray);
 
         // Atualiza a revista e trata troca de responsável
-        $revista->atualizarRevista($request, $nomeResponsavel, $codpes, $email);
+        $revista->atualizarRevista($request, $responsaveisString);
 
         session()->flash('success', 'Atualizado com sucesso!');
         return redirect()->route('revistas.index');
