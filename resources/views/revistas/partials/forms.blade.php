@@ -37,23 +37,33 @@
 </div>
 
 <div class="mb-1">
-    <label for="responsavel_centro_despesa" class="form-label">Editor</label>
-    <select class="form-control select2" name="responsavel_centro_despesa" id="responsavel_centro_despesa"
+    <label for="responsavel_centro_despesa" class="form-label">Editor(es)</label>
+    <select class="form-control select2" 
+            name="responsavel_centro_despesa[]"
+            id="responsavel_centro_despesa"
+            multiple="multiple"
             @unless($isFinanceiro) disabled @endunless
             required>
+        
         @if (isset($revista))
-            <option value="{{ $revista->responsavel_centro_despesa }}" selected>
-                {{ $revista->responsavel_centro_despesa }}
-            </option>
-        @else
-            <option value="" selected>Escolha um editor...</option>
-        @endif
+            @php
+                $responsaveisSelecionados = explode(',', $revista->responsavel_centro_despesa);
+            @endphp
 
-        @foreach ($responsaveis_centro_despesa as $responsavel)
-            <option value="{{ $responsavel['codpes'] }}">
-                {{ $responsavel['nompesttd'] }}
-            </option>
-        @endforeach
+            @foreach ($responsaveis_centro_despesa as $responsavel)
+                <option value="{{ $responsavel['codpes'] }}"
+                    @if(in_array($responsavel['codpes'], $responsaveisSelecionados)) selected @endif>
+                    {{ $responsavel['nompesttd'] }}
+                </option>
+            @endforeach
+        @else
+            <option value="" disabled>Escolha os editores...</option>
+            @foreach ($responsaveis_centro_despesa as $responsavel)
+                <option value="{{ $responsavel['codpes'] }}">
+                    {{ $responsavel['nompesttd'] }}
+                </option>
+            @endforeach
+        @endif
     </select>
 </div>
 
