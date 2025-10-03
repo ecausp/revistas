@@ -9,14 +9,11 @@
         Editar Revista
     </div>
     <div class="card-body">
-
-        @can("admin-financeiro")
         <form action="{{ route('revistas.update', $revista) }}" method="POST">
             @csrf
             @method('PUT')
             @include('revistas.partials.forms')
         </form>
     </div>
-    @endcan
 </div>
 @endsection

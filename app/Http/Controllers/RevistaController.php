@@ -119,12 +119,20 @@ class RevistaController extends Controller
      */
     public function edit(Revista $revista)
     {
-        $this->authorize("admin-financeiro");
-
-        $centros_despesas = Financeiro::ListarCentrosDespesas();
-        $responsaveis_centro_despesa =  ReplicadoTemp::listarServidoresDocentes();
+        $user = auth()->user();
+        $solicitante = Solicitante::Where('user_id', $user->id)->first();
+        if($user->hasAnyRole(['admin','financeiro']) || $solicitante != null && $solicitante->revista_id == $revista->id)
+        {
+            $centros_despesas = Financeiro::ListarCentrosDespesas();
+            $responsaveis_centro_despesa =  ReplicadoTemp::listarServidoresDocentes();
         
-        return view('revistas.edit', compact('revista', 'centros_despesas','responsaveis_centro_despesa'));
+            return view('revistas.edit', compact('revista', 'centros_despesas','responsaveis_centro_despesa'));
+        }
+        else
+        {
+            session()->flash('error', 'Usuário não autorizado a acessar esse recurso');
+            return redirect()->route('home');
+        }
     }
 
     /*
@@ -134,7 +142,6 @@ class RevistaController extends Controller
 
     public function update(Request $request, Revista $revista)
     {
-        $this->authorize("admin-financeiro");
 
         $request->validate([
             'name' => 'required',

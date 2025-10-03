@@ -18,7 +18,9 @@ class SolicitanteController extends Controller
 {
     public function create(Revista $revista)
     {
-        if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro'))
+        $user = auth()->user();
+        $solicitante = Solicitante::Where('user_id', $user->id)->first();
+        if($user->hasAnyRole(['admin','financeiro']) || $solicitante != null && $solicitante->revista_id == $revista->id)
         {
             return view('solicitantes.create', compact('revista'));
         }
@@ -34,9 +36,6 @@ class SolicitanteController extends Controller
      */
     public function store(Request $request)
     {
-        $this->authorize('admin-financeiro');
-
-
         // Tenta buscar um usuário pelo email
         $user = User::where('email', $request->email)->first();
 
