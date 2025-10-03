@@ -9,8 +9,12 @@
     </div>
     <div class="card-body">
         <p><strong>Centro de Despesa: </strong>{{ $revista->centro_despesa }}</p>
-        <p><strong>Editor: </strong>{{ $revista->responsavel_centro_despesa }}</p>
-        <p><strong>Email: </strong>{{ $revista->email_revista }}</p>
+        <p><strong>Editor(es): </strong>
+            @foreach (explode(',', $revista->responsavel_centro_despesa) as $editorRevista)
+                {{ \Uspdev\Replicado\Pessoa::dump($editorRevista)['nompesttd'] }} @if (!$loop->last) , @endif
+            @endforeach
+        </p>
+        <p><strong>E-mail: </strong>{{ $revista->email_revista }}</p>
 
         @include('revistas.partials.solicitantes')
         @include('revistas.partials.saldos')

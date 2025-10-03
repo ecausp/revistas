@@ -18,7 +18,7 @@
                 <tr>
                     <th>Nome</th>
                     <th>Centro de Despesas</th>
-                    <th>Editor</th>
+                    <th>Editor(es)</th>
                     <th>Ações</th>
                 </tr>
             </thead>
@@ -27,7 +27,11 @@
                 <tr>
                     <td>{{ $revista->name }}</td>
                     <td>{{ $revista->centro_despesa }}</td>
-                    <td>{{ $revista->responsavel_centro_despesa }}</td>
+                    <td>
+                        @foreach (explode(',', $revista->responsavel_centro_despesa) as $editorRevista)
+                            {{ \Uspdev\Replicado\Pessoa::dump($editorRevista)['nompesttd'] }} @if (!$loop->last) , @endif
+                        @endforeach
+                    </td>
                     <td>
                         <a href="{{ route('revistas.show', $revista) }}" class="btn btn-primary"><i
                                 class="fas fa-eye"></i> </a>
