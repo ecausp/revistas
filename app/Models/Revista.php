@@ -14,6 +14,7 @@ class Revista extends Model
         "centro_despesa",
         "editor",
         "responsavel_centro_despesa",
+        "email_revista",
     ];
 
     public function solicitantes()
@@ -40,7 +41,8 @@ class Revista extends Model
             'editor' => $request->user()->id,
             'name' => $request->name,
             'centro_despesa' => $request->centro_despesa,
-            'responsavel_centro_despesa' => $responsavel
+            'responsavel_centro_despesa' => $responsavel,
+            'email_revista' => $request->email_revista,
         ]);
     }
 
@@ -54,6 +56,7 @@ class Revista extends Model
             'name' => $request->name,
             'centro_despesa' => $request->centro_despesa,
             'responsavel_centro_despesa' => $nomeResponsavel,
+            'email_revista' => $request->email_revista,
         ]);
 
         // Se trocou responsável, faz os ajustes
