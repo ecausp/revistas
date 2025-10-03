@@ -11,7 +11,7 @@ class HomeController extends Controller
     {
         $user = auth()->user();
 
-        $solicitante = Solicitante::where('user_id', $user->id)->first();
+        $solicitante = (($user) ? Solicitante::where('user_id', $user->id)->first() : null);
         // se o usuário que está logando é solicitante de uma revista, então redireciona ele pra visualizar a revista dele;
         if ($solicitante) {
             return redirect()->route('revistas.show', $solicitante->revista_id);
