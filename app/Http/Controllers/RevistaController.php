@@ -58,7 +58,6 @@ class RevistaController extends Controller
      */
     public function store(Request $request)
     {
-
         $this->authorize("admin-financeiro");
 
         $request->validate([
@@ -68,22 +67,22 @@ class RevistaController extends Controller
             'email_revista' => 'required',
         ]);
 
-        $codpes = $request->responsavel_centro_despesa;
-        $responsavel_centro_despesa = Pessoa::dump($codpes);
-        $responsavel_centro_despesa = $responsavel_centro_despesa['nompesttd'];
-        $email = Pessoa::email($codpes);
+        $responsaveis_centro_despesa = Revista::ConveterResponsaveis($request->responsavel_centro_despesa);
 
         # cria a revista
-        $revista = Revista::criarRevista($request, $responsavel_centro_despesa);
-
-        # cria o user caso não exista
-        $user = User::criarUsuario($codpes, $responsavel_centro_despesa, $email);
+        $revista = Revista::criarRevista($request, $responsaveis_centro_despesa);
         
-        # dá permissão de user (hierarquica) e revista (sistema)
-        $user->atribuirPermissaoRevista();
+        # cria os users caso não existam:
+        foreach($request->responsavel_centro_despesa as $codpes)
+        {
+            $user = User::criarUsuario($codpes);
+            # dá permissão de user (hierarquica) e revista (sistema)
+            $user->atribuirPermissaoRevista();
+            # cria o solicitante:
+            Solicitante::criarSolicitante($user, $revista);
 
-        # cria o solicitante:
-        Solicitante::criarSolicitante($user, $revista);
+        }
+
 
         session()->flash('success', 'Cadastrado com sucesso!');
         return redirect()->route('revistas.index');

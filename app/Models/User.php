@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Uspdev\Replicado\Pessoa;
 
 class User extends Authenticatable
 {
@@ -47,16 +48,19 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public static function criarUsuario($codpes, $nome, $email)
+    public static function criarUsuario($codpes)
     {
         // busca pelo codpes pra ver se já existe
         $user = self::where('codpes', $codpes)->first();
+        
+        // pega os dados da pessoa pelo codpes do banco de Pessoas
+        $dados = Pessoa::dump($codpes);
 
         // caso não exista, cria um novo
         if (!$user) {
             $user = self::create([
-                'name' => $nome,
-                'email' => $email,
+                'name' => $dados['nompesttd'],
+                'email' => Pessoa::email($codpes),
                 'telefone' => 0,
                 'codpes' => $codpes,
             ]);

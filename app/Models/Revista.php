@@ -86,5 +86,11 @@ class Revista extends Model
         }
     }
 
+    public static function conveterResponsaveis(array $responsaveis)
+    {
+        // o select2 retorna uma array com o codpes de todos os editores,
+        // precisamos então converter para string para salvar no banco de dados.
+        return(implode(',', $responsaveis));
+    }
 
 }
