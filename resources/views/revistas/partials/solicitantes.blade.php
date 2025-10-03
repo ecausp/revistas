@@ -14,11 +14,13 @@
         </thead>
         <tbody>
             @foreach($revista->solicitantes as $solicitante)
-            <tr>
-                <td>{{ $solicitante->user->name ?? 'N/A' }}</td>
-                <td>{{ $solicitante->user->email ?? 'N/A' }}</td>
-                <td>{{ $solicitante->user->codpes ?? 'N/A' }}</td>
-            </tr>
+                @if (!in_array(intval($solicitante->user->codpes), explode(',', $revista->responsavel_centro_despesa)))
+                    <tr>
+                        <td>{{ $solicitante->user->name ?? 'N/A' }}</td>
+                        <td>{{ $solicitante->user->email ?? 'N/A' }}</td>
+                        <td>{{ $solicitante->user->codpes ?? 'N/A' }}</td>
+                    </tr>
+                @endif
             @endforeach
         </tbody>
     </table>
