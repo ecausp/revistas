@@ -65,6 +65,7 @@ class RevistaController extends Controller
             'name' => 'required',
             'centro_despesa' => 'required',
             'responsavel_centro_despesa' => 'required',
+            'email_revista' => 'required',
         ]);
 
         $codpes = $request->responsavel_centro_despesa;
@@ -147,6 +148,7 @@ class RevistaController extends Controller
             'name' => 'required',
             'centro_despesa' => 'required',
             'responsavel_centro_despesa' => 'required',
+            'email_revista' => 'required',
         ]);
 
         $codpes = $request->responsavel_centro_despesa;

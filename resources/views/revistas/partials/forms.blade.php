@@ -12,6 +12,15 @@
 </div>
 
 <div class="mb-1">
+    <label for="email_revista" class="form-label">E-mail </label>
+    <input type="text" class="form-control" name="email_revista" id="email_revista" 
+           value="{{ old('email_revista', isset($revista) ? $revista->email_revista : '') }}" 
+           placeholder="Email da Revista..." 
+           @unless($isFinanceiro) disabled @endunless
+           required>
+</div>
+
+<div class="mb-1">
     <label for="centro_despesa" class="form-label">Centro de Despesa </label>
     <select class="form-control select2" name="centro_despesa" id="centro_despesa" 
             @unless($isFinanceiro) disabled @endunless
