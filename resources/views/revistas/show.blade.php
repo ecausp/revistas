@@ -9,7 +9,8 @@
     </div>
     <div class="card-body">
         <p><strong>Centro de Despesa: </strong>{{ $revista->centro_despesa }}</p>
-        <p><strong>Responsável pelo Centro de Despesa: </strong>{{ $revista->responsavel_centro_despesa }}</p>
+        <p><strong>Editor: </strong>{{ $revista->responsavel_centro_despesa }}</p>
+        <p><strong>Email: </strong>{{ $revista->email_revista }}</p>
 
         @include('revistas.partials.solicitantes')
         @include('revistas.partials.saldos')

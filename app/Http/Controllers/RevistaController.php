@@ -58,31 +58,31 @@ class RevistaController extends Controller
      */
     public function store(Request $request)
     {
-
         $this->authorize("admin-financeiro");
 
         $request->validate([
             'name' => 'required',
             'centro_despesa' => 'required',
             'responsavel_centro_despesa' => 'required',
+            'email_revista' => 'required',
         ]);
 
-        $codpes = $request->responsavel_centro_despesa;
-        $responsavel_centro_despesa = Pessoa::dump($codpes);
-        $responsavel_centro_despesa = $responsavel_centro_despesa['nompesttd'];
-        $email = Pessoa::email($codpes);
+        $responsaveis_centro_despesa = Revista::ConveterResponsaveis($request->responsavel_centro_despesa);
 
         # cria a revista
-        $revista = Revista::criarRevista($request, $responsavel_centro_despesa);
-
-        # cria o user caso não exista
-        $user = User::criarUsuario($codpes, $responsavel_centro_despesa, $email);
+        $revista = Revista::criarRevista($request, $responsaveis_centro_despesa);
         
-        # dá permissão de user (hierarquica) e revista (sistema)
-        $user->atribuirPermissaoRevista();
+        # cria os users caso não existam:
+        foreach($request->responsavel_centro_despesa as $codpes)
+        {
+            $user = User::criarUsuario($codpes);
+            # dá permissão de user (hierarquica) e revista (sistema)
+            $user->atribuirPermissaoRevista();
+            # cria o solicitante:
+            Solicitante::criarSolicitante($user, $revista);
 
-        # cria o solicitante:
-        Solicitante::criarSolicitante($user, $revista);
+        }
+
 
         session()->flash('success', 'Cadastrado com sucesso!');
         return redirect()->route('revistas.index');
@@ -119,12 +119,20 @@ class RevistaController extends Controller
      */
     public function edit(Revista $revista)
     {
-        $this->authorize("admin-financeiro");
-
-        $centros_despesas = Financeiro::ListarCentrosDespesas();
-        $responsaveis_centro_despesa =  ReplicadoTemp::listarServidoresDocentes();
+        $user = auth()->user();
+        $solicitante = Solicitante::Where('user_id', $user->id)->first();
+        if($user->hasAnyRole(['admin','financeiro']) || $solicitante != null && $solicitante->revista_id == $revista->id)
+        {
+            $centros_despesas = Financeiro::ListarCentrosDespesas();
+            $responsaveis_centro_despesa =  ReplicadoTemp::listarServidoresDocentes();
         
-        return view('revistas.edit', compact('revista', 'centros_despesas','responsaveis_centro_despesa'));
+            return view('revistas.edit', compact('revista', 'centros_despesas','responsaveis_centro_despesa'));
+        }
+        else
+        {
+            session()->flash('error', 'Usuário não autorizado a acessar esse recurso');
+            return redirect()->route('home');
+        }
     }
 
     /*
@@ -134,21 +142,23 @@ class RevistaController extends Controller
 
     public function update(Request $request, Revista $revista)
     {
-        $this->authorize("admin-financeiro");
 
         $request->validate([
             'name' => 'required',
             'centro_despesa' => 'required',
             'responsavel_centro_despesa' => 'required',
+            'email_revista' => 'required',
         ]);
 
-        $codpes = $request->responsavel_centro_despesa;
-        $responsavel = Pessoa::dump($codpes);
-        $nomeResponsavel = $responsavel['nompesttd'];
-        $email = Pessoa::email($codpes);
+
+        // array com os responsáveis vindos do formulário
+        $responsaveisArray = $request->responsavel_centro_despesa;
+
+        // converte para string e atualiza a revista
+        $responsaveisString = Revista::conveterResponsaveis($responsaveisArray);
 
         // Atualiza a revista e trata troca de responsável
-        $revista->atualizarRevista($request, $nomeResponsavel, $codpes, $email);
+        $revista->atualizarRevista($request, $responsaveisString);
 
         session()->flash('success', 'Atualizado com sucesso!');
         return redirect()->route('revistas.index');

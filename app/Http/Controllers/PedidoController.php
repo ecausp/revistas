@@ -356,7 +356,8 @@ class PedidoController extends Controller
         foreach($pedido->revista->solicitantes as $solicitante){
             Mail::to($solicitante->user->email)->send(new PedidoDevolvidoParaRevistaMail($pedido));
         }      
-
+        Mail::to($pedido->revista->email_revista)->send(new PedidoDevolvidoParaRevistaMail($pedido));
+        
         $pedido->adicionarHistorico($pedido->status, $request->observacao);
 
         session()->flash('error', 'Pedido devolvido para elaboração.');

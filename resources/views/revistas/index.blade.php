@@ -18,7 +18,7 @@
                 <tr>
                     <th>Nome</th>
                     <th>Centro de Despesas</th>
-                    <th>Responsável pelo Centro de Despesas</th>
+                    <th>Editor</th>
                     <th>Ações</th>
                 </tr>
             </thead>
