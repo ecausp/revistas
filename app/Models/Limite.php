@@ -54,4 +54,16 @@ class Limite extends Model
             'editor' => $request->user()->id,
         ]);
     }
+
+    public static function atualizarLimite(Request $request, Limite $limite)
+    {
+        $limite->update([
+            'licitacao_id'   => $request->licitacao_id,
+            'revista_id'     => $request->revista_id,
+            'servico_id'     => $request->servico_id,
+            'quantidade'     => $request->quantidade,
+            'valor_unitario' => $request->valor_unitario,
+            'editor'         => $request->user()->id,
+        ]);
+    }
 }
