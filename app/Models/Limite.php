@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Licitacao;
 use App\Models\Revista;
 use App\Models\Servico;
+use Illuminate\Http\Request;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -41,5 +42,28 @@ class Limite extends Model
     public function servico()
     {
         return $this->belongsTo(Servico::class);
+    }
+    public static function criarLimite(Request $request)
+    {
+        return self::create([
+            'licitacao_id' => $request->licitacao_id,
+            'revista_id'   => $request->revista_id,
+            'servico_id'   => $request->servico_id,
+            'quantidade'   => $request->quantidade,
+            'valor_unitario' => $request->valor_unitario,
+            'editor' => $request->user()->id,
+        ]);
+    }
+
+    public static function atualizarLimite(Request $request, Limite $limite)
+    {
+        $limite->update([
+            'licitacao_id'   => $request->licitacao_id,
+            'revista_id'     => $request->revista_id,
+            'servico_id'     => $request->servico_id,
+            'quantidade'     => $request->quantidade,
+            'valor_unitario' => $request->valor_unitario,
+            'editor'         => $request->user()->id,
+        ]);
     }
 }
