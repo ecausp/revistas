@@ -68,14 +68,15 @@
                 </span>
             </div>
 
+            <!-- Linha 2: Total do Recurso Financeiro -->
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <span class="text-muted">Valor Total de Recurso Financeiro:</span>
                 <span class="fw-bold">
-                    <span id="valor_total_licitacao">0,00</span>
+                    <span id="valor_recurso_financeiro">0,00</span>
                 </span>
             </div>
 
-            <!-- Linha 2: Total do Pedido (com sinal negativo) -->
+            <!-- Linha 3: Total do Limite -->
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <span class="text-muted">Valor Total de Limite:</span>
                 <span class="fw-bold text-danger">
@@ -86,7 +87,7 @@
             <!-- Linha divisória -->
             <hr class="my-2 border-primary opacity-25">
 
-            <!-- Linha 3: Diferença (resultado) -->
+            <!-- Linha 4: Diferença (resultado) -->
             <div class="d-flex justify-content-between align-items-center">
                 <span class="text-muted">Valor Total Disponível:</span>
                 <span class="fs-5 fw-bold text-success">

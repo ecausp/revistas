@@ -75,4 +75,22 @@ class SaldoController extends Controller
         
     }
 
+    // função para que na criação de limite pege o valor recebido da revista para a licitação e valide 
+    public function getValorRecebido(Request $request)
+    {
+        $licitacaoId = $request->query('licitacao_id');
+        $revistaId = $request->query('revista_id');
+
+        if (!$licitacaoId || !$revistaId) {
+            return response()->json(['valor_recurso_financeiro' => 0]);
+        }
+
+        $saldo = Saldo::where('licitacao_id', $licitacaoId)
+                    ->where('revista_id', $revistaId)
+                    ->first();
+
+        $valor = $saldo ? $saldo->recurso_recebido : 0;
+
+        return response()->json(['valor_recurso_financeiro' => $valor]);
+    }
 }

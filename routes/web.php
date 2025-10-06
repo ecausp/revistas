@@ -59,12 +59,10 @@ Route::get('/saldos/{saldo}', [SaldoController::class, 'show'])->name('saldos.sh
 
 # rota para conseguir pegar a empresa que está cadastrando esse contato;
 Route::get('/contatos/create/{empresa}', ContatoController::class . '@create')->name('contatos.create');
-// adds a post to the database
 Route::post('/contatos', ContatoController::class .'@store')->name('contatos.store');
 
 # rota para conseguir pegar a revista que está cadastrando esse solicitante;
 Route::get('/solicitantes/create/{revista}', SolicitanteController::class . '@create')->name('solicitantes.create');
-// adds a post to the database
 Route::post('/solicitantes', SolicitanteController::class .'@store')->name('solicitantes.store');
 
 // logon
@@ -84,9 +82,12 @@ Route::get('get-user-details', [ContatoController::class, 'getUserDetails'])->na
 Route::get('/servicos/{id}/valor-unitario', [App\Http\Controllers\ServicoController::class, 'valorUnitario']);
 
 // pra pegar, na criação de limite, o valor total da licitacao
-Route::get('/licitacoes/{licitacao}/valor-total', function (App\Models\Licitacao $licitacao) {
+Route::get('/licitacoes/{licitacao}/valor-total', function (Licitacao $licitacao) {
     return response()->json(['valor_total' => $licitacao->valor_total]);
 });
+
+// pra pegar o saldo na criação do limite
+
 
 
 
