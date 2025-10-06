@@ -54,6 +54,12 @@ Route::get('/licitacoes/{licitacao}/saldos/create', [SaldoController::class, 'cr
      ->name('saldos.create')
      ->middleware('auth');
 Route::post('/saldos', [SaldoController::class, 'store'])->name('saldos.store');
+
+// ROTA CORRIGIDA: Rotas específicas (fixas) devem vir antes de rotas com parâmetros
+// pra pegar o saldo na criação do limite
+Route::get('/saldos/valor-recebido', [SaldoController::class, 'getValorRecebido'])->name('saldos.valor-recebido');
+
+// ROTA GENÉRICA: Rotas com parâmetros dinâmicos devem vir depois
 Route::get('/saldos/{saldo}', [SaldoController::class, 'show'])->name('saldos.show');
 
 
@@ -85,11 +91,6 @@ Route::get('/servicos/{id}/valor-unitario', [App\Http\Controllers\ServicoControl
 Route::get('/licitacoes/{licitacao}/valor-total', function (Licitacao $licitacao) {
     return response()->json(['valor_total' => $licitacao->valor_total]);
 });
-
-// pra pegar o saldo na criação do limite
-Route::get('/saldos/valor-recebido', [SaldoController::class, 'getValorRecebido'])->name('saldos.valor-recebido');
-
-
 
 // Rota para pegar os users do banco de dados de acordo com o nome buscado
 Route::get('/buscar-usuario', [SolicitanteController::class, 'buscarUsuario']);

@@ -86,8 +86,8 @@ class SaldoController extends Controller
         }
 
         $saldo = Saldo::where('licitacao_id', $licitacaoId)
-                    ->where('revista_id', $revistaId)
-                    ->first();
+                      ->where('revista_id', $revistaId)
+                      ->first();
 
         $valor = $saldo ? $saldo->recurso_recebido : 0;
 
