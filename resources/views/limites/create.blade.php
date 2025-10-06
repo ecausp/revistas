@@ -54,6 +54,9 @@
 
 @section('javascripts_bottom')
 @parent
+<!-- jQuery é obrigatório para Select2, Datepicker e para o seu script principal ($). 
+     Deve ser carregado primeiro. -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawR/U0ldPzK4dSQW0uM44fQk86F/t7jF/SjU=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/i18n/pt-BR.js"></script>
@@ -78,21 +81,22 @@ $(document).ready(function() {
     function carregarValorRecursoFinanceiro() {
         let licitacaoId = $('#licitacao_id').val();
         let revistaId = $('#revista_id').val();
-        console.log("carregarValorRecursoFinanceiro chamado", { licitacaoId, revistaId });
 
         if (licitacaoId && revistaId) {
             $.get(urlValorRecebido, { licitacao_id: licitacaoId, revista_id: revistaId })
             .done(function(data) {
-                console.log("Resposta AJAX /saldos/valor-recebido:", data);
                 let valor = parseFloat(data.valor_recurso_financeiro) || 0;
                 $('#valor_recurso_financeiro').text(valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                // Recarrega o cálculo da diferença após obter o recurso financeiro
+                calcularDiferenca(); 
             })
             .fail(function(jqXHR) {
-                console.error("Erro AJAX /saldos/valor-recebido:", jqXHR);
                 $('#valor_recurso_financeiro').text('0,00');
+                calcularDiferenca();
             });
         } else {
             $('#valor_recurso_financeiro').text('0,00');
+            calcularDiferenca();
         }
     }
 
@@ -100,13 +104,11 @@ $(document).ready(function() {
         if (servicoId) {
             $.get(urlValorUnitario + servicoId + "/valor-unitario")
             .done(function(data) {
-                console.log("Resposta AJAX /servicos/valor-unitario:", data);
                 let valor = parseFloat(data.valor_unitario) || 0;
                 $('#valor_unitario').val(valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })).prop('readonly', true);
                 atualizarValorTotal();
             })
             .fail(function(jqXHR) {
-                console.error("Erro AJAX /servicos/valor-unitario:", jqXHR);
                 $('#valor_unitario').val('0,00');
                 atualizarValorTotal();
             });
@@ -121,19 +123,15 @@ $(document).ready(function() {
         if (licitacaoId) {
             $.get(urlValorTotalLicitacao + licitacaoId + "/valor-total")
             .done(function(data) {
-                console.log("Resposta AJAX /licitacoes/valor-total:", data);
                 let valor = parseFloat(data.valor_total) || 0;
                 $('#valor_total_licitacao').text(valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-                calcularDiferenca();
+                // Não precisa chamar calcularDiferenca aqui, pois carregarValorRecursoFinanceiro já o faz
             })
             .fail(function(jqXHR) {
-                console.error("Erro AJAX /licitacoes/valor-total:", jqXHR);
                 $('#valor_total_licitacao').text('0,00');
-                calcularDiferenca();
             });
         } else {
             $('#valor_total_licitacao').text('0,00');
-            calcularDiferenca();
         }
     }
 
@@ -142,14 +140,14 @@ $(document).ready(function() {
         let valorUnitario = parseFloat($('#valor_unitario').val().replace(/\./g,'').replace(',','.')) || 0;
         let valorTotal = valorUnitario * quantidade;
         $('#valor_total_pedido').text(valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-        console.log("atualizarValorTotal chamado. Quantidade:", quantidade, "Valor unitário:", valorUnitario, "Valor total calculado:", valorTotal);
         calcularDiferenca();
     }
 
     function calcularDiferenca() {
-        let valorLicitacao = parseFloat($('#valor_total_licitacao').text().replace(/\./g,'').replace(',','.')) || 0;
+        // Altera para usar o Valor Total de Recurso Financeiro (#valor_recurso_financeiro)
+        let valorBase = parseFloat($('#valor_recurso_financeiro').text().replace(/\./g,'').replace(',','.')) || 0;
         let valorPedido = parseFloat($('#valor_total_pedido').text().replace(/\./g,'').replace(',','.')) || 0;
-        let diferenca = valorLicitacao - valorPedido;
+        let diferenca = valorBase - valorPedido;
 
         $('#diferenca_valores').text(diferenca.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
         $('#diferenca_valores').removeClass('valor-positivo valor-negativo valor-zero');
@@ -158,7 +156,6 @@ $(document).ready(function() {
         else if (diferenca < 0) $('#diferenca_valores').addClass('valor-negativo');
         else $('#diferenca_valores').addClass('valor-zero');
 
-        console.log("calcularDiferenca chamado. Valor licitação:", valorLicitacao, "Valor pedido:", valorPedido, "Diferença:", diferenca);
     }
 
     // ---------------------------
@@ -184,7 +181,8 @@ $(document).ready(function() {
     // ---------------------------
     // Inicializa valores ao carregar a página
     // ---------------------------
-    carregarValorRecursoFinanceiro();
+    // Garante que o recurso financeiro é carregado primeiro, pois é a base do cálculo agora.
+    carregarValorRecursoFinanceiro(); 
     carregarValorLicitacao();
     if ($('#servico_id').val()) carregarValorUnitario($('#servico_id').val());
 
@@ -203,7 +201,7 @@ $(document).ready(function() {
         // valida diferença
         let diferenca = parseFloat($('#diferenca_valores').text().replace(/\./g,'').replace(',','.')) || 0;
         if (diferenca < 0) {
-            alert('Atenção! O valor total do pedido excede o valor da licitação.');
+            alert('Atenção! O valor total do pedido excede o valor do recurso dessa revista.');
             return false;
         }
     });
@@ -211,5 +209,3 @@ $(document).ready(function() {
 });
 </script>
 @endsection
-
-
