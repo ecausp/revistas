@@ -12,16 +12,16 @@
     @if(isset($limite))
         <div class="mb-1">
         <label for="revista_id" class="form-label">Revista</label>
-        <select class="form-control select2" name="revista_id[]" id="revista_id" disabled>
+        <select class="form-control select2" name="revista_id" id="revista_id" disabled>
             <option value="{{ $limite->revista->id }}">{{ $limite->revista->name }} - {{ $limite->revista->centro_despesa }}</option>
-             <input type="hidden" name="revista_id[]" value="{{ $limite->revista->id }}">
+             <input type="hidden" name="revista_id" value="{{ $limite->revista->id }}">
         </select>
     </div>
     
     @else
     <div class="mb-1">
         <label for="revista_id" class="form-label">Revista</label>
-        <select class="form-control select2" name="revista_id[]" id="revista_id" multiple="multiple">
+        <select class="form-control select2" name="revista_id" id="revista_id">
             @foreach ($revistas as $revista)
             <option value="{{ $revista->id }}">{{ $revista->name }} - {{ $revista->centro_despesa }}</option>
             @endforeach
@@ -56,13 +56,20 @@
     </div>
 
 
-    <div class="mt-4">
+    <div class="mt-4 w-50">
         <label for="quantidade" class="form-label">Valor Disponível</label>
 
         <div class="border-start border-3 border-primary ps-3">
             <!-- Linha 1: Total da Licitação -->
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <span class="text-muted">Valor Total da Licitação:</span>
+                <span class="fw-bold">
+                    <span id="valor_total_licitacao">0,00</span>
+                </span>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="text-muted">Valor Total de Recurso Financeiro:</span>
                 <span class="fw-bold">
                     <span id="valor_total_licitacao">0,00</span>
                 </span>
