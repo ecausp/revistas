@@ -87,7 +87,7 @@ Route::get('/licitacoes/{licitacao}/valor-total', function (Licitacao $licitacao
 });
 
 // pra pegar o saldo na criação do limite
-
+Route::get('/saldos/valor-recebido', [SaldoController::class, 'getValorRecebido'])->name('saldos.valor-recebido');
 
 
 
