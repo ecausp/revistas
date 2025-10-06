@@ -46,21 +46,12 @@ class LimiteController extends Controller
             'valor_unitario' => 'required|numeric|min:0',
         ]);
 
-        foreach($request->revista_id as $revistaId)
-        {
-            Limite::create([
-            'licitacao_id' => $request->licitacao_id,
-            'revista_id' => $revistaId,
-            'servico_id' => $request->servico_id,
-            'quantidade' => $request->quantidade,
-            'valor_unitario' => $request->valor_unitario,
-            'editor' => $request->user()->id,
-            ]);
-        }
+        Limite::criarLimite($request);
 
         session()->flash('success', 'Cadastrado com sucesso!');
         return redirect()->route('limites.index');
     }
+
 
     public function show(Limite $limite)
     {
