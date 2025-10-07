@@ -12,6 +12,10 @@ use App\Models\Licitacao;
 use App\Models\Empresa;
 use App\Models\Contato;
 use App\Models\User;
+use App\Models\Arquivo;
+
+use Illuminate\Support\Facades\Storage;
+
 use App\States\EmExecucao;
 use Illuminate\Http\Request;
 
@@ -69,7 +73,7 @@ class PedidoController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-public function create()
+    public function create()
     {
         $this->authorize("acesso-revista");
         
@@ -82,7 +86,6 @@ public function create()
         $solicitante = Solicitante::where('user_id', auth()->id())->first();
 
         // --- Verificações de segurança (Guards) ---
-        // Se o Solicitante não existe, trata os casos de erro e retorna (Lógica OK)
         if (!$solicitante) {
             if (auth()->user()->hasRole('admin')) {
                 session()->flash('danger', 'Esse admin não está cadastrado como solicitante e não pode criar pedidos.');
@@ -99,7 +102,6 @@ public function create()
         $revista = Revista::where('id', $solicitante->revista_id)->first();
 
         // 1. Pega os serviços que possuem limite para a revista e a licitação atual
-        // Eager load o limite específico para esta revista/licitação para uso no map
         $servicos = Servico::whereHas('limites', function ($query) use ($revista, $licitacao) {
             $query->where('revista_id', $revista->id)
                   ->where('licitacao_id', $licitacao->id);
@@ -115,14 +117,12 @@ public function create()
             $limite = $servico->limites->first();
             $quantidadeDisponivel = $limite ? $limite->quantidade : 0;
             
-            // Retorna um novo objeto com o Servico e a Quantidade do Limite.
             return (object) [
-                'servico'             => $servico, // A) Objeto Serviço completo
-                'quantidade_disponivel' => $quantidadeDisponivel, // B) Quantidade no limite
+                'servico'             => $servico, 
+                'quantidade_disponivel' => $quantidadeDisponivel,
             ];
         });
 
-        // NOTA: A view agora receberá '$servicosComLimite' em vez de '$servicos'
         return view('pedidos.create', compact('solicitante', 'licitacao', 'servicosComLimite'));
     }
 
@@ -130,11 +130,16 @@ public function create()
      * Store a newly created resource in storage.
      */
 
+   /**
+     * Store a newly created resource in storage.
+     * Cria o Pedido, sincroniza os serviços e salva MÚLTIPLOS arquivos.
+     */
     public function store(Request $request)
     {
         $this->authorize("acesso-revista");
 
-        $validated = $request->validate([
+        // Regras de validação
+        $rules = [
             'solicitante_id' => 'required|exists:solicitantes,id',
             'revista_id' => 'required|exists:revistas,id',
             'licitacao_id' => 'required|exists:licitacoes,id',
@@ -143,23 +148,29 @@ public function create()
             'servicos.*' => 'exists:servicos,id',
             'quantidades' => 'required|array',
             'quantidades.*' => 'integer|min:1',
-        ]);
+            // Validações para Arquivos: garantindo que os arrays existem e são válidos
+            'arquivos' => 'nullable|array',
+            'arquivos.*' => 'nullable|file|mimes:pdf,jpg,jpeg,png,svg,tiff|max:3072', // 3MB por arquivo
+            'descricoes' => 'nullable|array',
+            // Descrição é obrigatória SE houver arquivo (alinhamento N:N)
+            'descricoes.*' => 'required_with:arquivos|string|max:255', 
+        ];
 
-        // Criando o pedido
+        $validated = $request->validate($rules);
+
+        // --- 1. CRIAÇÃO DO PEDIDO (Necessário para obter o ID) ---
         $pedido = Pedido::create([
             'licitacao_id' => $validated['licitacao_id'],
             'solicitante_id' => $validated['solicitante_id'],
             'revista_id' => $validated['revista_id'],
-            'observacoes' => $validated['observacoes'],
+            'observacoes' => $validated['observacoes'] ?? null,
         ]);
 
         $pedido->status = new EmElaboracao($pedido);
 
         
-        // 1. Carrega os serviços com base nos IDs validados.
+        // 2. SINCRONIZAÇÃO DE SERVIÇOS
         $servicosSelecionados = Servico::whereIn('id', $validated['servicos'])->get()->keyBy('id');
-
-        // 2. Relacionando serviços, quantidades E valor unitário
         $dadosParaSync = [];
         foreach ($validated['servicos'] as $servicoId) {
             $servico = $servicosSelecionados->get($servicoId);
@@ -175,12 +186,48 @@ public function create()
 
         $pedido->servicos()->sync($dadosParaSync);
 
+        // --- 3. UPLOAD DE ARQUIVOS (MUITOS ARQUIVOS -> UM PEDIDO) ---
+        if ($request->hasFile('arquivos')) {
+            $files = $request->file('arquivos');
+            $descriptions = $request->input('descricoes', []); 
+            $pedidoId = $pedido->id;
+
+            // Checagem de segurança (garantir que arrays estão alinhados)
+            if (count($files) !== count($descriptions)) {
+                // Se a contagem não bater, redireciona para edição.
+                session()->flash('danger', 'Erro de submissão: O número de arquivos e descrições não é compatível. O Pedido foi criado, mas os arquivos não foram anexados. Por favor, edite o pedido e anexe novamente.');
+                return redirect()->route('pedidos.edit', $pedido);
+            }
+
+            $arquivos_salvos = 0;
+            // Itera sobre os arquivos e salva CADA UM com sua descrição individual
+            foreach ($files as $index => $file) {
+                if ($file && $file->isValid()) {
+                    $description = $descriptions[$index]; 
+                    
+                    // Salva o arquivo no disco 'public'
+                    $fileName = time() . '_' . $file->getClientOriginalName();
+                    $path = $file->storeAs('arquivos', $fileName, 'public'); 
+
+                    // 2. Cria o registro Arquivo associado ao Pedido
+                    Arquivo::create([
+                        'pedido_id' => $pedidoId,
+                        'nome' => $fileName,
+                        'descricao' => $description, 
+                        'caminho' => $path,
+                    ]);
+                    $arquivos_salvos++;
+                }
+            }
+        }
+        // --- FIM DA LÓGICA DE UPLOAD ---
 
         $pedido->adicionarHistorico($pedido->status);
 
         if(Solicitante::where('user_id', auth()->id())->exists()|| auth()->user()->hasRole('admin'))
         {
-            session()->flash('success', 'Pedido cadastrado com sucesso!');
+            $msg_arquivos = isset($arquivos_salvos) && $arquivos_salvos > 0 ? " E $arquivos_salvos arquivo(s) anexado(s)." : '';
+            session()->flash('success', 'Pedido cadastrado com sucesso!' . $msg_arquivos);
             return redirect()->route('pedidos.index');
         }
         else
