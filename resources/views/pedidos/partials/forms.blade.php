@@ -60,11 +60,5 @@
     <div class="mb-1">
         <input type="hidden" class="form-control" name="licitacao_id" id="licitacao_id" value="{{ $licitacao->id }}">
     </div>
-
-    <div class="mt-5">
-        <button id="btn-salvar" type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salvar</button>
-        <a href="{{ route('pedidos.index') }}" class="btn btn-secondary"><i class="fas fa-chevron-left"></i>
-            Voltar</a>
-
-    </div>
+    
 </div>
