@@ -74,17 +74,36 @@ class PedidoController extends Controller
         $this->authorize("acesso-revista");
         
         $anoAtual = date('Y');
+        // Busca a licitação do ano atual
         $licitacao = Licitacao::where('ano', $anoAtual)->first();
         
-
         \UspTheme::activeUrl('pedidos/create');
         
         if(Solicitante::where('user_id', auth()->id())->exists())
         {
             $solicitante = Solicitante::where('user_id', auth()->user()->id)->first();
             $revista = Revista::where('id', $solicitante->revista_id)->first();
-            $servicos = Servico::whereHas('limites', function ($query) use ($revista) {
-                $query->where('revista_id', $revista->id);})->get();
+
+            // 1. Busca os serviços que possuem limite para a revista e a licitação atual
+            $servicos = Servico::whereHas('limites', function ($query) use ($revista, $licitacao) {
+                $query->where('revista_id', $revista->id)
+                      ->where('licitacao_id', $licitacao->id);
+            })
+            // 2. Eager load o limite específico para esta revista/licitação para facilitar
+            ->with(['limites' => function ($query) use ($revista, $licitacao) {
+                $query->where('revista_id', $revista->id)
+                      ->where('licitacao_id', $licitacao->id);
+            }])
+            ->get();
+
+            // 3. Anexa o limite_id ao objeto Servico para fácil acesso no Blade
+            foreach ($servicos as $servico) {
+                $limite = $servico->limites->first();
+                $servico->limite_id = $limite ? $limite->id : null;
+                // Nota: O valor unitário usado na view é o do Servico, mas se você quiser usar o valor do Limite, ajuste aqui:
+                // $servico->valor_unitario = $limite ? $limite->valor_unitario : $servico->valor_unitario;
+            }
+
             return view('pedidos.create', compact('solicitante','servicos', 'licitacao'));
         }
         
