@@ -6,8 +6,12 @@
 
 
         <select class="form-control select2" id="servico_id" name="servicos[]" multiple="multiple">
-            @foreach ($servicos as $servico)
+            @foreach ($servicosComLimite as $item) 
             @php
+                // Acessa o objeto Servico e a quantidade do limite a partir do item mapeado
+                $servico = $item->servico;
+                $quantidadeDisponivel = $item->quantidade_disponivel;
+
                 if($servico->empresas->first() != null){
                     $dataEmpresa = $servico->empresas->first()->razao_social;
                 }
@@ -20,7 +24,8 @@
 
             <option value="{{ $servico->id }}" data-empresa="{{$dataEmpresa}}"
                 data-descricao="{{ $servico->descricao }}" data-unidade="{{ $servico->unidade_medida }}"
-                data-valor="{{ number_format($servico->valor_unitario, 2, ',', '.') }}">
+                data-valor="{{ number_format($servico->valor_unitario, 2, ',', '.') }}"
+                data-quantidade-disponivel="{{ $quantidadeDisponivel }}">
                 {{ $servico->descricao }} - {{ $servico->unidade_medida }}
             </option>
 

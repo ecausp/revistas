@@ -69,54 +69,61 @@ class PedidoController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+public function create()
     {
         $this->authorize("acesso-revista");
         
         $anoAtual = date('Y');
-        // Busca a licitação do ano atual
         $licitacao = Licitacao::where('ano', $anoAtual)->first();
         
         \UspTheme::activeUrl('pedidos/create');
         
-        if(Solicitante::where('user_id', auth()->id())->exists())
-        {
-            $solicitante = Solicitante::where('user_id', auth()->user()->id)->first();
-            $revista = Revista::where('id', $solicitante->revista_id)->first();
+        // Tenta encontrar o solicitante
+        $solicitante = Solicitante::where('user_id', auth()->id())->first();
 
-            // 1. Busca os serviços que possuem limite para a revista e a licitação atual
-            $servicos = Servico::whereHas('limites', function ($query) use ($revista, $licitacao) {
-                $query->where('revista_id', $revista->id)
-                      ->where('licitacao_id', $licitacao->id);
-            })
-            // 2. Eager load o limite específico para esta revista/licitação para facilitar
-            ->with(['limites' => function ($query) use ($revista, $licitacao) {
-                $query->where('revista_id', $revista->id)
-                      ->where('licitacao_id', $licitacao->id);
-            }])
-            ->get();
-
-            // 3. Anexa o limite_id ao objeto Servico para fácil acesso no Blade
-            foreach ($servicos as $servico) {
-                $limite = $servico->limites->first();
-                $servico->limite_id = $limite ? $limite->id : null;
-                // Nota: O valor unitário usado na view é o do Servico, mas se você quiser usar o valor do Limite, ajuste aqui:
-                // $servico->valor_unitario = $limite ? $limite->valor_unitario : $servico->valor_unitario;
+        // --- Verificações de segurança (Guards) ---
+        // Se o Solicitante não existe, trata os casos de erro e retorna (Lógica OK)
+        if (!$solicitante) {
+            if (auth()->user()->hasRole('admin')) {
+                session()->flash('danger', 'Esse admin não está cadastrado como solicitante e não pode criar pedidos.');
+                return redirect()->route('pedidos.index');
             }
-
-            return view('pedidos.create', compact('solicitante','servicos', 'licitacao'));
-        }
-        
-        else if(auth()->user()->hasRole('admin'))
-        {
-            session()->flash('danger', 'Esse admin não está cadastrado como solicitante e não pode criar pedidos.');
-            return redirect()->route('pedidos.index');
-        }
-        else
-        {
+            
             session()->flash('danger', 'Usuário não cadastrado como solicitante. Favor contatar financeiro.');
             return redirect()->route('home');
         }
+
+        // --- Lógica de Criação (Se Solicitante existe) ---
+
+        // Pega a revista que ele faz parte
+        $revista = Revista::where('id', $solicitante->revista_id)->first();
+
+        // 1. Pega os serviços que possuem limite para a revista e a licitação atual
+        // Eager load o limite específico para esta revista/licitação para uso no map
+        $servicos = Servico::whereHas('limites', function ($query) use ($revista, $licitacao) {
+            $query->where('revista_id', $revista->id)
+                  ->where('licitacao_id', $licitacao->id);
+        })
+        ->with(['limites' => function ($query) use ($revista, $licitacao) {
+            $query->where('revista_id', $revista->id)
+                  ->where('licitacao_id', $licitacao->id);
+        }])
+        ->get();
+
+        // 2. Mapeia a coleção para anexar a quantidade no limite, sem modificar o objeto Servico original.
+        $servicosComLimite = $servicos->map(function ($servico) {
+            $limite = $servico->limites->first();
+            $quantidadeDisponivel = $limite ? $limite->quantidade : 0;
+            
+            // Retorna um novo objeto com o Servico e a Quantidade do Limite.
+            return (object) [
+                'servico'             => $servico, // A) Objeto Serviço completo
+                'quantidade_disponivel' => $quantidadeDisponivel, // B) Quantidade no limite
+            ];
+        });
+
+        // NOTA: A view agora receberá '$servicosComLimite' em vez de '$servicos'
+        return view('pedidos.create', compact('solicitante', 'licitacao', 'servicosComLimite'));
     }
 
     /**
