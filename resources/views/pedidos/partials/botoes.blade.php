@@ -9,11 +9,6 @@
             <!-- [1] - editar -->
             <a href="{{ route('pedidos.edit', $pedido) }}" class="btn btn-primary"><i class="fas fa-edit"></i>Editar</a>
         
-            <!-- [2] - arquivos -->
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#adicionarArquivoModal">
-                <i class="fas fa-paperclip"></i> Arquivo(s)
-            </button>
-
             <!-- [3] - enviar para empresa -->
             <form action="{{ route('pedidos.analise-empresa', $pedido) }}" method="POST" class="d-inline">
             @csrf
