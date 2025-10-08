@@ -19,21 +19,21 @@
             <tr>
                 <td>{{ $arquivo->nome }}</td>
                 <td>{{ $arquivo->descricao }}</td>
-                <td class="d-flex gap-2">
-                    <!-- eh necessario rodar o comando php artisan storage:link antes -->
-                    <a href="{{ asset('storage/' . $arquivo->path) }}" target="_blank"
-                        class="btn btn-primary d-flex ml-2 mr-2 justify-content-center">
+                <td class="d-flex">
+                    <a href="{{ asset('storage/' . $arquivo->caminho) }}" target="_blank"
+                        style="width: 30px; height: 30px;"
+                        class="btn btn-primary btn-sm d-inline-flex align-items-center justify-content-center mr-2"> 
                         <i class="fas fa-eye"></i>
                     </a>
 
-                    <!-- o arquivo só pode ser deletado se o pedido ainda não tiver sido enviado-->
                     @if($pedido->status == "em_elaboracao")
                         @if(auth()->user()->hasRole('admin') || auth()->user()->hasRole('financeiro') || auth()->user()->can('acesso-revista'))
                     <form action="{{ route('arquivos.destroy', $arquivo) }}" method="POST"
                         onsubmit="return confirm('Tem certeza que deseja excluir este arquivo?')">
                         @csrf
                         @method('DELETE')
-                        <button class="btn btn-danger d-flex justify-content-center">
+                        <button style="width: 30px; height: 30px;"
+                            class="btn btn-danger btn-sm d-inline-flex align-items-center justify-content-center">
                             <i class="fa fa-times"></i>
                         </button>
                     </form>
