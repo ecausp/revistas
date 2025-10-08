@@ -19,17 +19,24 @@
             <tr>
                 <td>{{ $arquivo->nome }}</td>
                 <td>{{ $arquivo->descricao }}</td>
-                <td class="d-flex">
+                <td class="d-flex gap-2">
                     <a href="{{ asset('storage/' . $arquivo->caminho) }}" target="_blank"
                         style="width: 30px; height: 30px;"
-                        class="btn btn-primary btn-sm d-inline-flex align-items-center justify-content-center mr-2"> 
+                        class="btn btn-primary btn-sm d-inline-flex align-items-center justify-content-center"> 
                         <i class="fas fa-eye"></i>
                     </a>
 
-                    @if($pedido->status == "em_elaboracao")
+                    @php
+                        // Verifica se a ROTA ATUAL é a de EDIÇÃO (pedidos.edit)
+                        $isEditPage = Route::is('pedidos.edit');
+                    @endphp
+
+                    @if($isEditPage && $pedido->status == "em_elaboracao")
                         @if(auth()->user()->hasRole('admin') || auth()->user()->hasRole('financeiro') || auth()->user()->can('acesso-revista'))
+                    
                     <form action="{{ route('arquivos.destroy', $arquivo) }}" method="POST"
-                        onsubmit="return confirm('Tem certeza que deseja excluir este arquivo?')">
+                        onsubmit="return confirm('Tem certeza que deseja excluir este arquivo?')"
+                        class="d-inline">
                         @csrf
                         @method('DELETE')
                         <button style="width: 30px; height: 30px;"
@@ -39,7 +46,7 @@
                     </form>
                         @endif
                     @endif
-                </td>
+                    </td>
             </tr>
             @endforeach
         </tbody>
