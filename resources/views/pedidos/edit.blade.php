@@ -41,7 +41,11 @@
                                 data-descricao="{{ $servico->descricao }}" 
                                 data-unidade="{{ $servico->unidade_medida }}"
                                 data-valor="{{ number_format($servico->valor_unitario, 2, ',', '.') }}"
-                                data-quantidade="{{ $quantidade }}"
+                                
+                                data-quantidade="{{ $quantidade }}" 
+                                
+                                data-quantidade-disponivel="{{ $servico->quantidade_disponivel ?? 0 }}"
+                                
                                 @if ($pedido->servicos->contains($servico->id)) selected @endif>
                                 {{ $servico->descricao }} - {{ $servico->unidade_medida }}
                             </option>
@@ -109,6 +113,27 @@ function formatarValorBrasileiro(valor) {
 function formatarMilhares(numero) {
     return Math.round(numero).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 }
+function formatarMilharesInteiro(numero) {
+    return Math.round(numero).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+}
+
+// Função para controlar o estado do botão Salvar (Colocado no topo para ser usado globalmente)
+function controlarBotaoSalvar() {
+    const hasQuantityError = $('.quantidade-input.is-invalid').length > 0;
+    // O aviso de irregularidade não é usado na edição, mas mantemos o check para segurança
+    const hasIrregularServiceError = $('#aviso-irregular').is(':visible'); 
+    const isAnyQuantityEmpty = $('.quantidade-input').filter(function() { return $(this).val() === ''; }).length > 0;
+    
+    // NOVO CHECK: Verifica se alguma descrição de arquivo está vazia
+    const hasEmptyFileDescription = $('input[name="descricoes[]"]').filter(function() { return $(this).val().trim() === ''; }).length > 0;
+
+    // Desabilita se qualquer erro ou campo vazio (incluindo descrição de arquivo) for encontrado
+    if (hasQuantityError || hasIrregularServiceError || isAnyQuantityEmpty || hasEmptyFileDescription) {
+        $('#btn-salvar').prop('disabled', true);
+    } else {
+        $('#btn-salvar').prop('disabled', false);
+    }
+}
 
 
 $(document).ready(function() {
@@ -146,6 +171,9 @@ $(document).ready(function() {
             fileListHtml += '</tbody></table>';
             $display.html(fileListHtml);
         }
+        
+        // Dispara a checagem do botão salvar, pois os campos de descrição estão agora visíveis
+        controlarBotaoSalvar();
     });
     // --- FIM DA LÓGICA DE ARQUIVOS ---
 });
@@ -158,7 +186,7 @@ function atualizarTabelaServicosSelecionados() {
 
     if (selecionados && selecionados.length > 0) {
         html += '<table class="table table-hover datatable-simples dt-fixed-header dt-paging-50 responsive no-footer table-striped responsive mb-0">';
-        html += '<thead><tr><th>Empresa</th><th>Descrição</th><th>Unidade</th><th>Quantidade</th><th>Valor Unitário R$</th><th>Valor Total R$</th><th></th></tr></thead><tbody>';
+        html += '<thead><tr><th>Empresa</th><th>Descrição</th><th>Unidade</th><th>Quantidade Disponível</th><th>Quantidade</th><th>Valor Unitário R$</th><th>Valor Total R$</th><th></th></tr></thead><tbody>';
 
         selecionados.forEach(id => {
             const option = $('#servico_id').find('option[value="' + id + '"]');
@@ -168,16 +196,22 @@ function atualizarTabelaServicosSelecionados() {
             const valorBr = option.attr('data-valor') || '0,00';
             const valor = parseFloat(valorBr.replace('.', '').replace(',', '.')) || 0;
 
-            const quantidade = parseFloat(option.data('quantidade')) || 0;
-            const valorTotal = quantidade * valor;
+            const quantidadePivot = parseFloat(option.data('quantidade')) || 0;
+            const quantidadeInicial = quantidadePivot; 
+            
+            // LÊ A QUANTIDADE DISPONÍVEL (AGORA FORNECIDA PELO CONTROLLER)
+            const qtdDisponivel = option.data('quantidade-disponivel') || 0; 
+
+            const valorTotal = quantidadeInicial * valor;
 
 
             html += `<tr data-id="${id}">
                         <td>${empresa}</td>
                         <td>${descricao}</td>
                         <td>${unidade}</td>
-                        <td>
-                            <input type="text" name="quantidades[${id}]" class="form-control quantidade-input milhares-mask" value="${formatarMilhares(quantidade)}" data-id="${id}" />
+                        <td>${formatarMilharesInteiro(qtdDisponivel)}</td> <td>
+                            <input type="text" name="quantidades[${id}]" class="form-control quantidade-input milhares-mask" value="${formatarMilhares(quantidadeInicial)}" data-id="${id}" />
+                            <div class="quantidade-erro text-danger small mt-1" data-id="${id}" style="display:none;"></div>
                         </td>
                         <td class="text-right"> ${formatarValorBrasileiro(valor)}</td>
                         <td class="valor-total text-right" data-id="${id}">${formatarValorBrasileiro(valorTotal)}</td>
@@ -209,36 +243,64 @@ function atualizarTabelaServicosSelecionados() {
     });
 }
 
-// Quando altera a quantidade manualmente (inclui lógica de total)
+// Quando altera a quantidade manualmente (ADICIONADA VALIDAÇÃO DE LIMITE)
 $(document).on('input', '.quantidade-input', function() {
     let somaTotal = 0;
+    
+    // PREPARAÇÃO: Limpa a string de quantidade para cálculo
+    const $input = $(this);
+    const id = $input.data('id');
+    const quantidadeUserStr = $input.val().replace(/\./g, ''); 
+    const quantidadeUser = parseFloat(quantidadeUserStr.replace(',', '.')) || 0;
+    
+    const $errorDiv = $(`.quantidade-erro[data-id="${id}"]`);
 
+    const option = $('#servico_id').find(`option[value="${id}"]`);
+    const valorBr = option.attr('data-valor') || '0,00';
+    const valorUnitario = parseFloat(valorBr.replace('.', '').replace(',', '.')) || 0;
+    
+    // Pega o limite disponível, ou usa MAX_SAFE_INTEGER para desabilitar o check (interno)
+    const quantidadeLimite = option.data('quantidade-disponivel') || Number.MAX_SAFE_INTEGER; 
+
+    // --- VALIDAÇÃO DE LIMITE NO FRONTEND ---
+    if (quantidadeUser > quantidadeLimite) {
+        $input.addClass('is-invalid');
+        const displayLimit = quantidadeLimite === Number.MAX_SAFE_INTEGER ? 'Não Definido' : formatarMilharesInteiro(quantidadeLimite);
+        $errorDiv.text(`Quantidade Máxima: ${displayLimit}`).show();
+    } else {
+        $input.removeClass('is-invalid');
+        $errorDiv.hide();
+    }
+    
+    // CÁLCULO GERAL
     $('.quantidade-input').each(function() {
-        const id = $(this).data('id');
-
-        let quantidadeBr = $(this).val() || '0';
-        quantidadeBr = quantidadeBr.replace(/\./g, '').replace(',', '.');
-        const quantidade = parseFloat(quantidadeBr) || 0;
+        const q = parseFloat($(this).val().replace(/\./g, '').replace(',', '.')) || 0;
+        const lineOption = $('#servico_id').find(`option[value="${$(this).data('id')}"]`);
+        const lineValorBr = lineOption.attr('data-valor') || '0,00';
+        const lineValorUnitario = parseFloat(lineValorBr.replace('.', '').replace(',', '.')) || 0;
         
-        const option = $('#servico_id').find('option[value="' + id + '"]');
-        const valorBr = option.attr('data-valor') || '0,00';
-        const valorUnitario = parseFloat(valorBr.replace('.', '').replace(',', '.')) || 0;
-
-        const total = quantidade * valorUnitario;
-
-        // Atualiza valor total da linha
-        $(`.valor-total[data-id="${id}"]`).text(formatarValorBrasileiro(total));
-
-        somaTotal += total;
+        somaTotal += (q * lineValorUnitario);
+        
+        // Atualiza valor total da linha atual
+        if ($(this).data('id') === id) {
+             $(`.valor-total[data-id="${id}"]`).text(formatarValorBrasileiro(q * lineValorUnitario));
+        }
     });
 
-    // Atualiza valor total do pedido
     $('#soma-total').text(formatarValorBrasileiro(somaTotal));
+    
+    // Controla o botão salvar após todas as verificações
+    controlarBotaoSalvar();
 });
 
-// Ao trocar o select2 (recarrega a tabela)
+
+// Evento para monitorar as descrições de arquivos (para o botão salvar)
+$(document).on('input', 'input[name="descricoes[]"]', controlarBotaoSalvar);
+
+
 $('#servico_id').on('change', function() {
     atualizarTabelaServicosSelecionados();
+    controlarBotaoSalvar(); 
 });
 
 // Ao fechar o modal

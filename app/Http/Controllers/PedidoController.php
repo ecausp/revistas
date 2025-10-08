@@ -297,31 +297,52 @@ class PedidoController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(Pedido $pedido)
+{
+    // Obtém a licitação para usar no filtro de limite
+    $licitacao = $pedido->licitacao;
+
+    // se o pedido já foi enviado para a empresa, ele não pode ser editado;
+    if($pedido->status == "em_analise_empresa")
     {
-
-        // se o pedido já foi enviado para a empresa, ele não pode ser editado;
-        if($pedido->status == "em_analise_empresa")
-        {
-            session()->flash('danger', 'Pedido em análise pela empresa, não pode ser editado.');
-            return redirect()->route('home');
-        }
-
-        // se o usuário é solicitante, só pode editar pedidos da revista dele 
-        else if(Solicitante::where('user_id', auth()->id())->exists() && $pedido->revista->id == Solicitante::where('user_id', auth()->id())->first()->revista->id)
-        {
-            $solicitante = Solicitante::where('user_id', auth()->user()->id)->first();
-            $revista = Revista::where('id', $solicitante->revista_id)->first();
-            $servicos = Servico::whereHas('limites', function ($query) use ($revista) {
-                $query->where('revista_id', $revista->id);})->get();
-            return view('pedidos.edit', compact('pedido', 'servicos'));
-        }
-        else
-        {
-            session()->flash('danger', 'Esse usuário não pode editar esse pedido.');
-            return redirect()->route('pedidos.index');
-        }
-
+        session()->flash('danger', 'Pedido em análise pela empresa, não pode ser editado.');
+        return redirect()->route('home');
     }
+
+    // se o usuário é solicitante, só pode editar pedidos da revista dele 
+    else if(Solicitante::where('user_id', auth()->id())->exists() && $pedido->revista->id == Solicitante::where('user_id', auth()->id())->first()->revista->id)
+    {
+        $solicitante = Solicitante::where('user_id', auth()->user()->id)->first();
+        $revista = Revista::where('id', $solicitante->revista_id)->first();
+        
+        // 1. Carregar explicitamente a relação 'arquivos'
+        $pedido->load('arquivos'); 
+
+        // 2. Carregar serviços e ATTACH o limite disponível (igual ao create)
+        $servicos = Servico::whereHas('limites', function ($query) use ($revista, $licitacao) {
+            $query->where('revista_id', $revista->id)
+                  ->where('licitacao_id', $licitacao->id);
+        })
+        ->with(['limites' => function ($query) use ($revista, $licitacao) {
+            $query->where('revista_id', $revista->id)
+                  ->where('licitacao_id', $licitacao->id);
+        }])
+        ->get();
+        
+        // 3. Anexar a quantidade_disponivel e pivot_quantidade para uso no Blade/JS
+        foreach ($servicos as $servico) {
+            $limite = $servico->limites->first();
+            $servico->quantidade_disponivel = $limite ? $limite->quantidade : 0;
+        }
+
+        // NOTA: A view usa $servicos. Mantenha o compact('servicos').
+        return view('pedidos.edit', compact('pedido', 'servicos'));
+    }
+    else
+    {
+        session()->flash('danger', 'Esse usuário não pode editar esse pedido.');
+        return redirect()->route('pedidos.index');
+    }
+}
 
     /**
      * Update the specified resource in storage.

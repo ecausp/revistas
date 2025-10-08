@@ -3,40 +3,56 @@
     <div class="mb-1">
         <label for="servico" class="form-label">Serviços</label>
 
-
-
         <select class="form-control select2" id="servico_id" name="servicos[]" multiple="multiple">
-            @foreach ($servicosComLimite as $item) 
             @php
-                // Acessa o objeto Servico e a quantidade do limite a partir do item mapeado
-                $servico = $item->servico;
-                $quantidadeDisponivel = $item->quantidade_disponivel;
+                $currentPedido = $pedido ?? null; 
+                $loopServices = $servicosComLimite ?? $servicos;
+            @endphp
+            
+            @foreach ($loopServices as $item)
+            @php
+                // Acessa o objeto Servico
+                $servico = $item->servico ?? $item;
 
-                if($servico->empresas->first() != null){
-                    $dataEmpresa = $servico->empresas->first()->razao_social;
-                }
-                else
-                {
-                    $dataEmpresa = "Esse serviço não está associado a nenhuma empresa!";
-                }
+                // Lê a quantidade atual APENAS se o $currentPedido existir.
+                $quantidadeAtual = ($currentPedido && $currentPedido->servicos) 
+                                   ? ($currentPedido->servicos->find($servico->id)?->pivot->quantidade ?? 0) 
+                                   : 0;
+                
+                // Na Criação, o limite é lido do $item. Na Edição, este campo será vazio.
+                $quantidadeDisponivel = $item->quantidade_disponivel ?? ''; 
+
+                // Lógica de Empresa (Consistente)
+                $dataEmpresa = $servico->empresas->first()->razao_social ?? "Esse serviço não está associado a nenhuma empresa!";
 
             @endphp
 
-            <option value="{{ $servico->id }}" data-empresa="{{$dataEmpresa}}"
-                data-descricao="{{ $servico->descricao }}" data-unidade="{{ $servico->unidade_medida }}"
+            <option 
+                value="{{ $servico->id }}" 
+                data-empresa="{{ $dataEmpresa }}"
+                data-descricao="{{ $servico->descricao }}" 
+                data-unidade="{{ $servico->unidade_medida }}"
                 data-valor="{{ number_format($servico->valor_unitario, 2, ',', '.') }}"
-                data-quantidade-disponivel="{{ $quantidadeDisponivel }}">
+                
+                {{-- Data-attribute específico para a tela de Criação para validação de limite --}}
+                @if($quantidadeDisponivel) data-quantidade-disponivel="{{ $quantidadeDisponivel }}" @endif
+                
+                {{-- Data-attribute específico para a tela de Edição para carregar o valor salvo --}}
+                @if($quantidadeAtual) data-quantidade="{{ $quantidadeAtual }}" @endif 
+                
+                {{-- Seleciona na Edição (Verifica se $currentPedido existe antes de usar contains) --}}
+                @if ($currentPedido && $currentPedido->servicos->contains($servico->id)) selected @endif>
+                
                 {{ $servico->descricao }} - {{ $servico->unidade_medida }}
             </option>
-
             @endforeach
         </select>
-
     </div>
 
-
+    {{-- Tabela onde os inputs de quantidade são renderizados --}}
     <div id="tabela-servicos-selecionados" class="mt-3"></div>
-    
+
+    {{-- Aviso de Irregularidade (Mesmo ID em ambas as telas) --}}
     <div id="aviso-irregular" class="alert alert-danger mt-2" style="display:none;">
         Não foi possível cadastrar o pedido. Há um serviço sem empresa associada. Entre em contato com o setor financeiro.
     </div>
@@ -44,21 +60,31 @@
 
     <div class="mb-1">
         <label for="observacoes">Observações</label>
-        <textarea class="form-control" id="observacoes" name="observacoes" rows="3"></textarea>
+        <textarea class="form-control" id="observacoes" name="observacoes" rows="3">
+            {{-- Usa o valor salvo na edição ($pedido) ou fica vazio na criação (o $solicitante não tem observações) --}}
+            {{ old('observacoes', $pedido->observacoes ?? '') }}
+        </textarea>
     </div>
+
+    {{-- CAMPOS ESCONDIDOS: Otimizados para pegar os dados do objeto disponível --}}
+    @php
+        // Define a fonte principal dos dados: Pedido (Edição) ou Solicitante (Criação)
+        $source = $pedido ?? $solicitante; 
+    @endphp
 
     <div class="mb-1">
         <input type="hidden" class="form-control" name="revista_id" id="revista_id"
-            value="{{ $solicitante->revista->id }}">
+            value="{{ $source->revista_id ?? $source->revista->id }}">
     </div>
 
     <div class="mb-1">
         <input type="hidden" class="form-control" name="solicitante_id" id="solicitante_id"
-            value="{{ $solicitante->id }}">
+            value="{{ $source->solicitante_id ?? $source->id }}">
     </div>
 
     <div class="mb-1">
-        <input type="hidden" class="form-control" name="licitacao_id" id="licitacao_id" value="{{ $licitacao->id }}">
+        <input type="hidden" class="form-control" name="licitacao_id" id="licitacao_id"
+            value="{{ $pedido->licitacao_id ?? $licitacao->id }}">
     </div>
-    
+
 </div>
