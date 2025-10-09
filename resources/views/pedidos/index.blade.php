@@ -18,6 +18,7 @@
             class="table table-hover datatable-simples dt-fixed-header dt-paging-50 responsive no-footer table-striped responsive">
             <thead>
                 <tr>
+                    <th>Nº do Pedido</th>
                     <th>Revista</th>
                     <th>Licitação</th>
                     <th>Status</th>
@@ -27,6 +28,7 @@
             <tbody>
                 @foreach ($pedidos as $pedido)
                 <tr>
+                    <td>{{ $pedido->id }}</td>
                     <td>{{ $pedido->revista->name }}</td>
                     <td>{{ $pedido->licitacao->descricao }} - {{ $pedido->licitacao->ano }}</td>
     	            <td>

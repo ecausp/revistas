@@ -103,7 +103,11 @@ Route::delete('/pedidos/{pedido}/servicos/{servico}', [PedidoController::class, 
 
 Route::post('/pedidos/{pedido}/chat', [ChatController::class, 'store'])->name('chat.store');
 
+// para adicionar arquivos novos na ediçao do pedido
+Route::post('/pedidos/{pedido}/anexar-arquivos', [PedidoController::class, 'storeArquivo'])
+    ->name('pedidos.store-arquivo');
 
+    
 // ALTERAÇÕES DE STATUS
 # 1 - envia para analise da empresa
 Route::post('/pedidos/{pedido}/analise-empresa', [PedidoController::class, 'paraAnaliseEmpresa'])
@@ -120,3 +124,4 @@ Route::post('/pedidos/{pedido}/analise-financeiro', [PedidoController::class, 'p
 # 4 - envia o pedido para execuçao
 Route::post('/pedidos/{pedido}/execucao', [PedidoController::class, 'paraExecucao'])
     ->name('pedidos.execucao');
+

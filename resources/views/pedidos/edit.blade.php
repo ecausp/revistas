@@ -2,7 +2,6 @@
 
 @section('content')
 
-
 <div class="card">
     <div class="card-header h5">
         Editar Pedido
@@ -14,74 +13,34 @@
         @include('pedidos.partials.cabecalho')
         
         @include('pedidos.partials.arquivos')
+        
+        {{-- O PARTIAL INTELIGENTE DE ARQUIVOS É INCLUÍDO AQUI. Ele contém o form#form-arquivos. --}}
+        @include('pedidos.partials.add_arquivos', ['pedido' => $pedido]) 
+        
 
         <div class="card mt-4 ml-2">
-                <div class="card-header h5">
-        Informações do Pedido
-                </div>
-
-        <form action="{{ route('pedidos.update', $pedido->id) }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            @method('PUT')
-            
-            <div class="md-6 mb-2">
-                <div class="mb-4">
-                    <label for="servico" class="form-label mt-4">Serviços</label>
-
-                    <select class="form-control select2" id="servico_id" name="servicos[]" multiple="multiple">
-                        @foreach ($servicos as $servico)
-                            @php
-                                // Obtém a quantidade do serviço no pedido, se existir
-                                $quantidade = $pedido->servicos->find($servico->id)?->pivot->quantidade ?? 0;
-                            @endphp
-
-                            <option 
-                                value="{{ $servico->id }}" 
-                                data-empresa="{{ $servico->empresas->first()->razao_social ?? '' }}"
-                                data-descricao="{{ $servico->descricao }}" 
-                                data-unidade="{{ $servico->unidade_medida }}"
-                                data-valor="{{ number_format($servico->valor_unitario, 2, ',', '.') }}"
-                                
-                                data-quantidade="{{ $quantidade }}" 
-                                
-                                data-quantidade-disponivel="{{ $servico->quantidade_disponivel ?? 0 }}"
-                                
-                                @if ($pedido->servicos->contains($servico->id)) selected @endif>
-                                {{ $servico->descricao }} - {{ $servico->unidade_medida }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div id="tabela-servicos-selecionados" class="mt-3"></div>
-
-                <div class="mb-1">
-                    <label for="observacoes">Observações</label>
-                    <textarea class="form-control" id="observacoes" name="observacoes" rows="3">{{ old('observacoes', $pedido->observacoes) }}</textarea>
-                </div>
-
-                <div class="mb-1">
-                    <input type="hidden" class="form-control" name="revista_id" id="revista_id" value="{{ $pedido->solicitante->revista->id }}">
-                </div>
-
-                <div class="mb-1">
-                    <input type="hidden" class="form-control" name="solicitante_id" id="solicitante_id" value="{{ $pedido->solicitante->id }}">
-                </div>
-
-                <div class="mb-1">
-                    <input type="hidden" class="form-control" name="licitacao_id" id="licitacao_id" value="{{ $pedido->licitacao->id }}">
-                </div>
+            <div class="card-header h5">
+                Informações do Pedido
             </div>
-            
-            @include('pedidos.partials.add_arquivos')
 
-            <div class="mt-5">
-                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salvar</button>
+            {{-- 1. Formulário Principal para Dados e Serviços (PUT) --}}
+            <form action="{{ route('pedidos.update', $pedido->id) }}" method="POST" id="form-principal">
+                @csrf
+                @method('PUT')
+                
+                {{-- CORREÇÃO CRÍTICA DE MARGEM: Adicionando padding (p-4) para evitar que o conteúdo grude nas laterais do card. --}}
+                <div class="p-4"> 
+                    @include('pedidos.partials.forms')
+                </div>
+                
+                {{-- Ajustando o padding para o botão final (pt-0 para evitar padding duplo com o mt-5 do forms) --}}
+                <div class="mt-5 p-4 pt-0"> 
+                    <button id="btn-salvar" type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salvar Edição</button>
 
-                <a href="{{ route('pedidos.index') }}" class="btn btn-secondary"><i class="fas fa-chevron-left"></i>
-                    Voltar</a>
-            </div>
-        </form>
+                    <a href="{{ route('pedidos.index') }}" class="btn btn-secondary"><i class="fas fa-chevron-left"></i>
+                        Voltar</a>
+                </div>
+            </form>
         </div>
         @endcan
     </div>
@@ -117,22 +76,33 @@ function formatarMilharesInteiro(numero) {
     return Math.round(numero).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 }
 
-// Função para controlar o estado do botão Salvar (Colocado no topo para ser usado globalmente)
+// NOVO: FUNÇÃO PARA CONTROLAR O BOTÃO DE SALVAR EDIÇÃO (APENAS SERVIÇOS/DADOS)
 function controlarBotaoSalvar() {
     const hasQuantityError = $('.quantidade-input.is-invalid').length > 0;
-    // O aviso de irregularidade não é usado na edição, mas mantemos o check para segurança
     const hasIrregularServiceError = $('#aviso-irregular').is(':visible'); 
     const isAnyQuantityEmpty = $('.quantidade-input').filter(function() { return $(this).val() === ''; }).length > 0;
     
-    // NOVO CHECK: Verifica se alguma descrição de arquivo está vazia
-    const hasEmptyFileDescription = $('input[name="descricoes[]"]').filter(function() { return $(this).val().trim() === ''; }).length > 0;
+    // O botão Salvar Edição IGNORA a validação de arquivos.
 
-    // Desabilita se qualquer erro ou campo vazio (incluindo descrição de arquivo) for encontrado
-    if (hasQuantityError || hasIrregularServiceError || isAnyQuantityEmpty || hasEmptyFileDescription) {
+    if (hasQuantityError || hasIrregularServiceError || isAnyQuantityEmpty) {
         $('#btn-salvar').prop('disabled', true);
     } else {
         $('#btn-salvar').prop('disabled', false);
     }
+}
+
+// NOVO: FUNÇÃO PARA CONTROLAR O BOTÃO DE ANEXAR ARQUIVOS
+function controlarBotaoAnexar() {
+    const hasFiles = $('#arquivos').get(0)?.files?.length > 0;
+    // Checa se os campos de descrição gerados dinamicamente estão vazios.
+    const hasEmptyDescription = $('#file-names-display input[name="descricoes[]"]').filter(function() { 
+        return $(this).val().trim() === ''; 
+    }).length > 0;
+    
+    const allFilled = hasFiles && !hasEmptyDescription;
+    
+    // Habilita/Desabilita o botão do formulário de upload
+    $('#btn-anexar-arquivos').prop('disabled', !allFilled);
 }
 
 
@@ -164,7 +134,8 @@ $(document).ready(function() {
                 fileListHtml += `<tr>
                     <td><i class="fas fa-file-alt mr-1"></i> ${files[i].name}</td>
                     <td>${fileSizeMB} MB</td>
-                    <td><input type="text" name="descricoes[]" class="form-control form-control-sm" placeholder="Descreva o conteúdo..." required></td>
+                    {{-- Usando required para validação HTML --}}
+                    <td><input type="text" name="descricoes[]" class="form-control form-control-sm" placeholder="Descreva o conteúdo..." required></td> 
                 </tr>`;
             }
 
@@ -172,8 +143,8 @@ $(document).ready(function() {
             $display.html(fileListHtml);
         }
         
-        // Dispara a checagem do botão salvar, pois os campos de descrição estão agora visíveis
-        controlarBotaoSalvar();
+        // Dispara a checagem do botão ANEXAR
+        controlarBotaoAnexar(); 
     });
     // --- FIM DA LÓGICA DE ARQUIVOS ---
 });
@@ -294,8 +265,9 @@ $(document).on('input', '.quantidade-input', function() {
 });
 
 
-// Evento para monitorar as descrições de arquivos (para o botão salvar)
-$(document).on('input', 'input[name="descricoes[]"]', controlarBotaoSalvar);
+// Evento para monitorar as descrições de arquivos (AGORA CONTROLA O BOTÃO ANEXAR)
+// O input name="descricoes[]" agora está DENTRO do form#form-arquivos na Edição.
+$(document).on('input', '#form-arquivos input[name="descricoes[]"]', controlarBotaoAnexar);
 
 
 $('#servico_id').on('change', function() {
@@ -319,12 +291,17 @@ $(document).on('click', '.remover-servico', function() {
 });
 
 // No submit, limpa a máscara das quantidades antes de enviar
-$('form').on('submit', function() {
-    $('.quantidade-input').each(function() {
-        let val = $(this).val();
-        val = val.replace(/\./g, '');  // remove pontos de milhar
-        $(this).val(val);
-    });
+// Checa se o formulário é o principal antes de limpar a máscara
+$('form').on('submit', function(e) {
+    if ($(this).attr('id') === 'form-principal') {
+        $('.quantidade-input').each(function() {
+            let val = $(this).val();
+            val = val.replace(/\./g, '');  // remove pontos de milhar
+            $(this).val(val);
+        });
+    }
+    // O form de arquivos (id="form-arquivos") não tem quantidades para limpar.
+    // Se o submit for no form de arquivos, ele prossegue sem limpar.
 });
 </script>
 @endsection

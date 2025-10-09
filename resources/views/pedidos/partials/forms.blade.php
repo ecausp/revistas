@@ -58,12 +58,9 @@
     </div>
 
 
-    <div class="mb-1">
+<div class="mb-1">
         <label for="observacoes">Observações</label>
-        <textarea class="form-control" id="observacoes" name="observacoes" rows="3">
-            {{-- Usa o valor salvo na edição ($pedido) ou fica vazio na criação (o $solicitante não tem observações) --}}
-            {{ old('observacoes', $pedido->observacoes ?? '') }}
-        </textarea>
+        <textarea class="form-control" id="observacoes" name="observacoes" rows="3">{{ old('observacoes', $pedido->observacoes ?? '') }}</textarea>
     </div>
 
     {{-- CAMPOS ESCONDIDOS: Otimizados para pegar os dados do objeto disponível --}}
