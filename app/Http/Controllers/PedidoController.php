@@ -615,19 +615,23 @@ class PedidoController extends Controller
     /**
      * Retorna a coleção de Pedidos que o usuário logado tem permissão para visualizar.
      */
-    private function getPedidosDoUsuario()
+private function getPedidosDoUsuario()
     {
         $user = auth()->user();
 
         // 1. Admin ou Financeiro (vê todos)
         if ($user->hasRole('admin') || $user->hasRole('financeiro')) {
-            return Pedido::all();
+
+            return Pedido::orderBy('id', 'desc')->get();
         }
 
         // 2. Solicitante (vê pedidos da sua revista)
         if (Solicitante::where('user_id', $user->id)->exists()) {
             $solicitante = Solicitante::where('user_id', $user->id)->first();
-            return Pedido::where('revista_id', $solicitante->revista_id)->get();
+
+            return Pedido::where('revista_id', $solicitante->revista_id)
+                         ->orderBy('id', 'desc')
+                         ->get();
         }
 
         // 3. Contato (vê pedidos com serviços da sua empresa)
@@ -640,7 +644,9 @@ class PedidoController extends Controller
                 $servicos = $empresa->servicos->pluck('id');
                 return Pedido::whereHas('servicos', function ($query) use ($servicos) {
                     $query->whereIn('servicos.id', $servicos);
-                })->get();
+                })
+                ->orderBy('id', 'desc')
+                ->get();
             }
         }
         
