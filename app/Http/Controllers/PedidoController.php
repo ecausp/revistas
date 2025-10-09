@@ -24,6 +24,7 @@ use App\Mail\PedidoEnviadoParaEmpresaMail;
 use App\Mail\PedidoEnviadoParaFinanceiroMail;
 use App\Mail\PedidoEnviadoParaExecucaoMail;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Http\RedirectResponse;
 
 #states
 use App\States\EmElaboracao;
@@ -63,7 +64,7 @@ class PedidoController extends Controller
         $solicitante = $this->handleSolicitanteGuard();
 
         // Se o Guard retornou um RedirectResponse (não um Solicitante), retornamos o redirecionamento
-        if ($solicitante instanceof \Illuminate\Http\RedirectResponse) {
+        if ($solicitante instanceof RedirectResponse) {
             return $solicitante;
         }
         
@@ -89,7 +90,7 @@ class PedidoController extends Controller
     {
         $this->authorize("acesso-revista");
 
-        // 1. Regras de validação (Ainda no Controller)
+        // 1. Regras de validação
         $rules = [
             'solicitante_id' => 'required|exists:solicitantes,id',
             'revista_id' => 'required|exists:revistas,id',
@@ -116,14 +117,14 @@ class PedidoController extends Controller
         ]);
         $pedido->status = new EmElaboracao($pedido);
         
-        // 3. SINCRONIZAÇÃO DE SERVIÇOS (Função auxiliar)
+        // 3. SINCRONIZAÇÃO DE SERVIÇOS
         $this->syncServicosDoPedido($pedido, $validated);
 
-        // 4. UPLOAD DE ARQUIVOS (Função auxiliar)
+        // 4. UPLOAD DE ARQUIVOS
         $resultadoArquivos = $this->handleArquivosDoPedido($request, $pedido);
 
         // Verifica se a função de arquivo retornou um RedirectResponse
-        if ($resultadoArquivos instanceof \Illuminate\Http\RedirectResponse) {
+        if ($resultadoArquivos instanceof RedirectResponse) {
             return $resultadoArquivos;
         }
         $arquivos_salvos = $resultadoArquivos;
@@ -131,16 +132,71 @@ class PedidoController extends Controller
         // 5. HISTÓRICO E REDIRECIONAMENTO FINAL
         $pedido->adicionarHistorico($pedido->status);
 
-        // (Seu bloco final de redirecionamento idêntico à função index, que deve ser refatorado futuramente)
         if(Solicitante::where('user_id', auth()->id())->exists()|| auth()->user()->hasRole('admin'))
         {
-            session()->flash('success', 'Pedido cadastrado com sucesso!');
+            $msg_arquivos = $arquivos_salvos > 0 ? " E $arquivos_salvos arquivo(s) anexado(s)." : '';
+            session()->flash('success', 'Pedido cadastrado com sucesso!' . $msg_arquivos);
             return redirect()->route('pedidos.index');
         }
         else
         {
             session()->flash('danger', 'Usuário não cadastrado como solicitante. Favor contatar financeiro.');
             return redirect()->route('home');
+        }
+    }
+    
+    /**
+     * Anexa MÚLTIPLOS arquivos a um pedido existente (usado na edição).
+     * O formulário da edição deve mirar esta rota.
+     */
+    public function storeArquivo(Request $request, Pedido $pedido)
+    {
+        // Validação (Apenas arquivos e descrições, mantendo a regra de segurança)
+        $rules = [
+            'arquivos' => 'required|array',
+            'arquivos.*' => 'file|mimes:pdf,jpg,jpeg,png,svg,tiff|max:3072', // 3MB
+            'descricoes' => 'required|array',
+            'descricoes.*' => 'required|string|max:255',
+        ];
+
+        $request->validate($rules);
+        
+        // 2. Processamento dos Arquivos
+        try {
+            $files = $request->file('arquivos');
+            $descriptions = $request->input('descricoes', []); 
+            $arquivos_salvos = 0;
+
+            // CRÍTICO: Checagem de alinhamento N:N
+            if (count($files) !== count($descriptions)) {
+                 throw new \Exception('Erro de submissão: O número de arquivos e descrições não é compatível.');
+            }
+
+            foreach ($files as $index => $file) {
+                if ($file && $file->isValid()) {
+                    $description = $descriptions[$index]; 
+                    
+                    $fileName = time() . '_' . $file->getClientOriginalName();
+                    // Salva o arquivo no disco 'public'
+                    $path = $file->storeAs('arquivos', $fileName, 'public'); 
+
+                    // Cria o registro Arquivo associado ao Pedido
+                    Arquivo::create([
+                        'pedido_id' => $pedido->id,
+                        'nome' => $fileName,
+                        'descricao' => $description, 
+                        'caminho' => $path,
+                    ]);
+                    $arquivos_salvos++;
+                }
+            }
+            
+            // Resposta de Sucesso (Volta para a tela de edição)
+            return back()->with('success', "$arquivos_salvos arquivo(s) anexado(s) com sucesso!");
+
+        } catch (\Exception $e) {
+            // Resposta de Falha
+            return back()->with('danger', 'Erro ao processar arquivos: ' . $e->getMessage());
         }
     }
 
@@ -204,48 +260,46 @@ class PedidoController extends Controller
      */
     public function edit(Pedido $pedido)
     {
-        // Obtém a licitação para usar no filtro de limite
-        $licitacao = $pedido->licitacao;
-
-        // se o pedido já foi enviado para a empresa, ele não pode ser editado;
-        if($pedido->status == "em_analise_empresa")
+        $user = auth()->user();
+        
+        // 1. Autorização: Verifica status do pedido (Guard)
+        if ($pedido->status == "em_analise_empresa")
         {
             session()->flash('danger', 'Pedido em análise pela empresa, não pode ser editado.');
             return redirect()->route('home');
         }
 
-        // se o usuário é solicitante, só pode editar pedidos da revista dele 
-        else if(Solicitante::where('user_id', auth()->id())->exists() && $pedido->revista->id == Solicitante::where('user_id', auth()->id())->first()->revista->id)
-        {  
-            $solicitante = Solicitante::where('user_id', auth()->user()->id)->first();
-            $revista = Revista::where('id', $solicitante->revista_id)->first();
+        // 2. Autorização: Verifica se o usuário é o solicitante correto (Guard)
+        $solicitante = Solicitante::where('user_id', $user->id)->first();
         
-            // 1. Carregar explicitamente a relação 'arquivos'
-            $pedido->load('arquivos'); 
-
-            // 2. Carregar serviços e ATTACH o limite disponível (igual ao create)
-            $servicos = Servico::whereHas('limites', function ($query) use ($revista, $licitacao) {
-                $query->where('revista_id', $revista->id)
-                    ->where('licitacao_id', $licitacao->id);})
-                    ->with(['limites' => function ($query) use ($revista, $licitacao) {
-                        $query->where('revista_id', $revista->id)
-                            ->where('licitacao_id', $licitacao->id);}])
-                                ->get();
-        
-            // 3. Anexar a quantidade_disponivel e pivot_quantidade para uso no Blade/JS
-            foreach ($servicos as $servico) {
-                $limite = $servico->limites->first();
-                $servico->quantidade_disponivel = $limite ? $limite->quantidade : 0;
-            }
-
-            return view('pedidos.edit', compact('pedido', 'servicos'));
-        }
-        
-        else
+        // Se não for um solicitante, ou se for, mas não da revista do pedido
+        if (!$solicitante || $pedido->revista->id != $solicitante->revista->id)
         {
             session()->flash('danger', 'Esse usuário não pode editar esse pedido.');
             return redirect()->route('pedidos.index');
         }
+
+        // --- Se a autorização passou, preparamos os dados ---
+
+        $licitacao = $pedido->licitacao;
+        $revista = $pedido->revista;
+        
+        // Carregar a relação 'arquivos' (necessário para o partial de arquivos existentes)
+        $pedido->load('arquivos'); 
+
+        // 3. Lógica para obter Serviços com Limite (Reutilizando getServicosComLimites)
+        
+        // Recria o formato $servicosComLimite para o forms genérico
+        $servicosComLimite = $this->getServicosComLimites($revista, $licitacao);
+        
+        // Carrega as empresas para que o forms possa ler data-empresa (necessário fazer a eager load aqui)
+        // Isso é necessário porque getServicosComLimites não carrega empresas, mas sim limites.
+        $servicosComLimite->each(function ($item) {
+             $item->servico->load('empresas');
+        });
+
+        // 5. Retorna a view, passando o pedido, o solicitante (para o forms) e os serviços no formato correto.
+        return view('pedidos.edit', compact('pedido', 'solicitante', 'servicosComLimite'));
     }
 
     /**
@@ -257,7 +311,18 @@ class PedidoController extends Controller
         $request->validate([
             'servicos' => 'array',
             'quantidades' => 'array',
+            // Arquivos e descrições não devem estar aqui, pois são submetidos via storeArquivo
         ]);
+        
+        // Autorização (reforçar)
+        $user = auth()->user();
+        $solicitante = Solicitante::where('user_id', $user->id)->first();
+
+        if (!$solicitante || $pedido->revista->id != $solicitante->revista->id) {
+            session()->flash('danger', 'Usuário não autorizado a atualizar este pedido.');
+            return redirect()->route('pedidos.index');
+        }
+
         // Atualiza dados simples
         $pedido->observacoes = $request->observacoes;
         $pedido->revista_id = $request->revista_id;
@@ -269,17 +334,22 @@ class PedidoController extends Controller
         $syncData = [];
 
         foreach ($request->servicos ?? [] as $id) {
-            $syncData[$id] = ['quantidade' => $request->quantidades[$id] ?? 1];
+            // Adicionando o valor unitário ao sync (melhor prática)
+            $servico = Servico::find($id);
+            $syncData[$id] = [
+                'quantidade' => $request->quantidades[$id] ?? 1,
+                'valor_unitario' => $servico ? $servico->valor_unitario : 0, 
+            ];
         }
 
         $pedido->servicos()->sync($syncData); 
+        
         if(Solicitante::where('user_id', auth()->id())->exists()|| auth()->user()->hasRole('admin'))
             return redirect()->route('pedidos.index')->with('success', 'Pedido atualizado com sucesso!');
         else
         {
             session()->flash('danger', 'Usuário não cadastrado como solicitante. Favor contatar financeiro.');
             return redirect()->route('home');
-
         }
     }
 
@@ -318,7 +388,12 @@ class PedidoController extends Controller
         // Atualiza os serviços com as quantidades no relacionamento many-to-many (pivot)
         $syncData = [];
         foreach ($servicos as $servicoId) {
-            $syncData[$servicoId] = ['quantidade' => $quantidades[$servicoId] ?? 1];
+            // Adicionando o valor unitário ao sync (melhor prática)
+            $servico = Servico::find($servicoId);
+            $syncData[$servicoId] = [
+                'quantidade' => $quantidades[$servicoId] ?? 1,
+                'valor_unitario' => $servico ? $servico->valor_unitario : 0,
+            ];
         }
 
         $pedido->servicos()->sync($syncData);
@@ -648,9 +723,11 @@ class PedidoController extends Controller
         $pedido->servicos()->sync($dadosParaSync);
     }
 
-    /**
+       /**
      * Gerencia o upload de múltiplos arquivos para o Pedido e cria os registros.
-     * Retorna a contagem de arquivos salvos. Redireciona em caso de desalinhamento.
+     * Retorna a contagem de arquivos salvos ou um RedirectResponse em caso de desalinhamento.
+     *
+     * @return int|\Illuminate\Http\RedirectResponse
      */
     private function handleArquivosDoPedido(Request $request, Pedido $pedido)
     {
@@ -662,11 +739,18 @@ class PedidoController extends Controller
         $descriptions = $request->input('descricoes', []); 
         $pedidoId = $pedido->id;
 
+        if (count($files) !== count($descriptions)) {
+            session()->flash('danger', 'Erro de submissão: O número de arquivos e descrições não é compatível. O Pedido foi criado, mas os arquivos não foram anexados. Por favor, edite o pedido e anexe novamente.');
+            // Retorna um RedirectResponse para interromper o fluxo do store
+            return redirect()->route('pedidos.edit', $pedido); 
+        }
+
         $arquivos_salvos = 0;
         foreach ($files as $index => $file) {
+            // A validação de 'required_with' garante que a descrição existe neste ponto.
+            $description = $descriptions[$index]; 
+
             if ($file && $file->isValid()) {
-                $description = $descriptions[$index]; 
-                
                 $fileName = time() . '_' . $file->getClientOriginalName();
                 $path = $file->storeAs('arquivos', $fileName, 'public'); 
 
