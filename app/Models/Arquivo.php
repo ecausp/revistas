@@ -13,7 +13,7 @@ class Arquivo extends Model
         'pedido_id',
         'nome',
         'descricao',
-        'path'
+        'caminho',
     ];
     public function pedido()
     {

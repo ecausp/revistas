@@ -37,40 +37,6 @@
 
 @include('pedidos.partials.botoes')
 
-<!-- Modal de Arquivos -->
-<div class="modal fade" id="adicionarArquivoModal" tabindex="-1" aria-labelledby="adicionarArquivoModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <form action="{{ route('arquivos.store') }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            <input type="hidden" name="pedido_id" value="{{ $pedido->id }}">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="adicionarArquivoModalLabel">Adicionar Arquivo</h5>
-                </div>
-                <div class="modal-body">
-                    <!-- Formulário de upload -->
-                    <div class="mb-3">
-                        <label for="arquivo" class="form-label">Arquivo</label>
-                        <input class="form-control" type="file" name="arquivo" accept=".pdf,.jpg,.jpeg,.png,.svg,.tiff"
-                            required>
-                        <small class="form-text text-muted">Máx: 3MB</small>
-                    </div>
-                    <div class="mb-3">
-                        <label for="descricao" class="form-label">Descrição</label>
-                        <input class="form-control" type="text" name="descricao" required>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Salvar</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-
-
 
 <!-- Modal de motivo da devolução do pedido -->
 <div class="modal fade" id="modalDevolver" tabindex="-1" aria-labelledby="modalDevolverLabel" aria-hidden="true"

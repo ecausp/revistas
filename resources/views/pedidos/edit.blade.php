@@ -1,4 +1,3 @@
-<!-- resources/views/licitacoes/create.blade.php -->
 @extends('layouts.app')
 
 @section('content')
@@ -13,17 +12,26 @@
         @can("acesso-revista")
         
         @include('pedidos.partials.cabecalho')
+        
+        @include('pedidos.partials.arquivos')
 
-        <form action="{{ route('pedidos.update', $pedido->id) }}" method="POST">
+        <div class="card mt-4 ml-2">
+                <div class="card-header h5">
+        Informações do Pedido
+                </div>
+
+        <form action="{{ route('pedidos.update', $pedido->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
-            <div class="md-6">
-                <div class="mb-1">
-                    <label for="servico" class="form-label">Serviços</label>
+            
+            <div class="md-6 mb-2">
+                <div class="mb-4">
+                    <label for="servico" class="form-label mt-4">Serviços</label>
 
                     <select class="form-control select2" id="servico_id" name="servicos[]" multiple="multiple">
                         @foreach ($servicos as $servico)
                             @php
+                                // Obtém a quantidade do serviço no pedido, se existir
                                 $quantidade = $pedido->servicos->find($servico->id)?->pivot->quantidade ?? 0;
                             @endphp
 
@@ -33,7 +41,11 @@
                                 data-descricao="{{ $servico->descricao }}" 
                                 data-unidade="{{ $servico->unidade_medida }}"
                                 data-valor="{{ number_format($servico->valor_unitario, 2, ',', '.') }}"
-                                data-quantidade="{{ $quantidade }}"
+                                
+                                data-quantidade="{{ $quantidade }}" 
+                                
+                                data-quantidade-disponivel="{{ $servico->quantidade_disponivel ?? 0 }}"
+                                
                                 @if ($pedido->servicos->contains($servico->id)) selected @endif>
                                 {{ $servico->descricao }} - {{ $servico->unidade_medida }}
                             </option>
@@ -59,15 +71,18 @@
                 <div class="mb-1">
                     <input type="hidden" class="form-control" name="licitacao_id" id="licitacao_id" value="{{ $pedido->licitacao->id }}">
                 </div>
+            </div>
+            
+            @include('pedidos.partials.add_arquivos')
 
-                <div class="mt-5">
-                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salvar</button>
+            <div class="mt-5">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salvar</button>
 
-                    <a href="{{ route('pedidos.index') }}" class="btn btn-secondary"><i class="fas fa-chevron-left"></i>
-                        Voltar</a>
-                </div>
+                <a href="{{ route('pedidos.index') }}" class="btn btn-secondary"><i class="fas fa-chevron-left"></i>
+                    Voltar</a>
             </div>
         </form>
+        </div>
         @endcan
     </div>
 </div>
@@ -87,7 +102,6 @@
 
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<!-- Tradução para português do Brasil -->
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/i18n/pt-BR.js"></script>
 
 <script>
@@ -95,9 +109,73 @@ function formatarValorBrasileiro(valor) {
     return valor.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
 
+// Função auxiliar para formatar a quantidade (mantida para consistência)
+function formatarMilhares(numero) {
+    return Math.round(numero).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+}
+function formatarMilharesInteiro(numero) {
+    return Math.round(numero).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+}
+
+// Função para controlar o estado do botão Salvar (Colocado no topo para ser usado globalmente)
+function controlarBotaoSalvar() {
+    const hasQuantityError = $('.quantidade-input.is-invalid').length > 0;
+    // O aviso de irregularidade não é usado na edição, mas mantemos o check para segurança
+    const hasIrregularServiceError = $('#aviso-irregular').is(':visible'); 
+    const isAnyQuantityEmpty = $('.quantidade-input').filter(function() { return $(this).val() === ''; }).length > 0;
+    
+    // NOVO CHECK: Verifica se alguma descrição de arquivo está vazia
+    const hasEmptyFileDescription = $('input[name="descricoes[]"]').filter(function() { return $(this).val().trim() === ''; }).length > 0;
+
+    // Desabilita se qualquer erro ou campo vazio (incluindo descrição de arquivo) for encontrado
+    if (hasQuantityError || hasIrregularServiceError || isAnyQuantityEmpty || hasEmptyFileDescription) {
+        $('#btn-salvar').prop('disabled', true);
+    } else {
+        $('#btn-salvar').prop('disabled', false);
+    }
+}
+
+
 $(document).ready(function() {
     $('.select2').select2({language: "pt-BR"});
     atualizarTabelaServicosSelecionados(); // Carrega a tabela se já houver selecionados
+
+    // --- Lógica para exibir nomes de múltiplos arquivos selecionados ---
+    $('#arquivos').on('change', function() {
+        const files = this.files;
+        const $display = $('#file-names-display');
+        $display.empty();
+
+        if (files.length > 0) {
+            let fileListHtml = `<p><strong>${files.length} arquivo(s) selecionado(s) para upload:</strong></p>
+                <table class="table table-sm table-striped small mb-0">
+                    <thead>
+                        <tr>
+                            <th style="width: 40%;">Arquivo</th>
+                            <th style="width: 15%;">Tamanho</th>
+                            <th style="width: 45%;">Descrição (Obrigatória)</th> 
+                        </tr>
+                    </thead>
+                    <tbody>`;
+
+            for (let i = 0; i < files.length; i++) {
+                const fileSizeMB = (files[i].size / 1024 / 1024).toFixed(2);
+                
+                fileListHtml += `<tr>
+                    <td><i class="fas fa-file-alt mr-1"></i> ${files[i].name}</td>
+                    <td>${fileSizeMB} MB</td>
+                    <td><input type="text" name="descricoes[]" class="form-control form-control-sm" placeholder="Descreva o conteúdo..." required></td>
+                </tr>`;
+            }
+
+            fileListHtml += '</tbody></table>';
+            $display.html(fileListHtml);
+        }
+        
+        // Dispara a checagem do botão salvar, pois os campos de descrição estão agora visíveis
+        controlarBotaoSalvar();
+    });
+    // --- FIM DA LÓGICA DE ARQUIVOS ---
 });
 
 // Atualiza tabela com base nos serviços selecionados
@@ -108,7 +186,7 @@ function atualizarTabelaServicosSelecionados() {
 
     if (selecionados && selecionados.length > 0) {
         html += '<table class="table table-hover datatable-simples dt-fixed-header dt-paging-50 responsive no-footer table-striped responsive mb-0">';
-        html += '<thead><tr><th>Empresa</th><th>Descrição</th><th>Unidade</th><th>Quantidade</th><th>Valor Unitário R$</th><th>Valor Total R$</th><th></th></tr></thead><tbody>';
+        html += '<thead><tr><th>Empresa</th><th>Descrição</th><th>Unidade</th><th>Quantidade Disponível</th><th>Quantidade</th><th>Valor Unitário R$</th><th>Valor Total R$</th><th></th></tr></thead><tbody>';
 
         selecionados.forEach(id => {
             const option = $('#servico_id').find('option[value="' + id + '"]');
@@ -118,22 +196,27 @@ function atualizarTabelaServicosSelecionados() {
             const valorBr = option.attr('data-valor') || '0,00';
             const valor = parseFloat(valorBr.replace('.', '').replace(',', '.')) || 0;
 
-            const quantidade = parseFloat(option.data('quantidade')) || 0;
-            const valorTotal = quantidade * valor;
+            const quantidadePivot = parseFloat(option.data('quantidade')) || 0;
+            const quantidadeInicial = quantidadePivot; 
+            
+            // LÊ A QUANTIDADE DISPONÍVEL (AGORA FORNECIDA PELO CONTROLLER)
+            const qtdDisponivel = option.data('quantidade-disponivel') || 0; 
 
+            const valorTotal = quantidadeInicial * valor;
 
 
             html += `<tr data-id="${id}">
                         <td>${empresa}</td>
                         <td>${descricao}</td>
                         <td>${unidade}</td>
-                        <td>
-                            <input type="text" name="quantidades[${id}]" class="form-control quantidade-input milhares-mask" value="${quantidade}" data-id="${id}" />
+                        <td>${formatarMilharesInteiro(qtdDisponivel)}</td> <td>
+                            <input type="text" name="quantidades[${id}]" class="form-control quantidade-input milhares-mask" value="${formatarMilhares(quantidadeInicial)}" data-id="${id}" />
+                            <div class="quantidade-erro text-danger small mt-1" data-id="${id}" style="display:none;"></div>
                         </td>
                         <td class="text-right"> ${formatarValorBrasileiro(valor)}</td>
                         <td class="valor-total text-right" data-id="${id}">${formatarValorBrasileiro(valorTotal)}</td>
                         <td class="text-center">
-                            <button class="btn btn-sm btn-danger remover-servico" data-id="{{ $servico->id }}"><i class="fa fa-times" aria-hidden="true"></i></button>
+                            <button type="button" class="btn btn-sm btn-danger remover-servico" data-id="${id}"><i class="fa fa-times" aria-hidden="true"></i></button>
                         </td>
                     </tr>`;
 
@@ -154,42 +237,70 @@ function atualizarTabelaServicosSelecionados() {
 
     $('#tabela-servicos-selecionados').html(html);
 
+    // Reaplicar máscaras
     $('.milhares-mask').mask('000.000.000.000.000', {
         reverse: true
     });
 }
 
-// Quando altera a quantidade manualmente
+// Quando altera a quantidade manualmente (ADICIONADA VALIDAÇÃO DE LIMITE)
 $(document).on('input', '.quantidade-input', function() {
     let somaTotal = 0;
+    
+    // PREPARAÇÃO: Limpa a string de quantidade para cálculo
+    const $input = $(this);
+    const id = $input.data('id');
+    const quantidadeUserStr = $input.val().replace(/\./g, ''); 
+    const quantidadeUser = parseFloat(quantidadeUserStr.replace(',', '.')) || 0;
+    
+    const $errorDiv = $(`.quantidade-erro[data-id="${id}"]`);
 
+    const option = $('#servico_id').find(`option[value="${id}"]`);
+    const valorBr = option.attr('data-valor') || '0,00';
+    const valorUnitario = parseFloat(valorBr.replace('.', '').replace(',', '.')) || 0;
+    
+    // Pega o limite disponível, ou usa MAX_SAFE_INTEGER para desabilitar o check (interno)
+    const quantidadeLimite = option.data('quantidade-disponivel') || Number.MAX_SAFE_INTEGER; 
+
+    // --- VALIDAÇÃO DE LIMITE NO FRONTEND ---
+    if (quantidadeUser > quantidadeLimite) {
+        $input.addClass('is-invalid');
+        const displayLimit = quantidadeLimite === Number.MAX_SAFE_INTEGER ? 'Não Definido' : formatarMilharesInteiro(quantidadeLimite);
+        $errorDiv.text(`Quantidade Máxima: ${displayLimit}`).show();
+    } else {
+        $input.removeClass('is-invalid');
+        $errorDiv.hide();
+    }
+    
+    // CÁLCULO GERAL
     $('.quantidade-input').each(function() {
-        const id = $(this).data('id');
-
-        let quantidadeBr = $(this).val() || '0';
-        quantidadeBr = quantidadeBr.replace(/\./g, '').replace(',', '.');
-        const quantidade = parseFloat(quantidadeBr) || 0;
-        console.log('ID:', id, 'quantidadeBr:', quantidadeBr, 'quantidade:', quantidade);
-
-        const option = $('#servico_id').find(`option[value="${id}"]`);
-        const valorBr = option.attr('data-valor') || '0,00';
-        const valorUnitario = parseFloat(valorBr.replace('.', '').replace(',', '.')) || 0;
-
-        const total = quantidade * valorUnitario;
-
-
-        const totalFormatado = total.toFixed(2).replace('.', ',');
-        $(`.valor-total[data-id="${id}"]`).text(formatarValorBrasileiro(total));
-
-        somaTotal += total;
+        const q = parseFloat($(this).val().replace(/\./g, '').replace(',', '.')) || 0;
+        const lineOption = $('#servico_id').find(`option[value="${$(this).data('id')}"]`);
+        const lineValorBr = lineOption.attr('data-valor') || '0,00';
+        const lineValorUnitario = parseFloat(lineValorBr.replace('.', '').replace(',', '.')) || 0;
+        
+        somaTotal += (q * lineValorUnitario);
+        
+        // Atualiza valor total da linha atual
+        if ($(this).data('id') === id) {
+             $(`.valor-total[data-id="${id}"]`).text(formatarValorBrasileiro(q * lineValorUnitario));
+        }
     });
 
     $('#soma-total').text(formatarValorBrasileiro(somaTotal));
+    
+    // Controla o botão salvar após todas as verificações
+    controlarBotaoSalvar();
 });
 
-// Ao trocar o select2
+
+// Evento para monitorar as descrições de arquivos (para o botão salvar)
+$(document).on('input', 'input[name="descricoes[]"]', controlarBotaoSalvar);
+
+
 $('#servico_id').on('change', function() {
     atualizarTabelaServicosSelecionados();
+    controlarBotaoSalvar(); 
 });
 
 // Ao fechar o modal
@@ -197,9 +308,9 @@ $('#modalServicos').on('hidden.bs.modal', function() {
     atualizarTabelaServicosSelecionados();
 });
 
-// Remoção de serviço
+// Remoção de serviço (remove da tabela e do select2)
 $(document).on('click', '.remover-servico', function() {
-    const id = $(this).data('id');
+    const id = $(this).data('id'); // ID lido do data-id do botão
     let selecionados = $('#servico_id').val() || [];
 
     selecionados = selecionados.filter(val => val != id);
@@ -207,13 +318,13 @@ $(document).on('click', '.remover-servico', function() {
     $('#servico_id').val(selecionados).trigger('change');
 });
 
+// No submit, limpa a máscara das quantidades antes de enviar
 $('form').on('submit', function() {
     $('.quantidade-input').each(function() {
         let val = $(this).val();
-        val = val.replace(/\./g, '');  // remove pontos
+        val = val.replace(/\./g, '');  // remove pontos de milhar
         $(this).val(val);
     });
 });
-
 </script>
 @endsection

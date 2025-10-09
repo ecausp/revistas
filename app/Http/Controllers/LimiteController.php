@@ -11,6 +11,32 @@ use Illuminate\Http\Request;
 
 class LimiteController extends Controller
 {
+
+    /**
+     * Define as regras de validação para criação e atualização de Limites.
+     */
+    private function getValidationRules(): array
+    {
+        return [
+            'licitacao_id' => 'required|exists:licitacoes,id',
+            'revista_id' => 'required|exists:revistas,id',
+            'servico_id' => 'required|exists:servicos,id',
+            'quantidade' => 'required|integer|min:1',
+            'valor_unitario' => 'required|numeric|min:0',
+        ];
+    }
+    /**
+     * Busca os dados necessários para popular os formulários (create e edit).
+     */
+    private function getDependencies(): array
+    {
+        return [
+            'licitacoes' => Licitacao::all(),
+            'revistas' => Revista::all(),
+            'servicos' => Servico::all(),
+        ];
+    }
+
     //lista os Limites
     public function index()
     {
@@ -27,24 +53,16 @@ class LimiteController extends Controller
         $this->authorize("admin-financeiro");
         \UspTheme::activeUrl('limites/create');
 
-        $licitacoes = Licitacao::all();
-        $revistas = Revista::all();
-        $servicos = Servico::all();
+        $data = $this->getFormDependencies();
 
-        return view('limites.create', compact('licitacoes', 'revistas', 'servicos'));
+        return view('limites.create', $data);
     }
 
     public function store(Request $request)
     {
         $this->authorize("admin-financeiro");
         
-        $request->validate([
-            'licitacao_id' => 'required|exists:licitacoes,id',
-            'revista_id' => 'required|exists:revistas,id',
-            'servico_id' => 'required|exists:servicos,id',
-            'quantidade' => 'required|integer|min:1',
-            'valor_unitario' => 'required|numeric|min:0',
-        ]);
+        $request->validate($this->getValidationRules());
 
         Limite::criarLimite($request);
 
@@ -66,24 +84,17 @@ class LimiteController extends Controller
     {
         $this->authorize("admin-financeiro");
         
-        $licitacoes = Licitacao::all();
-        $revistas = Revista::all();
-        $servicos = Servico::all();
+        $data = $this->getFormDependencies();
+        $data['limite'] = $limite;
 
-        return view('limites.edit', compact('limite','licitacoes', 'revistas', 'servicos'));
+        return view('limites.edit', $data);
     }
 
     public function update(Request $request, Limite $limite)
     {
         $this->authorize("admin-financeiro");
 
-        $request->validate([
-            'licitacao_id' => 'required|exists:licitacoes,id',
-            'revista_id' => 'required|exists:revistas,id',
-            'servico_id' => 'required|exists:servicos,id',
-            'quantidade' => 'required|integer|min:1',
-            'valor_unitario' => 'required|numeric|min:0',
-        ]);
+        $request->validate($this->getValidationRules());
 
         Limite::atualizarLimite($request, $limite);
 
