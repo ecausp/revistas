@@ -1,13 +1,13 @@
 @if ($pedido->arquivos->count() > 0)
 <div class="card mt-4">
-<div class="card-header">
-    <div class="d-flex align-items-center">
-        <h5 class="mb-0 me-2 mr-5">Arquivos Anexados</h5>
-
-    </div>
-</div>
-    <table class="table table-hover datatable-simples dt-fixed-header dt-paging-50 responsive no-footer table-striped responsive mb-0">
-        <thead>
+    <div class="card-header h5">
+        <div class="d-flex align-items-center">
+            Arquivos Anexados
+        </div>
+<div class="card-body p-2">
+</div class="table-responsive">
+    <table class="table table-hover table-sm datatable-simples dt-fixed-header dt-paging-50 responsive no-footer table-striped responsive mb-0">
+        <thead class="table-light">
             <tr>
                 <th style="width: 33%;">Arquivo</th>
                 <th style="width: 33%;">Descrição</th>
@@ -16,7 +16,7 @@
         </thead>
         <tbody>
             @foreach ($pedido->arquivos as $arquivo)
-            <tr>
+            <tr style="font-size: .85em">
                 <td>{{ $arquivo->nome }}</td>
                 <td>{{ $arquivo->descricao }}</td>
                 <td class="d-flex gap-2">
@@ -51,5 +51,6 @@
             @endforeach
         </tbody>
     </table>
+</div>
 </div>
 @endif

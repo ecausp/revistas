@@ -3,7 +3,7 @@
         <div class="d-flex align-items-center" style="cursor: pointer;">
             Histórico
         </div>
-    </div>
+
 
 
     <div id="historicoPedidoCard">
