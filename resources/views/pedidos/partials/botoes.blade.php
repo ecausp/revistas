@@ -1,5 +1,5 @@
 
-<div class="container mt-5 col">
+<div class="container mt-5 col pb-3 pl-3">
 
     <!-- se o status do pedido for "em elaboração": -->
     @if($pedido->status == "em_elaboracao")

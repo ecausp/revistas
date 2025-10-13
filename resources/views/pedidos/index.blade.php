@@ -22,6 +22,7 @@
                     <th>Revista</th>
                     <th>Licitação</th>
                     <th>Status</th>
+                    <th>Nº da Notificação de Fornecimento</th>
                     <th>Ações</th>
                 </tr>
             </thead>
@@ -37,6 +38,7 @@
                             <span class="text-secondary" style="font-size: .9rem; font-style: italic;">{{ $pedido->status->label() }}</span>
                         </div>
                     </td>
+                    <td>{{ $pedido->num_notificacao_fornecimento }}</td>
                     <td>
                         <a href="{{ route('pedidos.show', $pedido) }}" class="btn btn-primary"><i
                                 class="fas fa-eye"></i> </a>
