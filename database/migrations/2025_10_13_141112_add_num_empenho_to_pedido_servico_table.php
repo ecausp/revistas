@@ -8,19 +8,18 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     */
+    */
     public function up()
     {
-        Schema::table('servicos', function (Blueprint $table) {
+        Schema::table('pedido_servico', function (Blueprint $table) {
             $table->string('num_empenho')->nullable();
         });
     }
 
     public function down()
     {
-        Schema::table('servicos', function (Blueprint $table) {
+        Schema::table('pedido_servico', function (Blueprint $table) {
             $table->dropColumn('num_empenho');
         });
     }
-
 };
