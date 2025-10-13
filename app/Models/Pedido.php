@@ -19,6 +19,7 @@ class Pedido extends Model
     'licitacao_id',
     'observacoes',
     'status',
+    'num_notificacao_fornecimento'
 ];
     public function arquivos()
     {
