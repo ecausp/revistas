@@ -86,8 +86,8 @@
   $(document).ready(function () {
     $('.milhares-mask').mask('#.##0', { reverse: true });
 
-    $('form').on('submit', function () {
-      $('.milhares-mask').each(function () {
+    $('#formDevolver').on('submit', function () {
+      $('#formDevolver .milhares-mask').each(function () {
         let val = $(this).val().replace(/\./g, '');
         $(this).val(val);
       });
