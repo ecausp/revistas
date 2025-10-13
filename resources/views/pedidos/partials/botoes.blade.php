@@ -70,7 +70,17 @@
         @endif
     @endif
 
+    <!-- se o status do pedido for "em execucao": -->
+    @if($pedido->status == "em_execucao")
+        <!-- se o usuário for do financeiro: -->
+        @if(auth()->user()->hasRole('financeiro'))
+            <!-- Botão para salvar em PDF -->
+            <button id="btnPdf" class="btn btn-primary no-print">
+                <i class="fas fa-file-pdf"></i> Salvar em PDF
+            </button>
+        @endif
+    @endif
 
-    <a href="{{ route('pedidos.index') }}" class="btn btn-secondary"><i class="fas fa-chevron-left"></i>Voltar</a>
+    <a href="{{ route('pedidos.index') }}" class="btn btn-secondary no-print"><i class="fas fa-chevron-left"></i>Voltar</a>
 
 </div>

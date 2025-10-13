@@ -24,7 +24,9 @@
 
         @include('pedidos.partials.historico')
 
-        @include('chat.view', ['pedido' => $pedido])
+<div id="chatContainer" class="no-print">
+    @include('chat.view', ['pedido' => $pedido])
+</div>
 
         @include('pedidos.partials.modal_empenho')
 
@@ -96,4 +98,25 @@
     });
   });
 </script>
+
+<script>
+document.getElementById('btnPdf')?.addEventListener('click', function () {
+    // Esconde o chat para impressão
+    document.querySelector('#chatContainer')?.classList.add('no-print');
+
+    window.print();
+
+    // Volta a exibir o chat depois da impressão
+    document.querySelector('#chatContainer')?.classList.remove('no-print');
+});
+</script>
+
+<style>
+@media print {
+    .no-print {
+        display: none !important;
+    }
+}
+</style>
+
 @endsection

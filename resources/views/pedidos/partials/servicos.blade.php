@@ -11,9 +11,7 @@
             <tr>
                 <th style="width: 15%;">Empresa</th>
                 <th style="width: 25%;">Descrição</th>
-                @if ($pedido->status == 'em_execucao')
-                    <th style="width: 20%;">Número de Empenho</th>
-                @endif
+                <th style="width: 10%;">Nº do Empenho</th>
                 <th style="width: 10%;">Unidade de Medida</th>
                 <th style="width: 10%;">Valor Unitário (R$)</th>
                 <th style="width: 10%;">Quantidade</th>
@@ -31,9 +29,7 @@
                 <tr id="servico-{{ $servico->id }}">
                     <td>{{ $servico->empresas->first()->razao_social }}</td>
                     <td>{{ $servico->descricao }}</td>
-                    @if ($pedido->status == 'em_execucao')
                         <td class="text-right">{{ $servico->pivot->num_empenho}}</td>
-                    @endif
                     <td>{{ $servico->unidade_medida }}</td>
                     <td class="text-right">{{ number_format($servico->valor_unitario, 2, ',', '.') }}</td>
                     <td class="text-right">{{ number_format($servico->pivot->quantidade, 0, ',', '.') }}</td>
@@ -44,7 +40,7 @@
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="{{ $pedido->status == 'em_execucao' ? 5 : 4 }}"></td>
+                <td colspan="5"></td>
                 <td class="text-right"><strong>Valor total do pedido: </strong></td>
                 <td class="text-right"><strong>{{ number_format($valorTotalPedido, 2, ',', '.') }}</strong></td>
             </tr>
