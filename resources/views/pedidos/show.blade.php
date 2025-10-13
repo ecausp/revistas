@@ -26,6 +26,8 @@
 
         @include('chat.view', ['pedido' => $pedido])
 
+        @include('pedidos.partials.modal_empenho')
+
       </div>
 </div>
 

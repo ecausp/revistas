@@ -61,12 +61,11 @@
             </button>
 
             <!-- [2] - aprovar o pedido-->
-            <form action="{{ route('pedidos.execucao', $pedido) }}" method="POST" class="d-inline">
-            @csrf
-                <button type="submit" class="btn btn-success" title="Enviar para execução.">
-                    <i class="fas fa-tools"></i> Aprovar
-                </button>
-            </form>
+            <!-- Botão que abre o modal para inserir os números -->
+            <button type="button" class="btn btn-success" title="Enviar para execução" 
+                    data-bs-toggle="modal" data-bs-target="#modalAprovar">
+                <i class="fas fa-tools"></i> Aprovar
+            </button>
         
         @endif
     @endif
