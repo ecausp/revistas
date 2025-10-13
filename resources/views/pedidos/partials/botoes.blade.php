@@ -61,17 +61,26 @@
             </button>
 
             <!-- [2] - aprovar o pedido-->
-            <form action="{{ route('pedidos.execucao', $pedido) }}" method="POST" class="d-inline">
-            @csrf
-                <button type="submit" class="btn btn-success" title="Enviar para execução.">
-                    <i class="fas fa-tools"></i> Aprovar
-                </button>
-            </form>
+            <!-- Botão que abre o modal para inserir os números -->
+            <button type="button" class="btn btn-success" title="Enviar para execução" 
+                    data-bs-toggle="modal" data-bs-target="#modalAprovar">
+                <i class="fas fa-tools"></i> Aprovar
+            </button>
         
         @endif
     @endif
 
+    <!-- se o status do pedido for "em execucao": -->
+    @if($pedido->status == "em_execucao")
+        <!-- se o usuário for do financeiro: -->
+        @if(auth()->user()->hasRole('financeiro'))
+            <!-- Botão para salvar em PDF -->
+            <button id="btnPdf" class="btn btn-primary no-print">
+                <i class="fas fa-file-pdf"></i> Salvar em PDF
+            </button>
+        @endif
+    @endif
 
-    <a href="{{ route('pedidos.index') }}" class="btn btn-secondary"><i class="fas fa-chevron-left"></i>Voltar</a>
+    <a href="{{ route('pedidos.index') }}" class="btn btn-secondary no-print"><i class="fas fa-chevron-left"></i>Voltar</a>
 
 </div>
