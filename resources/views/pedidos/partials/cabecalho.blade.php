@@ -21,6 +21,12 @@
                 @endforeach                
             </p>
         </div>
+        
+        @if($pedido->status == 'em_execucao')
+            <div class="col-md-6">
+                <p><strong>Número da Notificação de Fornecimento:</strong> {{ $pedido->num_notificacao_fornecimento }}</p>
+            </div>
+        @endif
     </div>
 
 @else
