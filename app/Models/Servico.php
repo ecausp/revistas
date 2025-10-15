@@ -16,6 +16,7 @@ class Servico extends Model
         "unidade_medida",
         "valor_unitario",
         "editor",
+        "prazo",
     ];
 
     public function empresas()

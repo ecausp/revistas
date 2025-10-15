@@ -18,6 +18,7 @@
             <tr>
                 <th>Nº do Pedido</th>
                 <th>Descrição do Serviço</th>
+                <th>Prazo (dias)</th>
                 <th>Quantidade</th>
                 <th>Valor Unitário (R$)</th>
                 <th>Total (R$)</th>
@@ -28,6 +29,7 @@
                 <tr>
                     <td>{{ $servico->pedido_id }}</td>
                     <td>{{ $servico->descricao }}</td>
+                    <td style="text-align: right;">{{ number_format($servico->prazo, 0, ',', '.') }}</td>
                     <td style="text-align: right;">{{ number_format($servico->pivot->quantidade, 0, ',', '.') }}</td>
                     <td style="text-align: right;">{{ number_format($servico->valor_unitario, 2, ',', '.') }}</td>
                     <td style="text-align: right;">{{ number_format($servico->pivot->quantidade * $servico->valor_unitario, 2, ',', '.') }}</td>

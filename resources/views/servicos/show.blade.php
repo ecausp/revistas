@@ -11,7 +11,7 @@
     <div class="card-body">
         <p><strong>Unidade de medida: </strong>{{ $servico->unidade_medida }}</p>
         <p><strong>Valor Unitário: </strong>{{ number_format($servico->valor_unitario, 2, ',', '.') }}</p>
-
+        <p><strong>Prazo: </strong>{{ number_format($servico->prazo, 0, ',', '.') }} dias</p>
         @include('partials.editor')
 
         <div class="container mt-5 col">

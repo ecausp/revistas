@@ -20,6 +20,7 @@
                     <th>Revista</th>
                     <th>Empresa</th>
                     <th>Serviço</th>
+                    <th>Prazo (dias)</th>
                     <th>Quantidade</th>
                     <th>Valor Unitário (R$)</th>
                     <th>Valor Total de Limite (R$)</th>
@@ -39,6 +40,7 @@
                     @endif
 
                     <td>{{ $limite->servico->descricao }}</td>
+                    <td class="text-right">{{ number_format($limite->servico->prazo, 0, ',', '.') }}</td>
                     <td class="text-right">{{ number_format($limite->quantidade, 0, ',', '.') }}</td>
                     <td class="text-right">{{ number_format($limite->valor_unitario, 2, ',', '.') }}</td>
                     <td class="text-right">{{ number_format(($limite->quantidade * $limite->valor_unitario), 2, ',', '.') }} </td>

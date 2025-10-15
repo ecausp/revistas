@@ -53,7 +53,7 @@ class LimiteController extends Controller
         $this->authorize("admin-financeiro");
         \UspTheme::activeUrl('limites/create');
 
-        $data = $this->getFormDependencies();
+        $data = $this->getDependencies();
 
         return view('limites.create', $data);
     }
@@ -84,7 +84,7 @@ class LimiteController extends Controller
     {
         $this->authorize("admin-financeiro");
         
-        $data = $this->getFormDependencies();
+        $data = $this->getDependencies();
         $data['limite'] = $limite;
 
         return view('limites.edit', $data);

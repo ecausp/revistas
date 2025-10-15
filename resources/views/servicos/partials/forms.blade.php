@@ -11,6 +11,12 @@
 </div>
 
 <div class="mb-1">
+    <label for="prazo" class="form-label">Prazo (dias corridos)</label>
+    <input type="text" class="form-control" name="prazo" id="prazo" value="{{ old('prazo', isset($servico) ? $servico->prazo
+        : '') }}" placeholder="0" required></input>
+</div>
+
+<div class="mb-1">
     <label for="unidade_medida" class="form-label">Unidade de Medida</label>
 
     @if (isset($servico))

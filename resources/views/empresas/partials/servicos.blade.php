@@ -9,6 +9,7 @@
                 <th>Descrição</th>
                 <th>Valor Unitário (R$)</th>
                 <th>Unidade de Medida</th>
+                <th>Prazo (dias)</th>
                 <th>Ações</th>
             </tr>
         </thead>
@@ -18,6 +19,7 @@
                 <td>{{ $servico->descricao }}</td>
                 <td class="text-right">{{ number_format($servico->valor_unitario, 2, ',', '.') }}</td>
                 <td>{{ $servico->unidade_medida }}</td>
+                <td class="text-right">{{ number_format($servico->prazo, 0, ',', '.') }}</td>
                 <td><a href="{{ route('servicos.show', $servico) }}" class="btn btn-primary"><i class="fas fa-eye"></i>
                     </a></td>
             </tr>
