@@ -46,8 +46,11 @@
             <p><strong>Centro de Despesa:</strong> {{ $solicitante->revista->centro_despesa }} </p>
         </div>
         <div class="col-md-6">
-            <p><strong>Editor:</strong>
-                {{ $solicitante->revista->responsavel_centro_despesa }} </p>
+            <p><strong>Editor(es):</strong>
+                @foreach (explode(',', $solicitante->revista->responsavel_centro_despesa) as $editorRevista)
+                    {{ \Uspdev\Replicado\Pessoa::dump($editorRevista)['nompesttd'] }} @if (!$loop->last) , @endif
+                @endforeach                
+            </p>
         </div>
     </div>
 

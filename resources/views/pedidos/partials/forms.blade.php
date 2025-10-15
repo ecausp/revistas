@@ -14,6 +14,9 @@
                 // Acessa o objeto Servico
                 $servico = $item->servico ?? $item;
 
+                // Prazo
+                $prazo = $servico->prazo ?? '';
+
                 // Lê a quantidade atual APENAS se o $currentPedido existir.
                 $quantidadeAtual = ($currentPedido && $currentPedido->servicos) 
                                    ? ($currentPedido->servicos->find($servico->id)?->pivot->quantidade ?? 0) 
@@ -31,6 +34,7 @@
                 value="{{ $servico->id }}" 
                 data-empresa="{{ $dataEmpresa }}"
                 data-descricao="{{ $servico->descricao }}" 
+                data-prazo="{{ $prazo }}"
                 data-unidade="{{ $servico->unidade_medida }}"
                 data-valor="{{ number_format($servico->valor_unitario, 2, ',', '.') }}"
                 

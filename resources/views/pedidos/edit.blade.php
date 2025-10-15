@@ -157,13 +157,14 @@ function atualizarTabelaServicosSelecionados() {
 
     if (selecionados && selecionados.length > 0) {
         html += '<table class="table table-hover datatable-simples dt-fixed-header dt-paging-50 responsive no-footer table-striped responsive mb-0">';
-        html += '<thead><tr><th>Empresa</th><th>Descrição</th><th>Unidade</th><th>Quantidade Disponível</th><th>Quantidade</th><th>Valor Unitário R$</th><th>Valor Total R$</th><th></th></tr></thead><tbody>';
+        html += '<thead><tr><th>Empresa</th><th>Descrição</th><th>Unidade</th><th>Prazo (dias)</th><th>Quantidade Disponível</th><th>Quantidade</th><th>Valor Unitário R$</th><th>Valor Total R$</th><th></th></tr></thead><tbody>';
 
         selecionados.forEach(id => {
             const option = $('#servico_id').find('option[value="' + id + '"]');
             const empresa = option.data('empresa');
             const descricao = option.data('descricao');
             const unidade = option.data('unidade');
+            const prazo = option.data('prazo');
             const valorBr = option.attr('data-valor') || '0,00';
             const valor = parseFloat(valorBr.replace('.', '').replace(',', '.')) || 0;
 
@@ -180,7 +181,8 @@ function atualizarTabelaServicosSelecionados() {
                         <td>${empresa}</td>
                         <td>${descricao}</td>
                         <td>${unidade}</td>
-                        <td>${formatarMilharesInteiro(qtdDisponivel)}</td> <td>
+                        <td class="text-right">${prazo}</td>
+                        <td class="text-right">${formatarMilharesInteiro(qtdDisponivel)}</td> <td>
                             <input type="text" name="quantidades[${id}]" class="form-control quantidade-input milhares-mask" value="${formatarMilhares(quantidadeInicial)}" data-id="${id}" />
                             <div class="quantidade-erro text-danger small mt-1" data-id="${id}" style="display:none;"></div>
                         </td>
@@ -195,7 +197,7 @@ function atualizarTabelaServicosSelecionados() {
         });
 
         html += `<tr style="background-color: #f8f9fa;">
-                    <td colspan="4"></td>
+                    <td colspan="6"></td>
                     <td class="text-right"><strong>Total do Pedido</strong></td>
                     <td id="soma-total" class="text-right" style="font-weight: bold;">${formatarValorBrasileiro(somaTotal)}</td>
                     <td></td>

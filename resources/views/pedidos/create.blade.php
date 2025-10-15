@@ -160,13 +160,14 @@ function atualizarTabelaServicosSelecionados() {
         
         // ORDEM DAS COLUNAS
         html +=
-            '<thead><tr><th>Empresa</th><th>Descrição</th><th>Unidade</th><th>Quantidade Disponível</th><th>Quantidade</th><th>Valor Unitário (R$)</th><th>Valor Total (R$)</th><th></th></tr></thead><tbody>';
+            '<thead><tr><th>Empresa</th><th>Descrição</th><th>Unidade</th><th>Prazo (dias)</th><th>Quantidade Disponível</th><th>Quantidade</th><th>Valor Unitário (R$)</th><th>Valor Total (R$)</th><th></th></tr></thead><tbody>';
 
         selecionados.forEach(id => {
             const option = $('#servico_id').find('option[value="' + id + '"]');
             const empresa = option.data('empresa');
             const descricao = option.data('descricao');
             const unidade = option.data('unidade');
+            const prazo = option.data('prazo');
             const valorBr = option.attr('data-valor') || '0,00';
             const qtdDisponivel = option.data('quantidade-disponivel') || 0; 
 
@@ -179,7 +180,8 @@ function atualizarTabelaServicosSelecionados() {
                 <td ${errorClass}>${empresa}</td>
                 <td>${descricao}</td>
                 <td>${unidade}</td>
-                <td>${formatarMilharesInteiro(qtdDisponivel)}</td> 
+                <td class="text-right">${prazo}</td>
+                <td class="text-right">${formatarMilharesInteiro(qtdDisponivel)}</td> 
                 <td>
                     <input type="text" name="quantidades[${id}]" class="form-control quantidade-input milhares-mask" data-id="${id}" />
                     <div class="quantidade-erro text-danger small mt-1" data-id="${id}" style="display:none;"></div> </td>
@@ -194,7 +196,7 @@ function atualizarTabelaServicosSelecionados() {
 
         // Linha de total
         html += `<tr style="background-color: #f8f9fa;">
-                    <td colspan="5"></td> 
+                    <td colspan="6"></td> 
                     <td><strong>Total do Pedido</strong></td>
                     <td id="soma-total" class="text-right" style="font-weight: bold;">0,00</td>
                     <td></td>
