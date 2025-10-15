@@ -584,7 +584,7 @@ class PedidoController extends Controller
     $pedido->save();
  
     // 6) Adiciona histórico
-    $pedido->adicionarHistorico($pedido->status, "Empenho informado");
+    $pedido->adicionarHistorico($pedido->status, "Notificação de fornecimento e empenhos emitidos");
 
     session()->flash('success', 'Pedido enviado para execução.');
 
