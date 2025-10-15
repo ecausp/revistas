@@ -66,6 +66,7 @@ class ServicoController extends Controller
             'descricao' => 'required',
             'unidade_medida' => 'required',
             'valor_unitario' => 'required|numeric',
+            'prazo' => 'reqired|numeric',
         ]);
     
         // Adiciona o editor manualmente
@@ -78,6 +79,7 @@ class ServicoController extends Controller
                 'id' => $servico->id,
                 'descricao' => $servico->descricao,
                 'unidade_medida' => $servico->unidade_medida,
+                'prazo' => $servico->prazo,
             ]);
         }
         
@@ -156,6 +158,7 @@ class ServicoController extends Controller
             'descricao' => 'required',
             'unidade_medida' => 'required',
             'valor_unitario' => 'required|numeric',
+            'prazo' => 'required|numeric',
         ]);
         
         $servico_editado = [
@@ -163,6 +166,7 @@ class ServicoController extends Controller
             "descicao" => $request->descricao,
             "unidade_medida" => $request->unidade_medida,
             "valor_unitario" => $request->valor_unitario,
+            "prazo" => $request->prazo,
         ];
         
         $servico->update($servico_editado);
