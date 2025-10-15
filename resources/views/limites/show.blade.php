@@ -19,6 +19,7 @@
         @endif
         
         <p><strong>Revista: </strong>{{ $limite->revista->name }} - {{ $limite->revista->centro_despesa }}</p>
+        <p><strong>Prazo: </strong> {{ number_format($limite->servico->prazo, 0, ',', '.') }} dias.</p>
         <p><strong>Valor Unitário :</strong> R$ {{ number_format($limite->valor_unitario, 2, ',', '.') }}</p>
         <p><strong>Quantidade: </strong> {{ number_format($limite->quantidade, 0, ',', '.') }} </p>
         <p><strong>Valor Total de Limite: </strong> R$

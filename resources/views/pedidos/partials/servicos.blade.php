@@ -11,6 +11,7 @@
             <tr>
                 <th style="width: 15%;">Empresa</th>
                 <th style="width: 25%;">Descrição</th>
+                <th style="width: 10%;">Prazo (dias)</th>
                 <th style="width: 10%;">Nº do Empenho</th>
                 <th style="width: 10%;">Unidade de Medida</th>
                 <th style="width: 10%;">Valor Unitário (R$)</th>
@@ -29,7 +30,8 @@
                 <tr id="servico-{{ $servico->id }}">
                     <td>{{ $servico->empresas->first()->razao_social }}</td>
                     <td>{{ $servico->descricao }}</td>
-                        <td class="text-right">{{ $servico->pivot->num_empenho}}</td>
+                        <td class="text-right">{{ number_format($servico->prazo, 0, ',', '.') }}</td>
+                    <td class="text-right">{{ $servico->pivot->num_empenho}}</td>
                     <td>{{ $servico->unidade_medida }}</td>
                     <td class="text-right">{{ number_format($servico->valor_unitario, 2, ',', '.') }}</td>
                     <td class="text-right">{{ number_format($servico->pivot->quantidade, 0, ',', '.') }}</td>
