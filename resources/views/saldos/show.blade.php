@@ -38,7 +38,7 @@
         </tbody>
         <tfoot>
             <tr>
-                <th colspan="4" style="text-align: right;">Total Contratado</th>
+                <th colspan="5" style="text-align: right;">Total Contratado</th>
                 <th style="text-align: right;">{{ number_format($saldo->valor_contratado, 2, ',', '.') }}</th>
             </tr>
         </tfoot>
