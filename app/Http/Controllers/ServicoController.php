@@ -66,7 +66,7 @@ class ServicoController extends Controller
             'descricao' => 'required',
             'unidade_medida' => 'required',
             'valor_unitario' => 'required|numeric',
-            'prazo' => 'reqired|numeric',
+            'prazo' => 'required|numeric',
         ]);
     
         // Adiciona o editor manualmente
