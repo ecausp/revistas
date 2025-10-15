@@ -2,8 +2,8 @@
   <h1 style="color: #333; font-size: 22px; margin-bottom: 10px;">Pedido #{{ $pedido->id }}</h1>
 
   <p style="margin: 5px 0;"><strong>Revista:</strong> {{ $pedido->revista->name }}</p>
-  <p style="margin: 5px 0;"><strong>Status atual:</strong> <span style="color: #26a269">{{ $pedido->status->label() }}</span>
-</p>
+  <p style="margin: 5px 0;"><strong>Status atual:</strong> <span style="color: #26a269">{{ $pedido->status->label() }}</span></p>
+  <p>A Notificação de Fornecimento deste pedido, bem como os Empenhos dos serviços foram emitidos.</p>
  
 
   <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">
