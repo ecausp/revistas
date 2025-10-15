@@ -588,6 +588,20 @@ class PedidoController extends Controller
 
     session()->flash('success', 'Pedido enviado para execução.');
 
+    // 7) Notifica os contatos da empresa
+    $servicos = $pedido->servicos()->pluck('servicos.id');        
+    $empresas = Empresa::whereHas('servicos', function ($query) use ($servicos) {
+        $query->whereIn('servicos.id', $servicos);})->get();
+    $empresas->load('contatos'); // faz uma única query pra todos
+    $contatos = $empresas
+        ->pluck('contatos')   // pega a coleção de contatos de cada empresa
+        ->flatten()           // junta tudo
+        ->values();           // reindexa
+        
+    foreach($contatos as $contato){
+        Mail::to($contato->user->email)->send(new PedidoEnviadoParaExecucaoMail($pedido));
+    }     
+
     // 7) Redireciona conforme papel do usuário
     if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro')) {
         $pedidos = Pedido::all();
