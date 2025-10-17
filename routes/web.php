@@ -40,6 +40,10 @@ Route::fallback(function(){
     return view('errors.404');
 });
 
+// pra pegar, na criação de limite, os limites já cadastrados pra uma revista nessa mesma licitação
+Route::get('/limites/total', [LimiteController::class, 'totalPorRevistaELicitacao'])->name('limites.total');
+
+
 Route::resource('licitacoes', LicitacaoController::class)->parameters(['licitacoes' => 'licitacao']);
 Route::resource('empresas', EmpresaController::class);
 
@@ -85,12 +89,16 @@ Route::get('/autocomplete', [ContatoController::class, 'autocomplete'])->name('a
 Route::get('get-user-details', [ContatoController::class, 'getUserDetails'])->name('get-user-details');
 
 // pra colocar o valor do servico no limite
-Route::get('/servicos/{id}/valor-unitario', [App\Http\Controllers\ServicoController::class, 'valorUnitario']);
+Route::get('/servicos/{id}/valor-unitario', [ServicoController::class, 'valorUnitario']);
 
 // pra pegar, na criação de limite, o valor total da licitacao
 Route::get('/licitacoes/{licitacao}/valor-total', function (Licitacao $licitacao) {
     return response()->json(['valor_total' => $licitacao->valor_total]);
 });
+
+// pra pegar, na criação de limite, os limites já cadastrados pra uma revista nessa mesma licitação
+Route::get('/limites/total', [LimiteController::class, 'totalPorRevistaELicitacao'])->name('limites.total');
+
 
 // Rota para pegar os users do banco de dados de acordo com o nome buscado
 Route::get('/buscar-usuario', [SolicitanteController::class, 'buscarUsuario']);
