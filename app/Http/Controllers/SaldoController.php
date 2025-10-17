@@ -27,7 +27,39 @@ class SaldoController extends Controller
             'recurso_recebido' => 'required|numeric',
             'recurso_estagio' => 'required|numeric',
         ]);
+        
 
+
+        $licitacao = Licitacao::findOrFail($request->licitacao_id);
+       
+        // Verifica se já existe saldo para essa revista + licitação
+        $saldoExistente = Saldo::where('licitacao_id', $request->licitacao_id)
+            ->where('revista_id', $request->revista_id)
+            ->first();
+
+        $valorNovo = $request->recurso_recebido;
+
+
+        if ($saldoExistente) {
+            // Edição: remove o valor antigo antes de somar o novo
+            $valorAtualizado = ($licitacao->valor_cadastrado - $saldoExistente->recurso_recebido) + $valorNovo;
+        } else {
+            // Criação: soma direto
+            $valorAtualizado = $licitacao->valor_cadastrado + $valorNovo;
+        }
+
+
+
+        // Verificação do limite
+        if ($valorAtualizado > $licitacao->valor_total) {
+            return back()->withErrors([
+                'recurso_recebido' => 'O valor informado ultrapassa o total disponível da licitação.',
+            ])->withInput();
+        }
+
+
+
+        // Criação ou atualização do saldo
         $saldo = Saldo::updateOrCreate(
             [
                 'licitacao_id' => $request->licitacao_id,
@@ -39,9 +71,14 @@ class SaldoController extends Controller
             ]
         );
 
-        return redirect()->back()
-            ->with('success', 'Saldo salvo com sucesso!');
+        // Atualiza também o campo valor_cadastrado na licitação
+        $licitacao->valor_cadastrado = $valorAtualizado;
+        $licitacao->save();
+
+
+        return redirect()->back()->with('success', 'Saldo salvo com sucesso!');
     }
+
 
 
     public function show(Saldo $saldo)
