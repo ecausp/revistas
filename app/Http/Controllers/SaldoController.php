@@ -76,7 +76,7 @@ class SaldoController extends Controller
         $licitacao->save();
 
 
-        return redirect()->back()->with('success', 'Saldo salvo com sucesso!');
+        return redirect()->back()->with('success', 'Recurso salvo com sucesso!');
     }
 
 

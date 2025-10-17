@@ -116,8 +116,8 @@ $(document).ready(function(){
                                 <input type="hidden" name="licitacao_id" value="{{ $licitacao->id }}">
                                 <input type="hidden" name="revista_id" value="${revistaId}">
 
-                                <input type="text" name="recurso_recebido" class="form-control money" placeholder="0,00">
-                                <input type="text" name="recurso_estagio" class="form-control money mr-2" placeholder="0,00">
+                                <input type="text" name="recurso_recebido" class="form-control money mr-3" placeholder="0,00">
+                                <input type="text" name="recurso_estagio" class="form-control money mr-3" placeholder="0,00">
 
                                 <button type="submit" class="btn btn-success btn-sm ml-2">
                                     <i class="fas fa-check"></i>
