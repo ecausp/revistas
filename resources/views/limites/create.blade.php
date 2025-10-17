@@ -60,7 +60,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/i18n/pt-BR.js"></script>
-
 <script>
 $(document).ready(function() {
 
@@ -69,33 +68,69 @@ $(document).ready(function() {
     // ---------------------------
     $('.select2').select2({ language: "pt-BR" });
 
+    // Desabilita o select se já existe limite (readonly)
+    @if(isset($limite))
+        $('#revista_id').select2({ language: "pt-BR" }).prop('disabled', true);
+    @endif
+
     // URLs do Laravel via route()
     const urlValorRecebido = "{{ route('saldos.valor-recebido') }}";
     const urlValorUnitario = "{{ url('/servicos') }}/"; // acrescenta ID depois
     const urlValorTotalLicitacao = "{{ url('/licitacoes') }}/"; // acrescenta ID depois + /valor-total
+    const urlTotalLimites = "{{ route('limites.total') }}"; // total de limites cadastrados
+
+    // ---------------------------
+    // Função para pegar o ID da revista corretamente
+    // ---------------------------
+    function getRevistaId() {
+        let select = $('#revista_id');
+        if (select.is(':disabled')) {
+            return $('input[name="revista_id"]').val();
+        }
+        return select.val();
+    }
 
     // ---------------------------
     // Funções AJAX e cálculos
     // ---------------------------
-
     function carregarValorRecursoFinanceiro() {
         let licitacaoId = $('#licitacao_id').val();
-        let revistaId = $('#revista_id').val();
+        let revistaId = getRevistaId();
 
         if (licitacaoId && revistaId) {
             $.get(urlValorRecebido, { licitacao_id: licitacaoId, revista_id: revistaId })
             .done(function(data) {
                 let valor = parseFloat(data.valor_recurso_financeiro) || 0;
                 $('#valor_recurso_financeiro').text(valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-                // Recarrega o cálculo da diferença após obter o recurso financeiro
-                calcularDiferenca(); 
+                carregarTotalLimites(); // Recarrega total de limites cadastrados
             })
-            .fail(function(jqXHR) {
+            .fail(function() {
                 $('#valor_recurso_financeiro').text('0,00');
-                calcularDiferenca();
+                carregarTotalLimites();
             });
         } else {
             $('#valor_recurso_financeiro').text('0,00');
+            carregarTotalLimites();
+        }
+    }
+
+    function carregarTotalLimites() {
+        let licitacaoId = $('#licitacao_id').val();
+        let revistaId = getRevistaId();
+
+        if (licitacaoId && revistaId) {
+            $.get(urlTotalLimites, { licitacao_id: licitacaoId, revista_id: revistaId })
+            .done(function(data) {
+                let total = parseFloat(data.total_limites) || 0;
+                $('#valor_limites_cadastrados').text(total.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                calcularDiferenca();
+            })
+            .fail(function() {
+                $('#valor_limites_cadastrados').text('777');
+                calcularDiferenca();
+            });
+        } else {
+            $('#valor_limites_cadastrados').text('666');
             calcularDiferenca();
         }
     }
@@ -108,7 +143,7 @@ $(document).ready(function() {
                 $('#valor_unitario').val(valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })).prop('readonly', true);
                 atualizarValorTotal();
             })
-            .fail(function(jqXHR) {
+            .fail(function() {
                 $('#valor_unitario').val('0,00');
                 atualizarValorTotal();
             });
@@ -125,9 +160,8 @@ $(document).ready(function() {
             .done(function(data) {
                 let valor = parseFloat(data.valor_total) || 0;
                 $('#valor_total_licitacao').text(valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-                // Não precisa chamar calcularDiferenca aqui, pois carregarValorRecursoFinanceiro já o faz
             })
-            .fail(function(jqXHR) {
+            .fail(function() {
                 $('#valor_total_licitacao').text('0,00');
             });
         } else {
@@ -144,10 +178,11 @@ $(document).ready(function() {
     }
 
     function calcularDiferenca() {
-        // Altera para usar o Valor Total de Recurso Financeiro (#valor_recurso_financeiro)
         let valorBase = parseFloat($('#valor_recurso_financeiro').text().replace(/\./g,'').replace(',','.')) || 0;
+        let totalLimites = parseFloat($('#valor_limites_cadastrados').text().replace(/\./g,'').replace(',','.')) || 0;
         let valorPedido = parseFloat($('#valor_total_pedido').text().replace(/\./g,'').replace(',','.')) || 0;
-        let diferenca = valorBase - valorPedido;
+
+        let diferenca = valorBase - (totalLimites + valorPedido);
 
         $('#diferenca_valores').text(diferenca.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
         $('#diferenca_valores').removeClass('valor-positivo valor-negativo valor-zero');
@@ -155,7 +190,6 @@ $(document).ready(function() {
         if (diferenca > 0) $('#diferenca_valores').addClass('valor-positivo');
         else if (diferenca < 0) $('#diferenca_valores').addClass('valor-negativo');
         else $('#diferenca_valores').addClass('valor-zero');
-
     }
 
     // ---------------------------
@@ -181,7 +215,6 @@ $(document).ready(function() {
     // ---------------------------
     // Inicializa valores ao carregar a página
     // ---------------------------
-    // Garante que o recurso financeiro é carregado primeiro, pois é a base do cálculo agora.
     carregarValorRecursoFinanceiro(); 
     carregarValorLicitacao();
     if ($('#servico_id').val()) carregarValorUnitario($('#servico_id').val());
@@ -190,22 +223,21 @@ $(document).ready(function() {
     // Antes de submeter o formulário
     // ---------------------------
     $('form').on('submit', function() {
-        // converte quantidade
         let quantidade = $('#quantidade').val();
         if (quantidade) $('#quantidade').val(quantidade.replace(/\./g,''));
 
-        // converte valor_unitario
         let valorUnitario = $('#valor_unitario').val();
         if (valorUnitario) $('#valor_unitario').val(valorUnitario.replace(/\./g,'').replace(',','.'));
 
-        // valida diferença
         let diferenca = parseFloat($('#diferenca_valores').text().replace(/\./g,'').replace(',','.')) || 0;
         if (diferenca < 0) {
-            alert('Atenção! O valor total do pedido excede o valor do recurso dessa revista.');
+            alert('Atenção! O valor total do pedido + limites já cadastrados excede o valor do recurso dessa revista.');
             return false;
         }
     });
 
 });
 </script>
+
+
 @endsection

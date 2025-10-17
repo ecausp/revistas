@@ -76,7 +76,16 @@
                 </span>
             </div>
 
-            <!-- Linha 3: Total do Limite -->
+            <!-- Linha 3: Total dos Limites já cadastrados -->
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="text-muted">Valor Total dos Limites já cadastrados:</span>
+                <span class="fw-bold">
+                    <span id="valor_limites_cadastrados">0,00</span>
+                </span>
+            </div>
+
+
+            <!-- Linha 4: Total do Limite -->
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <span class="text-muted">Valor Total de Limite:</span>
                 <span class="fw-bold text-danger">
@@ -87,7 +96,7 @@
             <!-- Linha divisória -->
             <hr class="my-2 border-primary opacity-25">
 
-            <!-- Linha 4: Diferença (resultado) -->
+            <!-- Linha 5: Diferença (resultado) -->
             <div class="d-flex justify-content-between align-items-center">
                 <span class="text-muted">Valor Total Disponível:</span>
                 <span class="fs-5 fw-bold text-success">

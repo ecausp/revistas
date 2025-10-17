@@ -112,4 +112,19 @@ class LimiteController extends Controller
         session()->flash('danger', 'Limite: ' . $limite->id . ' removida!');
         return redirect()->route('limites.index');
     }
+
+    public function totalPorRevistaELicitacao(Request $request)
+    {
+        $licitacaoId = $request->licitacao_id;
+        $revistaId = $request->revista_id;
+
+        $total = Limite::where('licitacao_id', $licitacaoId)
+            ->where('revista_id', $revistaId)
+            ->sum(\DB::raw('valor_unitario * quantidade'));
+
+        return response()->json([
+            'total_limites' => $total,
+        ]);
+    }
+
 }

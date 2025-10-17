@@ -130,4 +130,5 @@ class SaldoController extends Controller
 
         return response()->json(['valor_recurso_financeiro' => $valor]);
     }
+
 }
