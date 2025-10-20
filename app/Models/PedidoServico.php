@@ -39,13 +39,13 @@ class PedidoServico extends Pivot
         $diasRestantes = $hoje->diffInDays($vencimento, false);
 
         if ($diasRestantes <= 0) {
-            $class = 'bg-danger text-white';
+            $class = 'bg-danger text-white ml-1';
             $text = '0';
         } elseif ($diasRestantes <= 7) {
-            $class = 'bg-warning text-dark';
+            $class = 'bg-warning text-dark ml-1';
             $text = "$diasRestantes";
         } else {
-            $class = 'bg-info text-white';
+            $class = 'bg-info text-white ml-1';
             $text = "$diasRestantes";
         }
 
