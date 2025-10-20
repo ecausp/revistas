@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use \App\Models\Servico;
+use \App\Models\Pedido;
 
 class PedidoServico extends Model
 {
@@ -17,5 +19,17 @@ class PedidoServico extends Model
         'quantidade',
         'valor_unitario',
         'num_empenho',
+        'data_vencimento'
     ];
+
+        public function servico()
+    {
+        return $this->belongsTo(Servico::class, 'servico_id');
+    }
+
+    public function pedido()
+    {
+        return $this->belongsTo(Pedido::class, 'pedido_id');
+    }
 }
+
