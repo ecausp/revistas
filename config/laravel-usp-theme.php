@@ -70,7 +70,7 @@ $submenu1 = [
     ],
     [
         'text' => '<i class="fas fa-cog" aria-hidden="true"></i> Em Execução',
-        'url' => 'pedido-servico',
+        'url' => 'servicos-execucao',
     ],
     [
         'type' => 'divider',

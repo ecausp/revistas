@@ -1,4 +1,4 @@
-<!-- resources/views/pedido-servicos/index.blade.php -->
+<!-- resources/views/servicos-execucao/index.blade.php -->
 @extends('layouts.app')
 
 @section('content')

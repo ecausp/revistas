@@ -34,7 +34,7 @@ class HomeController extends Controller
                     ->with(['pedido', 'servico.empresas'])
                     ->get();
             }
-            return view('pedido-servico.index', compact('pedidoServicos'));
+            return view('servicos-execucao.index', compact('pedidoServicos'));
         }
         return view('welcome');
     }

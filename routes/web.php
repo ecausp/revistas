@@ -42,6 +42,12 @@ Route::fallback(function(){
     return view('errors.404');
 });
 
+// pra pegar todos os serviços que estão em um pedido em execução
+Route::prefix('pedidos')->group(function () {
+    Route::get('/servicos-execucao', [PedidoServicoController::class, 'index'])->name('servicos-execucao.index');
+});
+
+
 // pra pegar, na criação de limite, os limites já cadastrados pra uma revista nessa mesma licitação
 Route::get('/limites/total', [LimiteController::class, 'totalPorRevistaELicitacao'])->name('limites.total');
 
@@ -118,8 +124,7 @@ Route::post('/pedidos/{pedido}/anexar-arquivos', [PedidoController::class, 'stor
     ->name('pedidos.store-arquivo');
 
 
-// pra pegar todos os serviços que estão em um pedido em execução
-Route::get('/pedido-servico', [PedidoServicoController::class, 'index'])->name('pedido-servico.index');
+
 
 // ALTERAÇÕES DE STATUS
 # 1 - envia para analise da empresa
