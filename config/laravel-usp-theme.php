@@ -57,7 +57,6 @@ $submenu1 = [
     [
         'type' => 'header',
         'text' => '<i class="fas fa-tasks" aria-hidden="true"></i> Serviços',
-        'can' => 'acesso-empresa'
     ],
     [
         'text' => '<i class="fas fa-plus-circle" aria-hidden="true"></i> Cadastrar',
@@ -68,6 +67,10 @@ $submenu1 = [
         'text' => '<i class="fas fa-list-ul" aria-hidden="true"></i> Listar',
         'url' => 'servicos',
         'can' => 'acesso-empresa'
+    ],
+    [
+        'text' => '<i class="fas fa-cog" aria-hidden="true"></i> Em Execução',
+        'url' => 'pedido-servico',
     ],
     [
         'type' => 'divider',

@@ -4,6 +4,7 @@ use App\Http\Controllers\ArquivoController;
 use App\Http\Controllers\LimiteController;
 use App\Http\Controllers\SolicitanteController;
 use App\Http\Middleware\EnsureUserIsLogged;
+use App\Models\PedidoServico; 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LicitacaoController;
 use App\Http\Controllers\EmpresaController;
@@ -15,6 +16,7 @@ use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\SaldoController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PedidoServicoController;
 
 
 use App\Models\User;
@@ -59,7 +61,7 @@ Route::get('/licitacoes/{licitacao}/saldos/create', [SaldoController::class, 'cr
      ->middleware('auth');
 Route::post('/saldos', [SaldoController::class, 'store'])->name('saldos.store');
 
-// ROTA CORRIGIDA: Rotas específicas (fixas) devem vir antes de rotas com parâmetros
+
 // pra pegar o saldo na criação do limite
 Route::get('/saldos/valor-recebido', [SaldoController::class, 'getValorRecebido'])->name('saldos.valor-recebido');
 
@@ -115,7 +117,10 @@ Route::post('/pedidos/{pedido}/chat', [ChatController::class, 'store'])->name('c
 Route::post('/pedidos/{pedido}/anexar-arquivos', [PedidoController::class, 'storeArquivo'])
     ->name('pedidos.store-arquivo');
 
-    
+
+// pra pegar todos os serviços que estão em um pedido em execução
+Route::get('/pedido-servico', [PedidoServicoController::class, 'index'])->name('pedido-servico.index');
+
 // ALTERAÇÕES DE STATUS
 # 1 - envia para analise da empresa
 Route::post('/pedidos/{pedido}/analise-empresa', [PedidoController::class, 'paraAnaliseEmpresa'])

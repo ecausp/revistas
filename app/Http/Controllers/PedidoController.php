@@ -557,12 +557,12 @@ class PedidoController extends Controller
                                         ->where('pedido_id', $pedido->id)
                                         ->first();
 
-                           
+                       
         if (!$pedidoServico) {
             session()->flash('danger', 'Erro: serviço inválido ou não pertence a este pedido.');
             return back();
         }
-
+        $pedidoServico->data_vencimento = $pedido->updated_at->addDays($pedidoServico->servico->prazo)->format('Y-m-d');
         $pedidoServico->num_empenho = $numEmpenho;
         $pedidoServico->save();
     }
