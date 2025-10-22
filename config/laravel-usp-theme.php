@@ -15,7 +15,6 @@ $submenuPedidos = [
     ],
     [
         'type' => 'divider',
-        'can' => 'admin-financeiro'
     ],
     [
         'type' => 'header',
