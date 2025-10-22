@@ -14,7 +14,7 @@ class PedidoServicoController extends Controller
     {
         $pedidoServicos = $this->getPedidoServicosDoUsuario();
 
-        return view('servicos-execucao.index', compact('pedidoServicos'));
+        return view('pedidos.servicos-execucao', compact('pedidoServicos'));
     }
 
 
