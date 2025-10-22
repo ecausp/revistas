@@ -8,7 +8,6 @@
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show mt-2" role="alert">
             {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     @endif
 
@@ -143,4 +142,15 @@ function desformatarMoeda(form){
     return true; // permite submit
 }
 </script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => {
+            document.querySelectorAll('.alert').forEach(alert => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 3000);
+    });
+</script>
+
 @endsection
