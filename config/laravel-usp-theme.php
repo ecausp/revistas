@@ -12,7 +12,29 @@ $submenuPedidos = [
     [
         'text' => '<i class="fas fa-list-ul" aria-hidden="true"></i> Listar',
         'url' => 'pedidos',
-    ]
+    ],
+    [
+        'type' => 'divider',
+    ],
+    [
+        'type' => 'header',
+        'text' => '<i class="fas fa-tasks" aria-hidden="true"></i> Serviços',
+    ],
+    [
+        'text' => '<i class="fas fa-plus-circle" aria-hidden="true"></i> Cadastrar',
+        'url' => 'servicos/create',
+        'can' => 'admin-financeiro'
+    ],
+    [
+        'text' => '<i class="fas fa-list-ul" aria-hidden="true"></i> Listar',
+        'url' => 'servicos',
+        'can' => 'acesso-empresa'
+    ],
+    [
+        'text' => '<i class="fas fa-cog" aria-hidden="true"></i> Em Execução',
+        'url' => 'pedidos/servicos-execucao',
+    ],
+
 ];
 
 $submenu1 = [
@@ -53,28 +75,6 @@ $submenu1 = [
     [
         'type' => 'divider',
         'can' => 'acesso-empresa'
-    ],
-    [
-        'type' => 'header',
-        'text' => '<i class="fas fa-tasks" aria-hidden="true"></i> Serviços',
-    ],
-    [
-        'text' => '<i class="fas fa-plus-circle" aria-hidden="true"></i> Cadastrar',
-        'url' => 'servicos/create',
-        'can' => 'admin-financeiro'
-    ],
-    [
-        'text' => '<i class="fas fa-list-ul" aria-hidden="true"></i> Listar',
-        'url' => 'servicos',
-        'can' => 'acesso-empresa'
-    ],
-    [
-        'text' => '<i class="fas fa-cog" aria-hidden="true"></i> Em Execução',
-        'url' => 'pedido-servico',
-    ],
-    [
-        'type' => 'divider',
-        'can' => 'admin-financeiro'
     ],
     [
         'type' => 'header',
