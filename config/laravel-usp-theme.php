@@ -33,7 +33,7 @@ $submenuPedidos = [
     ],
     [
         'text' => '<i class="fas fa-cog" aria-hidden="true"></i> Em Execução',
-        'url' => 'servicos-execucao',
+        'url' => 'pedidos/servicos-execucao',
     ],
 
 ];
