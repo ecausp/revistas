@@ -7,7 +7,7 @@
 
 <div class="card">
     <div class="card-header h5">
-        Serviços em execução
+        Serviços em Execução
     </div>
     <div class="card-body">
 
