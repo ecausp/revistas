@@ -3,6 +3,7 @@
 
 @section('content')
 
+<div id="alert-container"></div>
 
 <div class="card">
     <div class="card-header h5">
@@ -211,25 +212,43 @@ $(document).ready(function() {
     });
 
     // Formata valores antes do submit
-    $('form').on('submit', function() {
-        let quantidade = $('#quantidade').val();
-        if (quantidade) {
-            $('#quantidade').val(quantidade.replace(/\./g, ''));
-        }
-        // Converte valor_unitario
-        let valorUnitario = $('#valor_unitario').val();
-        if (valorUnitario) {
-            $('#valor_unitario').val(valorUnitario.replace(/\./g, '').replace(',', '.'));
-        }
+    $('form').on('submit', function(e) {
+        e.preventDefault(); //garantir que o evento é cancelado caso necessário
 
-        // Validação adicional
-        let diferencaText = $('#diferenca_valores').text();
-        let diferenca = parseFloat(diferencaText.replace(/\./g, '').replace(',', '.'));
+        let quantidade = $('#quantidade').val();
+        if (quantidade) $('#quantidade').val(quantidade.replace(/\./g,''));
+
+        let valorUnitario = $('#valor_unitario').val();
+        if (valorUnitario) $('#valor_unitario').val(valorUnitario.replace(/\./g,'').replace(',','.'));
+
+        let diferenca = parseFloat($('#diferenca_valores').text().replace(/\./g,'').replace(',','.')) || 0;
         if (diferenca < 0) {
-            alert('Atenção! O valor total do pedido excede o valor da licitação.');
+            mostrarMensagem(
+                'Atenção! O valor total do pedido + limites já cadastrados excede o valor do recurso dessa revista.',
+                'danger'
+            );
             return false;
         }
+
+        this.submit();
     });
+
+    
 });
+
+
+function mostrarMensagem(mensagem, tipo = 'success') {
+    const alertHtml = `
+        <div class="alert alert-${tipo} alert-dismissible fade show mt-3" role="alert">
+            ${mensagem}
+        </div>
+    `;
+    $('#alert-container').html(alertHtml);
+
+    // Fecha automaticamente após 3 segundos
+    setTimeout(() => {
+        $('.alert').alert('close');
+    }, 3000);
+}
 </script>
 @endsection
