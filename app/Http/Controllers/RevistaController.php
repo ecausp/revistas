@@ -26,8 +26,13 @@ class RevistaController extends Controller
         // pega todas as revistas visíveis para o usuário logado
         $revistas = auth()->user()->revistasVisiveis();
 
+        // se o usuário for admin ou financeiro, ele pode ver todas as revistas, mesmo que nenhuma tenha sido criada
+        if (auth()->user()->hasAnyRole(['admin', 'financeiro']) && $revistas->isEmpty()) {
+            return view('revistas.index', compact('revistas'));
+        }
+
         // se o usuário não pode ver nenhuma revista, retorna erro
-        if ($revistas->isEmpty()) {
+        else if ($revistas->isEmpty()) {
                 session()->flash('error', 'Usuário não está associado a nenhuma revista!');
             return redirect()->route('home');
         }

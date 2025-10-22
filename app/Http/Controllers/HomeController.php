@@ -21,10 +21,10 @@ class HomeController extends Controller
         }
         
         // se o usuário que está logando é contato de uma empresa, então redireciona ele para visualizar a lista de serviços de pedidos em execução;
-        if (Contato::where('user_id', $user->id)->exists()) {
-            $contato = Contato::where('user_id', $user->id)->first();
+
+        $contato = (($user) ? Contato::where('user_id', $user->id)->first() : null);
+        if ($contato) {
             $empresa = Empresa::where('id', $contato->empresa_id)->first();
-        
             if ($empresa) {
                 $servicosIds = $empresa->servicos->pluck('id');
                 $pedidoServicos =  PedidoServico::whereHas('pedido', function ($q) {
