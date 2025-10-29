@@ -14,6 +14,7 @@ use App\Models\Contato;
 use App\Models\User;
 use App\Models\Arquivo;
 
+use App\States\EmConferencia;
 use Illuminate\Support\Facades\Storage;
 
 use App\States\EmExecucao;
@@ -23,6 +24,7 @@ use App\Mail\PedidoDevolvidoParaRevistaMail;
 use App\Mail\PedidoEnviadoParaEmpresaMail;
 use App\Mail\PedidoEnviadoParaFinanceiroMail;
 use App\Mail\PedidoEnviadoParaExecucaoMail;
+use App\Mail\PedidoEmConferenciaMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\RedirectResponse;
 
@@ -630,7 +632,7 @@ class PedidoController extends Controller
         if(Contato::where('user_id', auth()->id())->exists() && $contatos->contains('user_id', auth()->id()))
         {
             // 1. Atualiza o status do pedido
-            $pedido->status->transitionTo(EmAnaliseFinanceiro::class);
+            $pedido->status->transitionTo(EmConferencia::class);
             $pedido->save();
 
             $pedido->adicionarHistorico($pedido->status);
