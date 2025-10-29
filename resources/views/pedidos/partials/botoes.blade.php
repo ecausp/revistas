@@ -78,9 +78,18 @@
             <button id="btnPdf" class="btn btn-primary no-print">
                 <i class="fas fa-file-pdf"></i> Salvar em PDF
             </button>
-        @endif
+        <!-- se o usuário for da empresa: -->
+        @elseif(auth()->user()->can('acesso-empresa') && !auth()->user()->can('admin') && ! auth()->user()->hasRole('financeiro'))
+            <!-- Botão que envia o pedido para conferência-->
+            <form action="" method="POST" class="d-inline">
+            @csrf
+                <button type="submit" class="btn btn-warning" title="Enviar para conferência.">
+                    <i class="fas fa-user-check"></i> Enviar para Conferência
+                </button>
+            </form>
+          @endif
     @endif
 
-    <a href="{{ route('pedidos.index') }}" class="btn btn-secondary no-print"><i class="fas fa-chevron-left"></i>Voltar</a>
+    <a href="{{ route('pedidos.index') }}" class="btn btn-secondary no-print"><i class="fas fa-chevron-left"></i> Voltar</a>
 
 </div>
