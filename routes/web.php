@@ -142,4 +142,8 @@ Route::post('/pedidos/{pedido}/analise-financeiro', [PedidoController::class, 'p
 # 4 - envia o pedido para execuçao
 Route::post('/pedidos/{pedido}/execucao', [PedidoController::class, 'paraExecucao'])
     ->name('pedidos.execucao');
+    
+# 5 - envia o pedido para conferência
+Route::post('/pedidos/{pedido}/conferencia', [PedidoController::class, 'paraConferencia'])
+    ->name('pedidos.conferencia');
 
