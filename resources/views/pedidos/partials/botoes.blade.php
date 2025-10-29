@@ -81,7 +81,7 @@
         <!-- se o usuário for da empresa: -->
         @elseif(auth()->user()->can('acesso-empresa') && !auth()->user()->can('admin') && ! auth()->user()->hasRole('financeiro'))
             <!-- Botão que envia o pedido para conferência-->
-            <form action="" method="POST" class="d-inline">
+            <form action="{{ route('pedidos.conferencia', $pedido) }}" method="POST" class="d-inline">
             @csrf
                 <button type="submit" class="btn btn-warning" title="Enviar para conferência.">
                     <i class="fas fa-user-check"></i> Enviar para Conferência
