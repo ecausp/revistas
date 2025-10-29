@@ -14,7 +14,6 @@ class EmExecucao extends StatusPedido
 
     public function icon(): string
     {
-        #icone de um sinal "+" em amarelo
         return 'fas fa-tools text-success border border-success rounded-pill p-2';
     }
 

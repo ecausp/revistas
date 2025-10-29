@@ -12,8 +12,18 @@ class EmConferencia extends StatusPedido
         return 'Em Conferência';
     }
 
+    public function icon(): string
+    {
+        return 'fas fa-user-check text-warning border border-warning rounded-pill p-2';
+    }
+
+    public function icon_style(): string
+    {
+        return 'font-size: 1rem; width: 32px; height: 32px';
+    }
+
     public function color(): string
     {
-        return 'yellow';
+        return 'warning';
     }
 }
