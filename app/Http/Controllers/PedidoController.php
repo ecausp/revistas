@@ -14,24 +14,27 @@ use App\Models\Contato;
 use App\Models\User;
 use App\Models\Arquivo;
 
-use App\States\EmConferencia;
 use Illuminate\Support\Facades\Storage;
 
-use App\States\EmExecucao;
-use Illuminate\Http\Request;
 
+use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+
+use Illuminate\Support\Facades\Mail;
 use App\Mail\PedidoDevolvidoParaRevistaMail;
 use App\Mail\PedidoEnviadoParaEmpresaMail;
 use App\Mail\PedidoEnviadoParaFinanceiroMail;
 use App\Mail\PedidoEnviadoParaExecucaoMail;
 use App\Mail\PedidoEmConferenciaMail;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Http\RedirectResponse;
+use App\Mail\PedidoPagoMail;
 
 #states
 use App\States\EmElaboracao;
 use App\States\EmAnaliseEmpresa;
 use App\States\EmAnaliseFinanceiro;
+use App\States\EmExecucao;
+use App\States\EmConferencia;
+use App\States\Pago;
 
 class PedidoController extends Controller
 {
@@ -658,6 +661,41 @@ class PedidoController extends Controller
             return redirect()->route('home');
         }
     }
+
+    public function pedidoPago(Pedido $pedido)
+    {
+        // só pode ser enviado se o usuário for:
+            // a) solicitante da revista 
+            // b) se a revista do pedido for a revista do usuário
+        if(Solicitante::where('user_id', auth()->id())->exists() && $pedido->revista->id == Solicitante::where('user_id', auth()->id())->first()->revista->id)
+        {
+            // 1. Atualiza o status do pedido
+            $pedido->status->transitionTo(EmAnaliseEmpresa::class);
+            $pedido->save();
+
+
+            $pedido->adicionarHistorico($pedido->status);
+            
+            $financeiros = User::role('financeiro')->get();
+            foreach($financeiros as $financeiro){
+                Mail::to($financeiro->email)->send(new PedidoPagoMail($pedido));
+            }
+
+            session()->flash('success', 'Pedido enviado por e-mail para os contatos da empresa responsável.');
+            
+            // redireciona o usuario:
+            $solicitante = Solicitante::where('user_id', auth()->id())->first();
+            $pedidos = Pedido::where('revista_id', $solicitante->revista_id)->get();  
+            return view('pedidos.index', compact('pedidos'));
+        }
+
+        else
+        {
+            session()->flash('danger', 'Usuário não é solicitante da revista e não pode enviar pedidos para a empresa.');
+            return redirect()->route('home');
+        }
+    }
+
     /**
      * Retorna a coleção de Pedidos que o usuário logado tem permissão para visualizar.
      */
