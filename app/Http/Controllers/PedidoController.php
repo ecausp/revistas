@@ -670,7 +670,7 @@ class PedidoController extends Controller
         if(Solicitante::where('user_id', auth()->id())->exists() && $pedido->revista->id == Solicitante::where('user_id', auth()->id())->first()->revista->id)
         {
             // 1. Atualiza o status do pedido
-            $pedido->status->transitionTo(EmAnaliseEmpresa::class);
+            $pedido->status->transitionTo(Pago::class);
             $pedido->save();
 
 
@@ -691,7 +691,7 @@ class PedidoController extends Controller
 
         else
         {
-            session()->flash('danger', 'Usuário não é solicitante da revista e não pode enviar pedidos para a empresa.');
+            session()->flash('danger', 'Usuário não é solicitante da revista e não pode enviar pedidos para o setor financeiro.');
             return redirect()->route('home');
         }
     }
