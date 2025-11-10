@@ -61,7 +61,7 @@
                         $devolucao = 'pedidos.elaboracao';
                     }
                     else if ($pedido->status = "em_conferencia") {
-                        $devolucao = 'pedidos.execucao';
+                        $devolucao = 'pedidos.devolver-execucao';
                     }
 
 

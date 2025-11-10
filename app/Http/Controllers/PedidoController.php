@@ -26,6 +26,7 @@ use App\Mail\PedidoEnviadoParaEmpresaMail;
 use App\Mail\PedidoEnviadoParaFinanceiroMail;
 use App\Mail\PedidoEnviadoParaExecucaoMail;
 use App\Mail\PedidoEmConferenciaMail;
+use App\Mail\PedidoDevolvidoParaExecucaoMail;
 use App\Mail\PedidoPagoMail;
 
 #states
@@ -669,6 +670,40 @@ class PedidoController extends Controller
         $pedido->save();
         $pedido->adicionarHistorico($pedido->status, $request->observacao);
         
+        // Notifica os contatos da empresa
+        $servicos = $pedido->servicos()->pluck('servicos.id');        
+        $empresas = Empresa::whereHas('servicos', function ($query) use ($servicos) {
+            $query->whereIn('servicos.id', $servicos);})->get();
+        $empresas->load('contatos'); // faz uma única query pra todos
+        $contatos = $empresas
+            ->pluck('contatos')   // pega a coleção de contatos de cada empresa
+            ->flatten()           // junta tudo
+            ->values();           // reindexa
+            
+        foreach($contatos as $contato){
+            Mail::to($contato->user->email)->send(new PedidoDevolvidoParaExecucaoMail($pedido));
+        }     
+
+        // Redireciona conforme papel do usuário
+        if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro')) {
+            $pedidos = Pedido::all();
+            return view('pedidos.index', compact('pedidos'));
+        }
+        else if(Solicitante::where('user_id', auth()->id())->exists()) {
+            $solicitante = Solicitante::where('user_id', auth()->id())->first();
+            $pedidos = Pedido::where('revista_id', $solicitante->revista_id)->get();
+            return view('pedidos.index', compact('pedidos'));
+        }
+        else if(Contato::where('user_id', auth()->id())->first()) {
+            $contato = Contato::where('user_id', auth()->id())->first();
+            $empresa = Empresa::where('id', $contato->empresa_id)->first();
+            $servicos = $empresa->servicos->pluck('id');
+            $pedidos = Pedido::whereHas('servicos', function ($query) use ($servicos) {
+                $query->whereIn('servicos.id', $servicos);
+            })->get();
+            return view('pedidos.index', compact('pedidos'));
+        }
+
         session()->flash('success', 'Pedido devolvido para a empresa.');
         return redirect()->route('pedidos.index');
     }
