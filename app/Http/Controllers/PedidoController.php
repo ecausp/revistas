@@ -663,7 +663,7 @@ class PedidoController extends Controller
     }
 
     #se o pedido for rejeitado na conferencia, ele volta para o status 'em_execucao'
-    public function pedidoRejeitado(Pedido $pedido, Request $request)
+    public function pedidoDevolvidoExecucao(Pedido $pedido, Request $request)
     {
         $pedido->status->transitionTo(EmExecucao::class);
         $pedido->save();
