@@ -94,14 +94,20 @@
     @if($pedido->status == "em_conferencia")
         <!-- se o usuário for da revista: -->
         @if(auth()->user()->can('acesso-revista') && !auth()->user()->can('admin') && ! auth()->user()->hasRole('financeiro'))
-         <!-- Botão que envia o pedido para o status 'pago'-->
+        <!-- [1] - devolver o pedido-->
+            <!-- Botão que abre o modal para inserir o motivo da devolução-->
+            <button type="button" class="btn btn-success" title="Devolver para a empresa" data-bs-toggle="modal" data-bs-target="#modalDevolver">
+                <i class="fas fa-undo-alt"></i> Devolver
+            </button>
+        <!-- [2] - enviar o pedido-->
+        <!-- Botão que envia o pedido para o status 'pago'-->
             <form action="{{ route('pedidos.pago', $pedido) }}" method="POST" class="d-inline">
             @csrf
-                <button type="submit" class="btn btn-warning" title="Enviar para conferência.">
-                    <i class="fas fa-user-check"></i> Pedido Pago
+                <button type="submit" class="btn btn-info" title="Enviar para pagamento.">
+                    <i class="fas fa-user-check"></i> Enviar para Pagamento
                 </button>
             </form>
-          @endif
+        @endif
     @endif
 
     <a href="{{ route('pedidos.index') }}" class="btn btn-secondary no-print"><i class="fas fa-chevron-left"></i> Voltar</a>

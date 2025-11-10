@@ -54,7 +54,19 @@
                 </div>
 
                 <div class="modal-body">
-                    <form id="formDevolver" action="{{ route('pedidos.elaboracao', $pedido) }}" method="POST">
+                    @php
+                    $devolucao = "";
+                    
+                    if ($pedido->status == "em_analise_empresa") {
+                        $devolucao = 'pedidos.elaboracao';
+                    }
+                    else if ($pedido->status = "em_conferencia") {
+                        $devolucao = 'pedidos.execucao';
+                    }
+
+
+                    @endphp
+                    <form id="formDevolver" action="{{ route($devolucao, $pedido) }}" method="POST">
                     @csrf
                         <div class="mb-3">
                             <label for="observacao" class="form-label">Explique o motivo da devolução</label>
