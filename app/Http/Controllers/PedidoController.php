@@ -14,24 +14,28 @@ use App\Models\Contato;
 use App\Models\User;
 use App\Models\Arquivo;
 
-use App\States\EmConferencia;
 use Illuminate\Support\Facades\Storage;
 
-use App\States\EmExecucao;
-use Illuminate\Http\Request;
 
+use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+
+use Illuminate\Support\Facades\Mail;
 use App\Mail\PedidoDevolvidoParaRevistaMail;
 use App\Mail\PedidoEnviadoParaEmpresaMail;
 use App\Mail\PedidoEnviadoParaFinanceiroMail;
 use App\Mail\PedidoEnviadoParaExecucaoMail;
 use App\Mail\PedidoEmConferenciaMail;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Http\RedirectResponse;
+use App\Mail\PedidoDevolvidoParaExecucaoMail;
+use App\Mail\PedidoPagoMail;
 
 #states
 use App\States\EmElaboracao;
 use App\States\EmAnaliseEmpresa;
 use App\States\EmAnaliseFinanceiro;
+use App\States\EmExecucao;
+use App\States\EmConferencia;
+use App\States\Pago;
 
 class PedidoController extends Controller
 {
@@ -545,84 +549,84 @@ class PedidoController extends Controller
     public function paraExecucao(Request $request, Pedido $pedido)
     {
 
-    // 1) Validação
-    $data = $request->validate([
-        'empenhos' => 'required|array',
-        'empenhos.*' => 'required|string|max:255', // obrigatório
-        'num_notificacao_fornecimento' => 'required|string|max:255', // obrigatório
-    ]);
+        // 1) Validação
+        $data = $request->validate([
+            'empenhos' => 'required|array',
+            'empenhos.*' => 'required|string|max:255', // obrigatório
+            'num_notificacao_fornecimento' => 'required|string|max:255', // obrigatório
+        ]);
 
-    // 2) Atualiza cada registro pivot pedido_servico pelo pivot id
-    foreach ($data['empenhos'] as $pivotId => $numEmpenho) {
+        // 2) Atualiza cada registro pivot pedido_servico pelo pivot id
+        foreach ($data['empenhos'] as $pivotId => $numEmpenho) {
 
-        $pedidoServico = PedidoServico::where('id', $pivotId)
-                                        ->where('pedido_id', $pedido->id)
-                                        ->first();
+            $pedidoServico = PedidoServico::where('id', $pivotId)
+                                            ->where('pedido_id', $pedido->id)
+                                            ->first();
 
-                       
-        if (!$pedidoServico) {
-            session()->flash('danger', 'Erro: serviço inválido ou não pertence a este pedido.');
+                        
+            if (!$pedidoServico) {
+                session()->flash('danger', 'Erro: serviço inválido ou não pertence a este pedido.');
+                return back();
+            }
+            $pedidoServico->data_vencimento = $pedido->updated_at->addDays($pedidoServico->servico->prazo)->format('Y-m-d');
+            $pedidoServico->num_empenho = $numEmpenho;
+            $pedidoServico->save();
+        }
+
+
+        // 3) Atualiza num_notificacao_fornecimento no pedido
+        $pedido->num_notificacao_fornecimento = $data['num_notificacao_fornecimento'];
+
+        // 4) Confirma que todos os empenhos foram preenchidos
+        $faltando = $pedido->servicos()->wherePivotNull('num_empenho')->count();
+        if ($faltando > 0) {
+            session()->flash('danger', 'Todos os serviços devem ter um número de empenho antes de enviar para execução.');
             return back();
         }
-        $pedidoServico->data_vencimento = $pedido->updated_at->addDays($pedidoServico->servico->prazo)->format('Y-m-d');
-        $pedidoServico->num_empenho = $numEmpenho;
-        $pedidoServico->save();
+
+        // 5) Transição de status para execução
+        $pedido->status->transitionTo(EmExecucao::class);
+
+        $pedido->save();
+    
+        // 6) Adiciona histórico
+        $pedido->adicionarHistorico($pedido->status, "Notificação de fornecimento e empenhos emitidos");
+
+        session()->flash('success', 'Pedido enviado para execução.');
+
+        // 7) Notifica os contatos da empresa
+        $servicos = $pedido->servicos()->pluck('servicos.id');        
+        $empresas = Empresa::whereHas('servicos', function ($query) use ($servicos) {
+            $query->whereIn('servicos.id', $servicos);})->get();
+        $empresas->load('contatos'); // faz uma única query pra todos
+        $contatos = $empresas
+            ->pluck('contatos')   // pega a coleção de contatos de cada empresa
+            ->flatten()           // junta tudo
+            ->values();           // reindexa
+            
+        foreach($contatos as $contato){
+            Mail::to($contato->user->email)->send(new PedidoEnviadoParaExecucaoMail($pedido));
+        }     
+
+        // 7) Redireciona conforme papel do usuário
+        if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro')) {
+            $pedidos = Pedido::all();
+            return view('pedidos.index', compact('pedidos'));
+        } else if(Solicitante::where('user_id', auth()->id())->exists()) {
+            $solicitante = Solicitante::where('user_id', auth()->id())->first();
+            $pedidos = Pedido::where('revista_id', $solicitante->revista_id)->get();
+            return view('pedidos.index', compact('pedidos'));
+        } else if(Contato::where('user_id', auth()->id())->first()) {
+            $contato = Contato::where('user_id', auth()->id())->first();
+            $empresa = Empresa::where('id', $contato->empresa_id)->first();
+            $servicos = $empresa->servicos->pluck('id');
+            $pedidos = Pedido::whereHas('servicos', function ($query) use ($servicos) {
+                $query->whereIn('servicos.id', $servicos);
+            })->get();
+            return view('pedidos.index', compact('pedidos'));
+        }
+
     }
-
-
-    // 3) Atualiza num_notificacao_fornecimento no pedido
-    $pedido->num_notificacao_fornecimento = $data['num_notificacao_fornecimento'];
-
-    // 4) Confirma que todos os empenhos foram preenchidos
-    $faltando = $pedido->servicos()->wherePivotNull('num_empenho')->count();
-    if ($faltando > 0) {
-        session()->flash('danger', 'Todos os serviços devem ter um número de empenho antes de enviar para execução.');
-        return back();
-    }
-
-    // 5) Transição de status para execução
-    $pedido->status->transitionTo(EmExecucao::class);
-
-    $pedido->save();
- 
-    // 6) Adiciona histórico
-    $pedido->adicionarHistorico($pedido->status, "Notificação de fornecimento e empenhos emitidos");
-
-    session()->flash('success', 'Pedido enviado para execução.');
-
-    // 7) Notifica os contatos da empresa
-    $servicos = $pedido->servicos()->pluck('servicos.id');        
-    $empresas = Empresa::whereHas('servicos', function ($query) use ($servicos) {
-        $query->whereIn('servicos.id', $servicos);})->get();
-    $empresas->load('contatos'); // faz uma única query pra todos
-    $contatos = $empresas
-        ->pluck('contatos')   // pega a coleção de contatos de cada empresa
-        ->flatten()           // junta tudo
-        ->values();           // reindexa
-        
-    foreach($contatos as $contato){
-        Mail::to($contato->user->email)->send(new PedidoEnviadoParaExecucaoMail($pedido));
-    }     
-
-    // 7) Redireciona conforme papel do usuário
-    if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro')) {
-        $pedidos = Pedido::all();
-        return view('pedidos.index', compact('pedidos'));
-    } else if(Solicitante::where('user_id', auth()->id())->exists()) {
-        $solicitante = Solicitante::where('user_id', auth()->id())->first();
-        $pedidos = Pedido::where('revista_id', $solicitante->revista_id)->get();
-        return view('pedidos.index', compact('pedidos'));
-    } else if(Contato::where('user_id', auth()->id())->first()) {
-        $contato = Contato::where('user_id', auth()->id())->first();
-        $empresa = Empresa::where('id', $contato->empresa_id)->first();
-        $servicos = $empresa->servicos->pluck('id');
-        $pedidos = Pedido::whereHas('servicos', function ($query) use ($servicos) {
-            $query->whereIn('servicos.id', $servicos);
-        })->get();
-        return view('pedidos.index', compact('pedidos'));
-    }
-    }
-
 
     public function paraConferencia(Pedido $pedido)
     {
@@ -658,6 +662,86 @@ class PedidoController extends Controller
             return redirect()->route('home');
         }
     }
+
+    #se o pedido for rejeitado na conferencia, ele volta para o status 'em_execucao'
+    public function pedidoDevolvidoExecucao(Pedido $pedido, Request $request)
+    {
+        $pedido->status->transitionTo(EmExecucao::class);
+        $pedido->save();
+        $pedido->adicionarHistorico($pedido->status, $request->observacao);
+        
+        // Notifica os contatos da empresa
+        $servicos = $pedido->servicos()->pluck('servicos.id');        
+        $empresas = Empresa::whereHas('servicos', function ($query) use ($servicos) {
+            $query->whereIn('servicos.id', $servicos);})->get();
+        $empresas->load('contatos'); // faz uma única query pra todos
+        $contatos = $empresas
+            ->pluck('contatos')   // pega a coleção de contatos de cada empresa
+            ->flatten()           // junta tudo
+            ->values();           // reindexa
+            
+        foreach($contatos as $contato){
+            Mail::to($contato->user->email)->send(new PedidoDevolvidoParaExecucaoMail($pedido));
+        }     
+
+        // Redireciona conforme papel do usuário
+        if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro')) {
+            $pedidos = Pedido::all();
+            return view('pedidos.index', compact('pedidos'));
+        }
+        else if(Solicitante::where('user_id', auth()->id())->exists()) {
+            $solicitante = Solicitante::where('user_id', auth()->id())->first();
+            $pedidos = Pedido::where('revista_id', $solicitante->revista_id)->get();
+            return view('pedidos.index', compact('pedidos'));
+        }
+        else if(Contato::where('user_id', auth()->id())->first()) {
+            $contato = Contato::where('user_id', auth()->id())->first();
+            $empresa = Empresa::where('id', $contato->empresa_id)->first();
+            $servicos = $empresa->servicos->pluck('id');
+            $pedidos = Pedido::whereHas('servicos', function ($query) use ($servicos) {
+                $query->whereIn('servicos.id', $servicos);
+            })->get();
+            return view('pedidos.index', compact('pedidos'));
+        }
+
+        session()->flash('success', 'Pedido devolvido para a empresa.');
+        return redirect()->route('pedidos.index');
+    }
+
+    public function pedidoPago(Pedido $pedido)
+    {
+        // só pode ser enviado se o usuário for:
+            // a) solicitante da revista 
+            // b) se a revista do pedido for a revista do usuário
+        if(Solicitante::where('user_id', auth()->id())->exists() && $pedido->revista->id == Solicitante::where('user_id', auth()->id())->first()->revista->id)
+        {
+            // 1. Atualiza o status do pedido
+            $pedido->status->transitionTo(Pago::class);
+            $pedido->save();
+
+
+            $pedido->adicionarHistorico($pedido->status);
+            
+            $financeiros = User::role('financeiro')->get();
+            foreach($financeiros as $financeiro){
+                Mail::to($financeiro->email)->send(new PedidoPagoMail($pedido));
+            }
+
+            session()->flash('success', 'Pedido enviado por e-mail para os contatos da empresa responsável.');
+            
+            // redireciona o usuario:
+            $solicitante = Solicitante::where('user_id', auth()->id())->first();
+            $pedidos = Pedido::where('revista_id', $solicitante->revista_id)->get();  
+            return view('pedidos.index', compact('pedidos'));
+        }
+
+        else
+        {
+            session()->flash('danger', 'Usuário não é solicitante da revista e não pode enviar pedidos para o setor financeiro.');
+            return redirect()->route('home');
+        }
+    }
+
     /**
      * Retorna a coleção de Pedidos que o usuário logado tem permissão para visualizar.
      */
