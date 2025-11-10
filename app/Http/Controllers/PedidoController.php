@@ -627,7 +627,6 @@ class PedidoController extends Controller
 
     }
 
-
     public function paraConferencia(Pedido $pedido)
     {
 
@@ -661,6 +660,17 @@ class PedidoController extends Controller
             session()->flash('danger', 'Usuário não é representante da empresa e não pode enviar pedidos para o setor financeiro.');
             return redirect()->route('home');
         }
+    }
+
+    #se o pedido for rejeitado na conferencia, ele volta para o status 'em_execucao'
+    public function pedidoRejeitado(Pedido $pedido, Request $request)
+    {
+        $pedido->status->transitionTo(EmExecucao::class);
+        $pedido->save();
+        $pedido->adicionarHistorico($pedido->status, $request->observacao);
+        
+        session()->flash('success', 'Pedido devolvido para a empresa.');
+        return redirect()->route('pedidos.index');
     }
 
     public function pedidoPago(Pedido $pedido)
