@@ -44,9 +44,15 @@
 <script>
 $(document).ready(function() {
     // Formato cnpj
-    $('.cnpj').mask('00.000.000/0000-00', {
-        reverse: true
+    $('.cnpj').mask('CC.CCC.CCC/CCCC-00', {
+        translation: {
+            'C': { pattern: /[A-Za-z0-9]/ },
+        }
+    })
+    .on('input', function() {
+        this.value = this.value.toUpperCase();
     });
+
 
     // Inicializa o Select2 de forma responsiva para o campo SERVIÇO
     $('#servico_id').select2({
