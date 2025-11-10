@@ -90,6 +90,20 @@
           @endif
     @endif
 
+    <!-- se o status do pedido for "em conferencia": -->
+    @if($pedido->status == "em_conferencia")
+        <!-- se o usuário for da revista: -->
+        @if(auth()->user()->can('acesso-revista') && !auth()->user()->can('admin') && ! auth()->user()->hasRole('financeiro'))
+         <!-- Botão que envia o pedido para o status 'pago'-->
+            <form action="{{ route('pedidos.pago', $pedido) }}" method="POST" class="d-inline">
+            @csrf
+                <button type="submit" class="btn btn-warning" title="Enviar para conferência.">
+                    <i class="fas fa-user-check"></i> Pedido Pago
+                </button>
+            </form>
+          @endif
+    @endif
+
     <a href="{{ route('pedidos.index') }}" class="btn btn-secondary no-print"><i class="fas fa-chevron-left"></i> Voltar</a>
 
 </div>
