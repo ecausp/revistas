@@ -11,8 +11,18 @@ class Pago extends StatusPedido
         return 'Pago';
     }
 
+    public function icon(): string
+    {
+        return 'fas fa-hand-holding-usd text-info border border-info rounded-pill p-2';
+    }
+
+    public function icon_style(): string
+    {
+        return 'font-size: 1rem; width: 32px; height: 32px';
+    }
+
     public function color(): string
     {
-        return 'red';
+        return 'info';
     }
 }
