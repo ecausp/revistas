@@ -147,3 +147,7 @@ Route::post('/pedidos/{pedido}/execucao', [PedidoController::class, 'paraExecuca
 Route::post('/pedidos/{pedido}/conferencia', [PedidoController::class, 'paraConferencia'])
     ->name('pedidos.conferencia');
 
+# 5 - envia o pedido para o status pago
+Route::post('/pedidos/{pedido}/pago', [PedidoController::class, 'pedidoPago'])
+    ->name('pedidos.pago');
+
