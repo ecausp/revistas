@@ -2,18 +2,18 @@
 
 namespace App\States;
 
-# se aprovado: envia/notifica a empresa do pagamento
-class Pago extends StatusPedido
+class Concluido extends StatusPedido
 {
-    public static string $name = 'pago';
+    public static string $name = 'concluido';
+
     public function label(): string
     {
-        return 'Pago';
+        return 'Concluído';
     }
 
     public function icon(): string
     {
-        return 'fas fa-hand-holding-usd text-info border border-info rounded-pill p-2';
+        return 'fas fa-check-circle text-success border border-success rounded-pill p-2';
     }
 
     public function icon_style(): string
@@ -23,6 +23,6 @@ class Pago extends StatusPedido
 
     public function color(): string
     {
-        return 'info';
+        return 'success';
     }
 }
