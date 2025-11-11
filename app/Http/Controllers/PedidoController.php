@@ -28,7 +28,7 @@ use App\Mail\PedidoEnviadoParaFinanceiroMail;
 use App\Mail\PedidoEnviadoParaExecucaoMail;
 use App\Mail\PedidoEmConferenciaMail;
 use App\Mail\PedidoDevolvidoParaExecucaoMail;
-use App\Mail\PedidoPagoMail;
+use App\Mail\PedidoEmPagamentoMail;
 
 #states
 use App\States\EmElaboracao;
@@ -725,7 +725,7 @@ class PedidoController extends Controller
             
             $financeiros = User::role('financeiro')->get();
             foreach($financeiros as $financeiro){
-                Mail::to($financeiro->email)->send(new PedidoPagoMail($pedido));
+                Mail::to($financeiro->email)->send(new PedidoEmPagamentoMail($pedido));
             }
 
             session()->flash('success', 'Pedido enviado por e-mail para os contatos da empresa responsável.');

@@ -100,10 +100,10 @@
                 <i class="fas fa-undo-alt"></i> Devolver
             </button>
         <!-- [2] - enviar o pedido-->
-        <!-- Botão que envia o pedido para o status 'pago'-->
-            <form action="{{ route('pedidos.pago', $pedido) }}" method="POST" class="d-inline">
+        <!-- Botão que envia o pedido para o status 'em pagamento'-->
+            <form action="{{ route('pedidos.em-pagamento', $pedido) }}" method="POST" class="d-inline">
             @csrf
-                <button type="submit" class="btn btn-info" title="Enviar para pagamento.">
+                <button type="submit" class="btn btn-info" title="Enviar para Pagamento.">
                     <i class="fas fa-user-check"></i> Enviar para Pagamento
                 </button>
             </form>
