@@ -751,14 +751,6 @@ class PedidoController extends Controller
 
             $pedido->adicionarHistorico($pedido->status, 'Pedido Concluido');
             
-            $financeiros = User::role('financeiro')->get();
-            foreach($financeiros as $financeiro){
-                Mail::to($financeiro->email)->send(new PedidoPagoMail($pedido));
-            }
-
-            session()->flash('success', 'Pedido enviado por e-mail para os contatos da empresa responsável.');
-            
-
         // Redireciona conforme papel do usuário
         if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro')) {
             $pedidos = Pedido::all();

@@ -49,6 +49,7 @@
             <p class="text-muted">Nenhuma mensagem ainda.</p>
         @endforelse
     </div>
+    @if($pedido->status != 'concluido')
     <div class="card-footer">
         <form action="{{ route('chat.store', ['pedido' => $pedido->id]) }}" method="POST">
             @csrf
@@ -59,5 +60,6 @@
             <button class="btn btn-primary mt-2" type="submit">Enviar</button>
         </form>
     </div>
+    @endif
 </div>
 @endif
