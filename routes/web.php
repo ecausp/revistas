@@ -148,10 +148,13 @@ Route::post('/pedidos/{pedido}/conferencia', [PedidoController::class, 'paraConf
     ->name('pedidos.conferencia');
 
 # 6 - envia o pedido para o status pago
-Route::post('/pedidos/{pedido}/pago', [PedidoController::class, 'pedidoPago'])
+Route::post('/pedidos/{pedido}/pago', [PedidoController::class, 'paraPagamento'])
     ->name('pedidos.pago');
 
 # 7 - rejeita o pedido após conferencia e devolve para execucao
 Route::post('/pedidos/{pedido}/devolver-execucao', [PedidoController::class, 'pedidoDevolvidoExecucao'])
     ->name('pedidos.devolver-execucao');
 
+# 8 - conclui o pedido
+Route::post('/pedidos/{pedido}/concluido', [PedidoController::class, 'pedidoConcluido'])
+    ->name('pedidos.concluido');
