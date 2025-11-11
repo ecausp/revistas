@@ -22,7 +22,7 @@ class PedidoPagoMail extends Mailable
         return $this->from(
         'noreply@usp.br',
         config('mail.from.name'))->
-        subject("Pedido #{$this->pedido->id} - {$this->pedido->revista->name} - pago")
+        subject("Pedido #{$this->pedido->id} - {$this->pedido->revista->name} - Em Pagamento")
         ->view('emails.pedido_pago_mail');
     }
 }

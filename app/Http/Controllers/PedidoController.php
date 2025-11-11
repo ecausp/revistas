@@ -35,7 +35,7 @@ use App\States\EmAnaliseEmpresa;
 use App\States\EmAnaliseFinanceiro;
 use App\States\EmExecucao;
 use App\States\EmConferencia;
-use App\States\Pago;
+use App\States\EmPagamento;
 
 class PedidoController extends Controller
 {
@@ -716,7 +716,7 @@ class PedidoController extends Controller
         if(Solicitante::where('user_id', auth()->id())->exists() && $pedido->revista->id == Solicitante::where('user_id', auth()->id())->first()->revista->id)
         {
             // 1. Atualiza o status do pedido
-            $pedido->status->transitionTo(Pago::class);
+            $pedido->status->transitionTo(EmPagamento::class);
             $pedido->save();
 
 
