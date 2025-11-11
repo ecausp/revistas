@@ -13,7 +13,7 @@ class Concluido extends StatusPedido
 
     public function icon(): string
     {
-        return 'fas fa-check-circle text-success border border-success rounded-pill p-2';
+        return 'fas fa-check-circle text-primary border border-primary rounded-pill p-2';
     }
 
     public function icon_style(): string
@@ -23,6 +23,6 @@ class Concluido extends StatusPedido
 
     public function color(): string
     {
-        return 'success';
+        return 'primary';
     }
 }
