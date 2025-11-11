@@ -19,7 +19,8 @@ abstract class StatusPedido extends State
             ->allowTransition(EmAnaliseFinanceiro::class, EmExecucao::class)
             ->allowTransition(EmAnaliseFinanceiro::class, EmElaboracao::class)
             ->allowTransition(EmExecucao::class, EmConferencia::class)
-            ->allowTransition(EmConferencia::class, Pago::class)
-            ->allowTransition(EmConferencia::class, EmExecucao::class);
+            ->allowTransition(EmConferencia::class, EmPagamento::class)
+            ->allowTransition(EmConferencia::class, EmExecucao::class)
+            ->allowTransition(EmPagamento::class, Concluido::class);
     }
 }

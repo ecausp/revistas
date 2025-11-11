@@ -33,11 +33,17 @@
             'sub_label' => 'Em Conferência',
             'color' => 'warning',
         ],
-        'pago' => [
+        'em_pagamento' => [
             'label' => 'Financeiro',
             'icon' => 'fa-hand-holding-usd',
-            'sub_label' => 'Pago',
+            'sub_label' => 'Em Pagamento',
             'color' => 'info',
+        ],
+        'concluido' => [
+            'label' => 'Financeiro',
+            'icon' => 'fa-check-circle',
+            'sub_label' => 'Concluido',
+            'color' => 'success',
         ],
     ];
 

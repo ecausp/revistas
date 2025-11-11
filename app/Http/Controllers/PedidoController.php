@@ -14,6 +14,7 @@ use App\Models\Contato;
 use App\Models\User;
 use App\Models\Arquivo;
 
+use App\States\Concluido;
 use Illuminate\Support\Facades\Storage;
 
 
@@ -27,7 +28,7 @@ use App\Mail\PedidoEnviadoParaFinanceiroMail;
 use App\Mail\PedidoEnviadoParaExecucaoMail;
 use App\Mail\PedidoEmConferenciaMail;
 use App\Mail\PedidoDevolvidoParaExecucaoMail;
-use App\Mail\PedidoPagoMail;
+use App\Mail\PedidoEmPagamentoMail;
 
 #states
 use App\States\EmElaboracao;
@@ -35,7 +36,7 @@ use App\States\EmAnaliseEmpresa;
 use App\States\EmAnaliseFinanceiro;
 use App\States\EmExecucao;
 use App\States\EmConferencia;
-use App\States\Pago;
+use App\States\EmPagamento;
 
 class PedidoController extends Controller
 {
@@ -708,7 +709,7 @@ class PedidoController extends Controller
         return redirect()->route('pedidos.index');
     }
 
-    public function pedidoPago(Pedido $pedido)
+    public function paraPagamento(Pedido $pedido)
     {
         // só pode ser enviado se o usuário for:
             // a) solicitante da revista 
@@ -716,7 +717,7 @@ class PedidoController extends Controller
         if(Solicitante::where('user_id', auth()->id())->exists() && $pedido->revista->id == Solicitante::where('user_id', auth()->id())->first()->revista->id)
         {
             // 1. Atualiza o status do pedido
-            $pedido->status->transitionTo(Pago::class);
+            $pedido->status->transitionTo(EmPagamento::class);
             $pedido->save();
 
 
@@ -724,7 +725,7 @@ class PedidoController extends Controller
             
             $financeiros = User::role('financeiro')->get();
             foreach($financeiros as $financeiro){
-                Mail::to($financeiro->email)->send(new PedidoPagoMail($pedido));
+                Mail::to($financeiro->email)->send(new PedidoEmPagamentoMail($pedido));
             }
 
             session()->flash('success', 'Pedido enviado por e-mail para os contatos da empresa responsável.');
@@ -742,6 +743,33 @@ class PedidoController extends Controller
         }
     }
 
+    public function pedidoConcluido(Pedido $pedido)
+    {
+            $pedido->status->transitionTo(Concluido::class);
+            $pedido->save();
+
+
+            $pedido->adicionarHistorico($pedido->status, 'Pedido Concluido');
+            
+        // Redireciona conforme papel do usuário
+        if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro')) {
+            $pedidos = Pedido::all();
+            return view('pedidos.index', compact('pedidos'));
+        } else if(Solicitante::where('user_id', auth()->id())->exists()) {
+            $solicitante = Solicitante::where('user_id', auth()->id())->first();
+            $pedidos = Pedido::where('revista_id', $solicitante->revista_id)->get();
+            return view('pedidos.index', compact('pedidos'));
+        } else if(Contato::where('user_id', auth()->id())->first()) {
+            $contato = Contato::where('user_id', auth()->id())->first();
+            $empresa = Empresa::where('id', $contato->empresa_id)->first();
+            $servicos = $empresa->servicos->pluck('id');
+            $pedidos = Pedido::whereHas('servicos', function ($query) use ($servicos) {
+                $query->whereIn('servicos.id', $servicos);
+            })->get();
+            return view('pedidos.index', compact('pedidos'));
+        }
+
+    }
     /**
      * Retorna a coleção de Pedidos que o usuário logado tem permissão para visualizar.
      */

@@ -6,7 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class PedidoPagoMail extends Mailable
+class PedidoEmPagamentoMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -22,7 +22,7 @@ class PedidoPagoMail extends Mailable
         return $this->from(
         'noreply@usp.br',
         config('mail.from.name'))->
-        subject("Pedido #{$this->pedido->id} - {$this->pedido->revista->name} - pago")
-        ->view('emails.pedido_pago_mail');
+        subject("Pedido #{$this->pedido->id} - {$this->pedido->revista->name} - Em Pagamento")
+        ->view('emails.pedido_em_pagamento_mail');
     }
 }
