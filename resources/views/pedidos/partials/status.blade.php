@@ -39,6 +39,12 @@
             'sub_label' => 'Em Pagamento',
             'color' => 'info',
         ],
+        'concluido' => [
+            'label' => 'Financeiro',
+            'icon' => 'fa-check-circle',
+            'sub_label' => 'Concluido',
+            'color' => 'success',
+        ],
     ];
 
     $ordemStatus = array_keys($status);
