@@ -22,7 +22,7 @@ class PedidoEnviadoParaFinanceiroMail extends Mailable
         return $this->from(
         'noreply@usp.br',
         config('mail.from.name'))->
-        subject("Pedido #{$this->pedido->id} - {$this->pedido->revista->name} - recebido")
+        subject("Pedido #{$this->pedido->id} - {$this->pedido->revista->name} - Recebido para Análise do Financeiro")
         ->view('emails.pedido_enviado_para_financeiro_mail');
     }
 }

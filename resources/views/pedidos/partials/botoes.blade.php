@@ -116,7 +116,7 @@
         @if(auth()->user()->hasRole('financeiro'))
             <form action="{{ route('pedidos.concluido', $pedido) }}" method="POST" class="d-inline">
             @csrf
-                <button type="submit" class="btn btn-info" title="Concluir Pedido.">
+                <button type="submit" class="btn btn-primary" title="Concluir Pedido.">
                     <i class="fas fa-check-circle"></i> Concluido
                 </button>
             </form>

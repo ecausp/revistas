@@ -2,7 +2,7 @@
   <h1 style="color: #333; font-size: 22px; margin-bottom: 10px;">Pedido #{{ $pedido->id }}</h1>
 
   <p style="margin: 5px 0;"><strong>Revista:</strong> {{ $pedido->revista->name }}</p>
-  <p style="margin: 5px 0;"><strong>Status atual:</strong> <span style="color: #0dcaf0">{{ $pedido->status->label() }}</span>
+  <p style="margin: 5px 0;"><strong>Status atual:</strong> <span style="color: #055464ff">{{ $pedido->status->label() }}</span>
 </p>
  
 

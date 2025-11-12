@@ -21,7 +21,7 @@ class PedidoEnviadoParaExecucaoMail extends Mailable
         return $this->from(
         'noreply@usp.br',
         config('mail.from.name'))->
-        subject("Pedido #{$this->pedido->id} - {$this->pedido->revista->name} - enviado para execução")
+        subject("Pedido #{$this->pedido->id} - {$this->pedido->revista->name} - Enviado para Execução")
         ->view('emails.pedido_enviado_para_execucao_mail');
     }
 }
