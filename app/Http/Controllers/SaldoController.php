@@ -7,6 +7,11 @@ use App\Models\Revista;
 use App\Models\Saldo;
 
 use App\Models\Solicitante;
+use App\States\Concluido;
+use App\States\EmConferencia;
+use App\States\EmExecucao;
+use App\States\EmPagamento;
+
 use Illuminate\Http\Request;
 
 class SaldoController extends Controller
@@ -84,16 +89,30 @@ class SaldoController extends Controller
     public function show(Saldo $saldo)
     {
         // se o usuario logado for solicitante da empresa, pode visualizar.
-        // se não for, então redireciona.
         $id = auth()->user()->id;
         $solicitante = Solicitante::where('user_id', $id)->first();
         $revista = $saldo->revista;
 
-        if(auth()->user()->hasRole('financeiro')|| $solicitante->revista_id == $revista->id)
-        {
+        if (auth()->user()->hasRole('financeiro') || $solicitante->revista_id == $revista->id) {
+
+            // Carrega os pedidos e serviços associados
             $revista->load('pedidos.servicos');
 
-            $servicos = $revista->pedidos->flatMap(function ($pedido) {
+            // Define os estados válidos
+            $estadosValidos = [
+                EmExecucao::class,
+                EmConferencia::class,
+                EmPagamento::class,
+                Concluido::class,
+            ];
+
+            // Filtra os pedidos pelo status válido
+            $pedidosValidos = $revista->pedidos->filter(function ($pedido) use ($estadosValidos) {
+                return in_array(get_class($pedido->status), $estadosValidos);
+            });
+
+            // Mapeia apenas os serviços desses pedidos
+            $servicos = $pedidosValidos->flatMap(function ($pedido) {
                 return $pedido->servicos->map(function ($servico) use ($pedido) {
                     $servico->pedido_id = $pedido->id;
                     return $servico;
@@ -101,15 +120,10 @@ class SaldoController extends Controller
             });
 
             return view('saldos.show', compact('saldo', 'servicos'));
-    
-        }
-        else
-        {
+        } else {
             session()->flash('error', 'Usuário não autorizado a acessar esse recurso');
-        
             return redirect()->route('home');
         }
-        
     }
 
     // função para que na criação de limite pege o valor recebido da revista para a licitação e valide 
