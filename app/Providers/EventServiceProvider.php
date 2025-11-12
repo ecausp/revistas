@@ -2,7 +2,11 @@
 
 namespace App\Providers;
 
+use App\Models\Pedido;
+use App\Observers\PedidoObserver;
+
 use App\Listeners\ConcedeAdmin;
+
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -23,6 +27,10 @@ class EventServiceProvider extends ServiceProvider
         Login::class => [
             ConcedeAdmin::class,
         ],
+    ];
+
+    protected $observers = [
+        Pedido::class => [PedidoObserver::class],
     ];
 
     /**
