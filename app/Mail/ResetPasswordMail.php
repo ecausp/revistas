@@ -22,7 +22,7 @@ class ResetPasswordMail extends Mailable
         return $this->from(
         'noreply@usp.br',
         config('mail.from.name'))
-        ->subject('Pedido de redefinição de senha')
+        ->subject('Pedido de Redefinição de Senha')
         ->view('emails.reset-password')
         ->with(['resetUrl' => $this->resetUrl]);
     }

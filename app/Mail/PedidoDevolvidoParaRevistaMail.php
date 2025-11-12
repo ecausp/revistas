@@ -22,7 +22,7 @@ class PedidoDevolvidoParaRevistaMail extends Mailable
         return $this->from(
         'noreply@usp.br',
         config('mail.from.name'))->
-        subject("Pedido #{$this->pedido->id} - {$this->pedido->revista->name} - devolvido")
+        subject("Pedido #{$this->pedido->id} - {$this->pedido->revista->name} - Devolvido para Elaboração")
         ->view('emails.pedido_devolvido_para_revista_mail');
     }
 }

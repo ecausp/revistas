@@ -22,7 +22,7 @@ class PedidoEmConferenciaMail extends Mailable
         return $this->from(
         'noreply@usp.br',
         config('mail.from.name'))->
-        subject("Pedido #{$this->pedido->id} - {$this->pedido->revista->name} - recebido")
+        subject("Pedido #{$this->pedido->id} - {$this->pedido->revista->name} - Recebido para Conferência")
         ->view('emails.pedido_em_conferencia_mail');
     }
 }
