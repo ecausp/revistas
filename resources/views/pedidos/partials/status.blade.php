@@ -43,7 +43,7 @@
             'label' => 'Financeiro',
             'icon' => 'fa-check-circle',
             'sub_label' => 'Concluido',
-            'color' => 'success',
+            'color' => 'primary',
         ],
     ];
 
