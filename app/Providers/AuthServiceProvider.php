@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\Pedido;
+use App\Policies\ChatPolicy;
+
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use Spatie\Permission\Traits\HasRoles;
@@ -14,7 +17,7 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     protected $policies = [
-        // 'App\Models\Model' => 'App\Policies\ModelPolicy',
+        Pedido::class => ChatPolicy::class,
     ];
 
     /**
