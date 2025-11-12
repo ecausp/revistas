@@ -58,5 +58,8 @@ class Saldo extends Model
         
         $this->valor_contratado = $total;
         $this->save();
+
+        \Log::info("Saldo #{$this->id} atualizado: valor_contratado = {$total}");
+
     }
 }

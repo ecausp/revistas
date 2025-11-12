@@ -47,7 +47,7 @@ class Pedido extends Model
     {
         return $this->belongsToMany(Servico::class, 'pedido_servico')
                 ->using(PedidoServico::class)
-                ->withPivot('id', 'quantidade', 'num_empenho', 'data_vencimento')
+                ->withPivot('id', 'quantidade', 'num_empenho', 'data_vencimento', 'valor_unitario')
                 ->withTimestamps();
     }
 
