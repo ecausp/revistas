@@ -3,16 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 use App\Models\Empresa;
 use App\Models\Contato;
-use App\Models\User;
-
-use App\Mail\ContatoCadastradoMail;
-use Illuminate\Support\Facades\Mail;
-
-use Spatie\Permission\Models\Permission;
 
 class ContatoController extends Controller
 {
@@ -38,46 +31,15 @@ class ContatoController extends Controller
     {
 
         $this->authorize('admin-financeiro');
-        $request->validate([
+
+        $dados = $request->validate([
             'name' => 'required',
             'email' => 'required|email',
             'telefone' => 'required',
             'empresa_id' => 'required|exists:empresas,id',
         ]);
 
-        // Tenta buscar um usuário pelo email
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user) {
-            // Usuário não existe, cria novo
-            $user = new User();
-            $user->name = $request->name;
-            $user->email = $request->email;
-            $user->telefone = $request->telefone;
-            $user->codpes = 0;
-            $user->save();
-        }
-
-        $user->telefone = $request->telefone;
-
-        $user->givePermissionTo(
-            Permission::where('guard_name', User::$hierarquiaNs)->where('name', 'user')->first()
-        );
-
-        $user->givePermissionTo(['revistas.empresa']);
-        $user->save();
-       
-        // Agora cria o contato associando a empresa com o usuário
-        $contato = new Contato();
-        $contato->user_id = $user->id;
-        $contato->empresa_id = $request->empresa_id;
-
-        $contato->save();
-
-        // Notifica o contato que ele foi cadastrado
-
-        $empresa = Empresa::where('id', $contato->empresa_id)->first();
-        Mail::to($contato->user->email)->send(new ContatoCadastradoMail($empresa));
+        Contato::criarComUsuario($dados);
 
         session()->flash('success', 'Cadastrado com sucesso!');
         return redirect()->route('empresas.index');
