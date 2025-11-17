@@ -12,11 +12,11 @@ document.addEventListener('DOMContentLoaded', () => {
     alerts.forEach(alert => {
         setTimeout(() => {
             alert.classList.add('fade');
-            alert.classList.add('show'); // para animação suave se desejar
+            alert.classList.add('show');
             alert.style.transition = 'opacity 0.5s';
             alert.style.opacity = '0';
 
-            setTimeout(() => alert.remove(), 500); // remove após fade-out
+            setTimeout(() => alert.remove(), 500);
         }, 6000); // 6 segundos
     });
 
