@@ -4,7 +4,7 @@
   </div>
 @endif
 
-<script>
+{{-- <script>
 document.addEventListener('DOMContentLoaded', () => {
 
     const alerts = document.querySelectorAll('.alert');
@@ -21,4 +21,4 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 });
-</script>
+</script> --}}
