@@ -17,6 +17,7 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\SaldoController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PedidoServicoController;
+use App\Http\Controllers\AjudaController;
 
 
 use App\Models\User;
@@ -52,9 +53,10 @@ Route::prefix('pedidos')->group(function () {
 Route::get('/limites/total', [LimiteController::class, 'totalPorRevistaELicitacao'])->name('limites.total');
 
 
+Route::post('/ajuda', [AjudaController::class, 'store'])->name('ajuda.store');
+
 Route::resource('licitacoes', LicitacaoController::class)->parameters(['licitacoes' => 'licitacao']);
 Route::resource('empresas', EmpresaController::class);
-
 Route::resource('servicos', ServicoController::class);
 Route::resource('revistas', RevistaController::class);
 Route::resource('limites', LimiteController::class);
