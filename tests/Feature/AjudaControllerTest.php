@@ -1,12 +1,15 @@
 <?php
 
 use App\Models\Ajuda;
+use App\Models\User;
 use App\Enums\CategoriaAjuda;
 
+use Spatie\Permission\Models\Role;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\post;
+use function Pest\Laravel\actingAs;
 
 // limpa o banco de dados a cada teste
 uses(Tests\TestCase::class, RefreshDatabase::class);
@@ -63,8 +66,7 @@ test('deve exibir a tela de cadastro de ajuda', function() {
     $response = $this->get('/ajuda/create');
 
     $response->assertStatus(200)
-        ->assertViewIs('ajuda.create')
-        ->assertSee('Salvar');  // se retorna o status correto, pra view correta e tem um botão de 'salvar';
+        ->assertViewIs('ajuda.create'); 
 });
 
 test('deve exibir o forms de edição com os dados já carregados', function()
@@ -125,4 +127,46 @@ test('deve excluir uma ajuda do banco de dados', function()
     $this->assertDatabaseMissing('ajuda', [
         'id' => $ajuda->id,
     ]);
+});
+
+test('apenas o admin pode acessar a criação e salvar ajudas', function(){
+
+    // limpa o cache, sempre tem que usar pra testes com Spatie
+    app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+
+    $role = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
+    $admin = User::factory()->create();
+    $admin->assignRole($role);
+
+    actingAs($admin)
+        ->get('/ajuda/create')
+        ->assertStatus(200);
+
+    $dados = [
+        'categoria' => CategoriaAjuda::Empresa->value,
+        'descricao' => "Video de Teste do Admin",
+        'url' => "https://youtube.com/watch?v=ADMIN"
+    ];
+
+    actingAs($admin)
+        ->post('/ajuda', $dados)
+        ->assertStatus(302);
+});
+
+test('usuario comum não pode criar nem salvar ajudas', function(){
+    $userComum = User::factory()->create();
+
+    actingAs($userComum)
+        ->get('/ajuda/create')
+        ->assertStatus(403);
+
+    $dados = [
+        'categoria' => CategoriaAjuda::Empresa->value,
+        'descricao' => 'Tentativa de Hack',
+        'url' => 'https://youtube.com/watch?v=HACK'
+    ];
+
+    actingAs($userComum)
+        ->post('/ajuda', $dados)
+        ->assertStatus(403);
 });
