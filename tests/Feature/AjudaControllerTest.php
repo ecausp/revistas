@@ -66,3 +66,63 @@ test('deve exibir a tela de cadastro de ajuda', function() {
         ->assertViewIs('ajuda.create')
         ->assertSee('Salvar');  // se retorna o status correto, pra view correta e tem um botão de 'salvar';
 });
+
+test('deve exibir o forms de edição com os dados já carregados', function()
+{
+    $ajuda = Ajuda::create([
+        'categoria' => CategoriaAjuda::Empresa->value,
+        'descricao' => "Video Para Edição",
+        'url' => 'https://youtube.com/watch?v=TESTE123',
+    ]);
+
+    $response = $this->get("/ajuda/{$ajuda->id}/edit");
+
+    $response->assertStatus(200)
+        ->assertViewIs('ajuda.edit')
+        ->assertSee("Video Para Edição");
+});
+
+test('deve atualizar uma ajuda existente no banco de dados', function()
+{
+    $ajuda = Ajuda::create([
+        'categoria' => CategoriaAjuda::Empresa->value,
+        'descricao' => "Video Para Edição",
+        'url' => 'https://youtube.com/watch?v=TESTE123',
+    ]);
+
+    $novosDados = [
+        'categoria' => CategoriaAjuda::Financeiro->value,
+        'descricao' => 'Video Atualizado',
+        'url' => 'https://youtube.com/watch?v=NOVO123'
+    ];
+
+    $this->put("/ajuda/{$ajuda->id}", $novosDados)
+        ->assertStatus(302); // redireciona para a rota de index
+
+    $this->assertDatabaseHas('ajuda', [
+        'id' => $ajuda->id,
+        'categoria' => $novosDados['categoria'],
+        'descricao' => $novosDados['descricao'],
+        'url' => 'NOVO123',
+    ]);
+
+    $this->assertDatabaseMissing('ajuda', [ // garante que os dados antigos não existem mais
+        'descricao' => 'Video Para Edição' 
+    ]);
+});
+
+test('deve excluir uma ajuda do banco de dados', function()
+{
+    $ajuda = Ajuda::create([
+        'categoria' => CategoriaAjuda::Empresa->value,
+        'descricao' => "Video Para Exclusão",
+        'url' => 'https://youtube.com/watch?v=DELETE',
+    ]);
+
+    $this->delete("/ajuda/{$ajuda->id}")
+        ->assertStatus(302); // redireciona para a rota de index
+   
+    $this->assertDatabaseMissing('ajuda', [
+        'id' => $ajuda->id,
+    ]);
+});
