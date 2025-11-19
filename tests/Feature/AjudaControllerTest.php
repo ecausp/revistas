@@ -44,3 +44,25 @@ test('deve exibir a tela principal de ajuda', function() {
     $response->assertStatus(200)
         ->assertViewIs('ajuda.index');
 });
+
+test('deve exibir o index de ajudas com a lista de vídeos', function() {
+   Ajuda::create([
+    'categoria' => CategoriaAjuda::Empresa->value,
+    'descricao' => "Video Exclusivo de Teste",
+    'url' => 'https://youtube.com/watch?v=TESTE123',
+   ]); 
+
+   $response = $this->get('/ajuda');
+
+   $response->assertStatus(200)
+    ->assertViewHas('ajudas')
+    ->assertSee("Video Exclusivo de Teste");
+});
+
+test('deve exibir a tela de cadastro de ajuda', function() {
+    $response = $this->get('/ajuda/create');
+
+    $response->assertStatus(200)
+        ->assertViewIs('ajuda.create')
+        ->assertSee('Salvar');  // se retorna o status correto, pra view correta e tem um botão de 'salvar';
+});

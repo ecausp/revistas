@@ -54,6 +54,8 @@ Route::get('/limites/total', [LimiteController::class, 'totalPorRevistaELicitaca
 
 
 Route::post('/ajuda', [AjudaController::class, 'store'])->name('ajuda.store');
+Route::get('/ajuda', [AjudaController::class, 'index'])->name('ajuda.index');
+Route::get('/ajuda/create', [AjudaController::class, 'create'])->name('ajuda.create');
 
 Route::resource('licitacoes', LicitacaoController::class)->parameters(['licitacoes' => 'licitacao']);
 Route::resource('empresas', EmpresaController::class);

@@ -20,4 +20,14 @@ class AjudaController extends Controller
 
         return redirect('/ajudas');
     }
+
+    public function index(){
+        $ajudas = Ajuda::all();
+        return view('ajuda.index', compact('ajudas'));
+    }
+
+    public function create()
+    {
+        return view('ajuda.create');
+    }
 }
