@@ -52,11 +52,6 @@ Route::prefix('pedidos')->group(function () {
 // pra pegar, na criação de limite, os limites já cadastrados pra uma revista nessa mesma licitação
 Route::get('/limites/total', [LimiteController::class, 'totalPorRevistaELicitacao'])->name('limites.total');
 
-
-Route::post('/ajuda', [AjudaController::class, 'store'])->name('ajuda.store');
-Route::get('/ajuda', [AjudaController::class, 'index'])->name('ajuda.index');
-Route::get('/ajuda/create', [AjudaController::class, 'create'])->name('ajuda.create');
-
 Route::resource('licitacoes', LicitacaoController::class)->parameters(['licitacoes' => 'licitacao']);
 Route::resource('empresas', EmpresaController::class);
 Route::resource('servicos', ServicoController::class);
@@ -64,6 +59,7 @@ Route::resource('revistas', RevistaController::class);
 Route::resource('limites', LimiteController::class);
 Route::resource('pedidos', PedidoController::class);
 Route::resource('arquivos', ArquivoController::class);
+Route::resource('ajuda', AjudaController::class);
 
 # rotas para cadastro de saldos
 Route::get('/licitacoes/{licitacao}/saldos/create', [SaldoController::class, 'create'])

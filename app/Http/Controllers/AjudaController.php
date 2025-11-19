@@ -30,4 +30,28 @@ class AjudaController extends Controller
     {
         return view('ajuda.create');
     }
+
+    public function edit(Ajuda $ajuda)
+    {
+        return view('ajuda.edit', compact('ajuda'));
+    }
+
+    public function update(Request $request, Ajuda $ajuda)
+    {
+        $dados = $request->validate([
+            'categoria' => 'required',
+            'descricao' => 'required',
+            'url' => 'required'
+        ]);
+
+        $ajuda->update($dados);
+
+        return redirect()->route('ajuda.index');
+    }
+
+    public function destroy(Ajuda $ajuda)
+    {
+        $ajuda->delete();
+        return redirect()->route('ajuda.index');
+    }
 }
