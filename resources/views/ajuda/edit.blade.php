@@ -1,46 +1,42 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h1>Editar Ajuda</h1>
-    
-    <form action="{{ route('ajuda.update', $ajuda->id) }}" method="POST">
-        @csrf
-        @method('PUT') <div class="mb-3">
-            <label>Categoria</label>
-            <select name="categoria" class="form-control">
-                <option value="financeiro">Financeiro</option>
-                <option value="empresa">Empresa</option>
-                <option value="revista">Revista</option>
-                <option value="admin">Admin</option>
-            </select>
-        </div>
 
-        <div class="mb-3">
-            <label>Descrição</label>
-            <input type="text" name="descricao" class="form-control" value="{{ $ajuda->descricao }}">
-        </div>
 
-        <div class="mb-3">
-            <label>URL</label>
-            <input type="text" name="url" class="form-control" value="{{ $ajuda->url }}">
-        </div>
+<div class="card">
+    <div class="card-header h5">
+        Editar Ajuda "{{ $ajuda->descricao }}"
+    </div>
+    <div class="card-body">
 
-        <button type="submit" class="btn btn-primary">Atualizar (Evoluir)</button>
-    </form>
-</div>
-
-<hr>
-    
-    <div class="d-flex justify-content-between">
-        <a href="{{ route('ajuda.index') }}" class="btn btn-secondary">Voltar</a>
-
-        <form action="{{ route('ajuda.destroy', $ajuda->id) }}" method="POST" onsubmit="return confirm('Tem certeza que quer dar esse Last Hit?');">
+        @can("admin-financeiro")
+        <form action="{{ route('ajuda.update', $ajuda) }}" method="POST">
             @csrf
-            @method('DELETE') <button type="submit" class="btn btn-danger">
-                Excluir (Evanesco)
+            @method('PUT')
+            @include('ajuda.partials.forms')
+        </form>
+
+        <div class="d-flex justify-content-between align-items-center">
+        
+        <a href="{{ route('ajuda.index') }}" class="btn btn-secondary">
+            &larr; Voltar
+        </a>
+
+        <form action="{{ route('ajuda.destroy', $ajuda->id) }}" method="POST" 
+              onsubmit="return confirm('Tem certeza que deseja excluir este vídeo?');">
+            @csrf
+            @method('DELETE')
+            
+            <button type="submit" class="btn btn-danger">
+                Excluir Ajuda
             </button>
         </form>
+        
     </div>
-    
+
+</div>
+    </div>
+    @endcan
+</div>
+
 @endsection

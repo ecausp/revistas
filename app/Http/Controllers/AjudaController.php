@@ -18,7 +18,7 @@ class AjudaController extends Controller
 
         Ajuda::create($dados);
 
-        return redirect('/ajudas');
+        return redirect('/ajuda');
     }
 
     public function index(){
@@ -28,7 +28,7 @@ class AjudaController extends Controller
 
     public function create()
     {
-        return view('ajuda.create');
+        return view('ajuda.create', ['ajuda' => new Ajuda()]);
     }
 
     public function edit(Ajuda $ajuda)
