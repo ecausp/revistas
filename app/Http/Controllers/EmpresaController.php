@@ -196,6 +196,10 @@ class EmpresaController extends Controller
         
         session()->flash('danger', 'Empresa: ' . $empresa->cnpj . ' - ' . $empresa->razao_social . ' removida!');
         return redirect()->route('empresas.index');
-        }
+    }
     
+    public function empresasAjuda()
+    {
+        return view('empresas.ajuda');
+    }
 }
