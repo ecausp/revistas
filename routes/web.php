@@ -61,7 +61,6 @@ Route::middleware(['auth'])->group(function(){
     Route::resource('limites', LimiteController::class);
     Route::resource('pedidos', PedidoController::class);
     Route::resource('arquivos', ArquivoController::class);
-    Route::resource('ajuda', AjudaController::class);
 });
 
 
