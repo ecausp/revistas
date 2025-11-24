@@ -130,6 +130,7 @@ $menu = [
     ],
 ];
 
+
 $right_menu = [
     [
         'key' => 'senhaunica-socialite',
@@ -154,6 +155,7 @@ $right_menu = [
         'can' => 'badge-revista',
     ],
 
+    
     // [
     //     'text' => '<i class="fas fa-cog" aria-hidden="true"></i>',
     //     'title' => 'Configurações',
