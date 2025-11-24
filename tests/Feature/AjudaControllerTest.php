@@ -13,19 +13,6 @@ use function Pest\Laravel\actingAs;
 
 uses(Tests\TestCase::class, RefreshDatabase::class);
 
-test('consegue visualizar o index de ajudas', function() {
-   Ajuda::create([
-       'categoria' => CategoriaAjuda::Empresa->value,
-       'descricao' => "Video Exclusivo de Teste",
-       'url' => 'https://youtube.com/watch?v=TESTE123',
-   ]); 
-
-   $this->get('/ajuda')
-        ->assertStatus(200)
-        ->assertViewIs('ajuda.index')
-        ->assertSee("Video Exclusivo de Teste");
-});
-
 test('admin consegue visualizar o formulário de criação', function() {
     $admin = criarAdmin();
 
@@ -211,13 +198,52 @@ test('usuario comum não pode deletar uma ajuda', function(){
     assertDatabaseHas('ajuda', ['id' => $ajuda->id]);
 });
 
+test('visitante (não logado) é redirecionado para login ao tentar acessar ajuda', function () {
+
+    $this->get('/ajuda')
+         ->assertStatus(302)
+         ->assertRedirect('/login_empresa');
+         
+    
+    $ajuda = Ajuda::create(['categoria' => 'empresa', 'descricao' => 'Teste', 'url' => 'URL']);
+    $this->get("/ajuda/{$ajuda->id}")
+         ->assertStatus(302)
+         ->assertRedirect('/login_empresa');
+});
+
+test('qualquer usuário logado consegue visualizar o index e os vídeos', function () {
+    app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+    Permission::firstOrCreate(['name' => 'admin', 'guard_name' => 'senhaunica']);
+    
+    $user = User::create([
+        'name' => 'User Comum',
+        'email' => 'u@t.com',
+        'password' => bcrypt('123'),
+        'codpes' => '123',
+        'telefone' => '123'
+    ]);
+
+    Ajuda::create(['categoria' => CategoriaAjuda::Revista->value, 'descricao' => 'Vídeo Revista', 'url' => 'A']);
+    Ajuda::create(['categoria' => CategoriaAjuda::Empresa->value, 'descricao' => 'Vídeo Empresa', 'url' => 'B']);
+
+    actingAs($user)
+        ->get('/ajuda')
+        ->assertStatus(200)
+        ->assertSee('Vídeo Revista')
+        ->assertSee('Vídeo Empresa');
+
+    $ajuda = Ajuda::first();
+    actingAs($user)
+        ->get("/ajuda/{$ajuda->id}")
+        ->assertStatus(200)
+        ->assertSee($ajuda->descricao);
+});
 
 // ==========================================
 // HELPERS
 // ==========================================
 
 function criarAdmin() {
-    // 1. Permission (Para o Tema USP)
     $permission = Permission::firstOrCreate([
         'name' => 'admin', 
         'guard_name' => 'senhaunica'

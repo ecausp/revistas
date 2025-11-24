@@ -31,6 +31,10 @@ class AjudaController extends Controller
         return view('ajuda.index', compact('ajudas'));
     }
 
+    public function show(Ajuda $ajuda){
+        return view('ajuda.show', compact('ajuda'));
+    }
+
     public function create()
     {
         if (!auth()->user()->hasRole('admin')) {
