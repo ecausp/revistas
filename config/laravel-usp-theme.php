@@ -133,6 +133,11 @@ $menu = [
 
 $right_menu = [
     [
+        'text' => '<i class="fas fa-question-circle" aria-hidden="true"></i> Ajuda',
+        'url' => 'ajuda',
+        'can' => 'logado'
+    ],
+    [
         'key' => 'senhaunica-socialite',
     ],
     [
