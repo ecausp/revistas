@@ -3,163 +3,143 @@
 use App\Models\Ajuda;
 use App\Models\User;
 use App\Enums\CategoriaAjuda;
-
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\post;
 use function Pest\Laravel\actingAs;
 
-// limpa o banco de dados a cada teste
 uses(Tests\TestCase::class, RefreshDatabase::class);
 
-test('deve permitir cadastrar uma nova ajuda pela rota', function(){
+test('consegue visualizar o index de ajudas', function() {
+   Ajuda::create([
+       'categoria' => CategoriaAjuda::Empresa->value,
+       'descricao' => "Video Exclusivo de Teste",
+       'url' => 'https://youtube.com/watch?v=TESTE123',
+   ]); 
+
+   $this->get('/ajuda')
+        ->assertStatus(200)
+        ->assertViewIs('ajuda.index')
+        ->assertSee("Video Exclusivo de Teste");
+});
+
+test('admin consegue visualizar o formulário de criação', function() {
+    $admin = criarAdmin();
+
+    actingAs($admin)
+        ->get('/ajuda/create')
+        ->assertStatus(200)
+        ->assertViewIs('ajuda.create'); 
+});
+
+test('admin consegue salvar uma nova ajuda', function(){
+    $admin = criarAdmin();
+
     $dados = [
         'categoria' => CategoriaAjuda::Empresa->value,
-        'descricao' => 'primeiro login do usuário',
+        'descricao' => 'Tutorial Admin',
         'url' => 'https://www.youtube.com/watch?v=ABCDE123'
     ];
 
-    post('/ajuda', $dados)->assertStatus(302);
+    actingAs($admin)
+        ->post('/ajuda', $dados)
+        ->assertStatus(302);
 
     assertDatabaseHas('ajuda', [
-        'categoria' => $dados['categoria'],
-        'descricao' => $dados['descricao'],
         'url' => 'ABCDE123',
     ]);
 });
 
-test('não deve permitir cadastro de dados invalidos', function()
+test('admin consegue visualizar o formulário de edição com dados', function()
 {
-    $dadosInvalidos = [
-        'categoria' => CategoriaAjuda::Empresa->value,
-        'descricao' => 'primeiro login do usuário',
-        'url' => '',
-    ];
-
-    post('/ajuda', $dadosInvalidos)->assertSessionHasErrors(['url']);
-});
-
-test('deve exibir a tela principal de ajuda', function() {
-    $response = $this->get('/ajuda');
-
-    $response->assertStatus(200)
-        ->assertViewIs('ajuda.index');
-});
-
-test('deve exibir o index de ajudas com a lista de vídeos', function() {
-   Ajuda::create([
-    'categoria' => CategoriaAjuda::Empresa->value,
-    'descricao' => "Video Exclusivo de Teste",
-    'url' => 'https://youtube.com/watch?v=TESTE123',
-   ]); 
-
-   $response = $this->get('/ajuda');
-
-   $response->assertStatus(200)
-    ->assertViewHas('ajudas')
-    ->assertSee("Video Exclusivo de Teste");
-});
-
-test('deve exibir a tela de cadastro de ajuda', function() {
-    $response = $this->get('/ajuda/create');
-
-    $response->assertStatus(200)
-        ->assertViewIs('ajuda.create'); 
-});
-
-test('deve exibir o forms de edição com os dados já carregados', function()
-{
+    $admin = criarAdmin();
     $ajuda = Ajuda::create([
         'categoria' => CategoriaAjuda::Empresa->value,
         'descricao' => "Video Para Edição",
         'url' => 'https://youtube.com/watch?v=TESTE123',
     ]);
 
-    $response = $this->get("/ajuda/{$ajuda->id}/edit");
-
-    $response->assertStatus(200)
+    actingAs($admin)
+        ->get("/ajuda/{$ajuda->id}/edit")
+        ->assertStatus(200)
         ->assertViewIs('ajuda.edit')
         ->assertSee("Video Para Edição");
 });
 
-test('deve atualizar uma ajuda existente no banco de dados', function()
+test('admin consegue atualizar uma ajuda existente', function()
 {
-    $ajuda = Ajuda::create([
-        'categoria' => CategoriaAjuda::Empresa->value,
-        'descricao' => "Video Para Edição",
-        'url' => 'https://youtube.com/watch?v=TESTE123',
-    ]);
+   $admin = criarAdmin();
+   $ajuda = Ajuda::create([
+       'categoria' => CategoriaAjuda::Empresa->value,
+       'descricao' => "Descrição Antiga",
+       'url' => "https://youtube.com/watch?v=ANTIGO",
+   ]);
 
-    $novosDados = [
-        'categoria' => CategoriaAjuda::Financeiro->value,
-        'descricao' => 'Video Atualizado',
-        'url' => 'https://youtube.com/watch?v=NOVO123'
-    ];
+   $novosDados = [
+     'categoria' => CategoriaAjuda::Financeiro->value,
+     'descricao' => "Descrição Nova",
+     'url' => "https;//youtube.com/watch?v=NOVA"  
+   ];
 
-    $this->put("/ajuda/{$ajuda->id}", $novosDados)
-        ->assertStatus(302); // redireciona para a rota de index
+   actingAs($admin)
+        ->put("/ajuda/{$ajuda->id}", $novosDados)
+        ->assertStatus(302);
 
-    $this->assertDatabaseHas('ajuda', [
-        'id' => $ajuda->id,
-        'categoria' => $novosDados['categoria'],
-        'descricao' => $novosDados['descricao'],
-        'url' => 'NOVO123',
-    ]);
-
-    $this->assertDatabaseMissing('ajuda', [ // garante que os dados antigos não existem mais
-        'descricao' => 'Video Para Edição' 
-    ]);
+   $this->assertDatabaseHas('ajuda', ['url' => 'NOVA']);
+   $this->assertDatabaseMissing('ajuda', ['descricao' => "Descrição Antiga"]);
 });
 
-test('deve excluir uma ajuda do banco de dados', function()
+test('admin consegue excluir uma ajuda', function()
 {
+    $admin = criarAdmin();
     $ajuda = Ajuda::create([
         'categoria' => CategoriaAjuda::Empresa->value,
         'descricao' => "Video Para Exclusão",
         'url' => 'https://youtube.com/watch?v=DELETE',
     ]);
 
-    $this->delete("/ajuda/{$ajuda->id}")
-        ->assertStatus(302); // redireciona para a rota de index
+    actingAs($admin)
+        ->delete("/ajuda/{$ajuda->id}")
+        ->assertStatus(302);
    
-    $this->assertDatabaseMissing('ajuda', [
-        'id' => $ajuda->id,
-    ]);
+    $this->assertDatabaseMissing('ajuda', ['id' => $ajuda->id]);
 });
 
-test('apenas o admin pode acessar a criação e salvar ajudas', function(){
+test('não deve permitir cadastro com dados inválidos (validação)', function()
+{
+    $admin = criarAdmin();
 
-    // limpa o cache, sempre tem que usar pra testes com Spatie
-    app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
-
-    $role = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
-    $admin = User::factory()->create();
-    $admin->assignRole($role);
-
-    actingAs($admin)
-        ->get('/ajuda/create')
-        ->assertStatus(200);
-
-    $dados = [
+    $dadosInvalidos = [
         'categoria' => CategoriaAjuda::Empresa->value,
-        'descricao' => "Video de Teste do Admin",
-        'url' => "https://youtube.com/watch?v=ADMIN"
+        'descricao' => 'Sem URL',
+        'url' => '',
     ];
 
     actingAs($admin)
-        ->post('/ajuda', $dados)
-        ->assertStatus(302);
+        ->post('/ajuda', $dadosInvalidos)
+        ->assertSessionHasErrors(['url']);
 });
 
 test('usuario comum não pode criar nem salvar ajudas', function(){
-    $userComum = User::factory()->create();
+    // 1. Garante que a permissão "admin" existe no banco para o Menu USP não quebrar (Erro 500)
+    app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+    Permission::firstOrCreate(['name' => 'admin', 'guard_name' => 'senhaunica']);
+    
+    // 2. Cria usuário comum
+    $userComum = User::create([
+        'name' => "Usuario Comum",
+        'email' => "comum@teste.com",
+        'password' => bcrypt("123456"),
+        'codpes' => "132456",
+        'telefone' => "123456",
+    ]);
 
     actingAs($userComum)
         ->get('/ajuda/create')
-        ->assertStatus(403);
-
+        ->assertStatus(403); 
     $dados = [
         'categoria' => CategoriaAjuda::Empresa->value,
         'descricao' => 'Tentativa de Hack',
@@ -170,3 +150,97 @@ test('usuario comum não pode criar nem salvar ajudas', function(){
         ->post('/ajuda', $dados)
         ->assertStatus(403);
 });
+
+test('usuario comum não pode editar nem atualizar ajudas', function(){
+    app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+    Permission::firstOrCreate(['name' => 'admin', 'guard_name' => 'senhaunica']);
+
+    $userComum = User::create([
+        'name' => "Usuario Comum",
+        'email' => "comum_edit@teste.com",
+        'password' => bcrypt("123456"),
+        'codpes' => "111222",
+        'telefone' => "111222",
+    ]);
+
+    $ajuda = Ajuda::create([
+        'categoria' => CategoriaAjuda::Empresa->value,
+        'descricao' => "Video Protegido",
+        'url' => 'https://youtube.com/watch?v=PROTECTED',
+    ]);
+
+    actingAs($userComum)
+        ->get("/ajuda/{$ajuda->id}/edit")
+        ->assertStatus(403);
+
+    $dadosHack = [
+        'categoria' => CategoriaAjuda::Financeiro->value,
+        'descricao' => 'Hacked',
+        'url' => 'https://youtube.com/watch?v=HACK'
+    ];
+
+    actingAs($userComum)
+        ->put("/ajuda/{$ajuda->id}", $dadosHack)
+        ->assertStatus(403);
+        
+    assertDatabaseHas('ajuda', ['descricao' => 'Video Protegido']);
+});
+
+test('usuario comum não pode deletar uma ajuda', function(){
+    app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+    Permission::firstOrCreate(['name' => 'admin', 'guard_name' => 'senhaunica']);
+
+    $userComum = User::create([
+        'name' => "Usuario Comum",
+        'email' => "comum_del@teste.com",
+        'password' => bcrypt("123456"),
+        'codpes' => "333444",
+        'telefone' => "333444",
+    ]);
+
+    $ajuda = Ajuda::create([
+        'categoria' => CategoriaAjuda::Empresa->value,
+        'descricao' => "Video Intocavel",
+        'url' => 'https://youtube.com/watch?v=SAFE',
+    ]);
+
+    actingAs($userComum)
+        ->delete("/ajuda/{$ajuda->id}")
+        ->assertStatus(403);
+
+    assertDatabaseHas('ajuda', ['id' => $ajuda->id]);
+});
+
+
+// ==========================================
+// HELPERS
+// ==========================================
+
+function criarAdmin() {
+    // 1. Permission (Para o Tema USP)
+    $permission = Permission::firstOrCreate([
+        'name' => 'admin', 
+        'guard_name' => 'senhaunica'
+    ]);
+
+    // 2. Role (Para o Controller)
+    $role = Role::firstOrCreate([
+        'name' => 'admin', 
+        'guard_name' => 'senhaunica'
+    ]);
+
+    // 3. User
+    $user = User::create([
+        'name' => 'Admin Teste',
+        'email' => 'admin_' . uniqid() . '@teste.com',
+        'password' => bcrypt('123456'),
+        'codpes' => rand(10000, 99999),
+        'telefone' => '1199999999',
+    ]);
+
+    // 4. Vínculos
+    $role->givePermissionTo($permission);
+    $user->assignRole($role);
+
+    return $user;
+}

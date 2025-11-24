@@ -10,12 +10,17 @@ use App\Enums\CategoriaAjuda;
 class AjudaController extends Controller
 {
     public function store(Request $request) {
+                if (!auth()->user()->hasRole('admin')) {
+            abort(403);
+        }
         $dados = $request->validate([
             'categoria' => 'required',
             'descricao' => 'required',
             'url' => 'required'
         ]);
 
+
+        
         Ajuda::create($dados);
 
         return redirect('/ajuda');
@@ -28,16 +33,28 @@ class AjudaController extends Controller
 
     public function create()
     {
+        if (!auth()->user()->hasRole('admin')) {
+            abort(403);
+        }
+        
         return view('ajuda.create', ['ajuda' => new Ajuda()]);
     }
 
     public function edit(Ajuda $ajuda)
     {
+        if (!auth()->user()->hasRole('admin')) {
+            abort(403);
+        }
+        
         return view('ajuda.edit', compact('ajuda'));
     }
 
     public function update(Request $request, Ajuda $ajuda)
     {
+        if (!auth()->user()->hasRole('admin')) {
+            abort(403);
+        }
+        
         $dados = $request->validate([
             'categoria' => 'required',
             'descricao' => 'required',
@@ -51,6 +68,10 @@ class AjudaController extends Controller
 
     public function destroy(Ajuda $ajuda)
     {
+        if (!auth()->user()->hasRole('admin')) {
+            abort(403);
+        }
+        
         $ajuda->delete();
         return redirect()->route('ajuda.index');
     }
