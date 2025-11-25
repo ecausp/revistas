@@ -26,13 +26,23 @@
                         <li>Clique no botão <span class="badge badge-primary"><i class="fas fa-paper-plane" aria-hidden="true"> </i> Enviar Link</span></li>
                         <li>Se o e-mail indicado tiver sido cadastrado como contato de alguma empresa, você deve receber um link para criar uma senha.</li>
                     </ul>
+                    <li>Você também deverá receber um e-mail com o link para definir uma senha quando seu e-mail for cadastrado como contato de uma empresa.</li>
                 </ol>
+                <div class="video-container">
+                    <div class="card-header h5 mb-3">
+                        Veja como funciona:
+                    </div>
+                    <video controls width="50%" class="rounded shadow-md">
+                        <source src="{{ asset('videos/ajuda_acesso_empresa.webm') }}" type="video/webm">
+                            Seu navegador não suporta a tag de vídeo.
+                    </video>
+                </div>
             </div>
         </div>
         
         <div class="card mb-5">
             <div class="card-header h5">
-                Visualizar Pedidos
+                Visualizar Lista de Pedidos
             </div>
             <div class="card-body">
                 <ol>
@@ -48,6 +58,26 @@
                         <li><strong>Ações:</strong> um botão que redireciona para a página individual do pedido.</li>
                     </ul>
                 </ol>
+            </div>
+        </div>
+
+        <div class="card mb-5">
+            <div class="card-header h5">
+                Visualizar um Pedido
+            </div>
+            <div class="card-body">
+                <ul>
+                    <li>Ao visualizar um pedido, você terá acesso na página às seguintes informações:</li>
+                        <ol>
+                            <li>evolução no status do pedido</li>
+                            <li>cabeçalho com as informações do pedido</li>
+                            <li>tabela com detalhes dos serviços inclusos no pedido</li>
+                            <li>tabela com os arquivos anexados ao pedido</li>
+                            <li>histórico do pedido</li>
+                            <li>mensagens do pedido</li>
+                            <li>botões de ação do pedido</li>
+                        </ol>
+                </ul>
             </div>
         </div>
 
