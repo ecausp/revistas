@@ -1,4 +1,14 @@
 <?php
+
+$submenuAjuda = [
+    [
+        'text' => '<i class="fas fa-building" aria-hidden="true"></i> Empresa',
+        'url' => 'empresas/ajuda',
+        'can' => 'logado'
+    ],
+
+];
+
 $submenuPedidos = [
     [
         'type' => 'header',
@@ -131,11 +141,12 @@ $menu = [
 ];
 
 
+
 $right_menu = [
     [
-        'text' => '<i class="fas fa-question-circle" aria-hidden="true"></i> Ajuda',
-        'url' => 'ajuda',
-        'can' => 'logado'
+        'text' => '<i class="fas fa-question-circle"></i> Ajuda',
+        'submenu' => $submenuAjuda,
+        'can' => 'logado',
     ],
     [
         'key' => 'senhaunica-socialite',

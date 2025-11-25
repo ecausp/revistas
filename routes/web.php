@@ -52,6 +52,11 @@ Route::prefix('pedidos')->group(function () {
 // pra pegar, na criação de limite, os limites já cadastrados pra uma revista nessa mesma licitação
 Route::get('/limites/total', [LimiteController::class, 'totalPorRevistaELicitacao'])->name('limites.total');
 
+// para acessar as ajudas:
+Route::middleware(['auth'])->group(function(){
+    Route::get('/empresas/ajuda', [EmpresaController::class, 'empresasAjuda'])->name('empresas.ajuda');
+});
+
 Route::resource('licitacoes', LicitacaoController::class)->parameters(['licitacoes' => 'licitacao']);
 
 Route::middleware(['auth'])->group(function(){
@@ -61,7 +66,6 @@ Route::middleware(['auth'])->group(function(){
     Route::resource('limites', LimiteController::class);
     Route::resource('pedidos', PedidoController::class);
     Route::resource('arquivos', ArquivoController::class);
-    Route::resource('ajuda', AjudaController::class);
 });
 
 
