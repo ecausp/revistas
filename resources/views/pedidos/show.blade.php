@@ -21,9 +21,16 @@
         @include('pedidos.partials.historico')
     </div>
 </div>
+
+
+<div class="mt-3 pl-3">
+    <small class="text-muted">Atualizado em {{ date_format($pedido->updated_at, 'd/m/Y H:i') }}
+    <br />por {{ $pedido->solicitante->user->name }} - {{ $pedido->solicitante->user->email }}</small>
+</div>
+
+@include('pedidos.partials.botoes')
+
 @endsection
-
-
 
 @section('javascripts_bottom')
     @parent
