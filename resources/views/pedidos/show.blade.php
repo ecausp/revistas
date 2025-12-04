@@ -16,6 +16,10 @@
         @include('pedidos.partials.cabecalho')
         <p><strong>Observações:</strong> {{ $pedido->observacoes }}</p>
 
+        <div id="tabela-servicos">
+          @include('pedidos.partials.servicos')
+        </div>
+
         @include('pedidos.partials.arquivos')
 
         @include('pedidos.partials.historico')
@@ -29,6 +33,50 @@
 </div>
 
 @include('pedidos.partials.botoes')
+
+<!-- Modal de motivo da devolução do pedido -->
+<div class="modal fade" id="modalDevolver" tabindex="-1" aria-labelledby="modalDevolverLabel" aria-hidden="true"
+        data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="card mt-4">
+
+                <div class="card-header d-flex align-items-center">
+                    <span>Motivo da Devolução</span>
+                </div>
+
+                <div class="modal-body">
+                    @php
+                    $devolucao = "";
+                    
+                    if ($pedido->status == "em_analise_empresa") {
+                        $devolucao = 'pedidos.elaboracao';
+                    }
+                    else if ($pedido->status = "em_conferencia") {
+                        $devolucao = 'pedidos.devolver-execucao';
+                    }
+
+
+                    @endphp
+                    <form id="formDevolver" action="{{ route($devolucao, $pedido) }}" method="POST">
+                    @csrf
+                        <div class="mb-3">
+                            <label for="observacao" class="form-label">Explique o motivo da devolução</label>
+                            <textarea class="form-control" id="observacao" name="observacao" rows="4" required></textarea>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-warning" title="Devolver para a revista" form="formDevolver">
+                        <i class="fas fa-undo-alt"></i> Confirmar Devolução
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 @endsection
 
