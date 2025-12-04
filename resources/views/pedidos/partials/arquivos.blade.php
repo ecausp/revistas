@@ -10,9 +10,9 @@
     <x-table-simples>
         <thead>
             <tr>
-                <th style="width: 33%;">Arquivo</th>
-                <th style="width: 33%;">Descrição</th>
-                <th style="width: 33%;">Ações</th>
+                <th>Arquivo</th>
+                <th>Descrição</th>
+                <th>Ações</th>
             </tr>
         </thead>
         <tbody>
@@ -20,7 +20,7 @@
             <tr style="font-size: .85em">
                 <td>{{ $arquivo->nome }}</td>
                 <td>{{ $arquivo->descricao }}</td>
-                <td class="d-flex gap-2">
+                <td>
                     <a href="{{ asset('storage/' . $arquivo->caminho) }}" target="_blank"
                         style="width: 30px; height: 30px;"
                         class="btn btn-primary btn-sm d-inline-flex align-items-center justify-content-center"> 

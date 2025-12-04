@@ -11,6 +11,13 @@
     </div>
 
     <div class="card-body">
+        @include('pedidos.partials.status')
+        
+        @include('pedidos.partials.cabecalho')
+        <p><strong>Observações:</strong> {{ $pedido->observacoes }}</p>
+
+        @include('pedidos.partials.arquivos')
+
         @include('pedidos.partials.historico')
     </div>
 </div>
