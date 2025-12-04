@@ -23,6 +23,11 @@
         @include('pedidos.partials.arquivos')
 
         @include('pedidos.partials.historico')
+
+        <div id="chatContainer" class="no-print">
+            @include('chat.view', ['pedido' => $pedido])
+        </div>
+
     </div>
 </div>
 
