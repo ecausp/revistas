@@ -15,6 +15,7 @@
         @include('pedidos.partials.arquivos')
         
         {{-- O PARTIAL INTELIGENTE DE ARQUIVOS É INCLUÍDO AQUI. Ele contém o form#form-arquivos. --}}
+
         @include('pedidos.partials.add_arquivos', ['pedido' => $pedido]) 
         
 
@@ -52,10 +53,6 @@
 
 @section('javascripts_bottom')
 @parent
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
 
