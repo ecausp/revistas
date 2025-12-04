@@ -4,10 +4,11 @@
         <div class="d-flex align-items-center">
             Arquivos Anexados
         </div>
+    </div>
 <div class="card-body p-2">
-</div class="table-responsive">
-    <table class="table table-hover table-sm datatable-simples dt-fixed-header dt-paging-50 responsive no-footer table-striped responsive mb-0">
-        <thead class="table-light">
+</div>
+    <x-table-simples>
+        <thead>
             <tr>
                 <th style="width: 33%;">Arquivo</th>
                 <th style="width: 33%;">Descrição</th>
@@ -50,7 +51,7 @@
             </tr>
             @endforeach
         </tbody>
-    </table>
-</div>
+    </x-table-simples>
+
 </div>
 @endif

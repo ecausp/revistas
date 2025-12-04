@@ -40,7 +40,7 @@
 
         {{-- Tabela de saldos --}}
         <div class="card mt-2 mb-3">
-            <table class="table table-hover table-striped" id="tabela-saldos">
+            <x-table-simples id="tabela-saldos">
                 <thead>
                     <tr>
                         <th class="text-center">Revista</th>
@@ -76,7 +76,7 @@
                     </tr>
                 @endforeach
                 </tbody>
-            </table>
+            </x-table-simples>
         </div>
 
         <div class="container mt-3 col">

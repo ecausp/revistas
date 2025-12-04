@@ -25,8 +25,8 @@
                         </div>
 
                         <p>Preencha o número do empenho para cada serviço antes de enviar:</p>
-                        <div class="table-responsive">
-                            <table class="table table-hover datatable-simples dt-fixed-header dt-paging-50 responsive no-footer table-striped responsive mb-0">
+                        <div>
+                            <x-table>
                                 <thead>
                                     <tr>
                                         <th style="width: 15%;">Empresa</th>
@@ -72,7 +72,7 @@
                                         <td>&nbsp;</td>
                                     </tr>
                                 </tfoot>
-                            </table>
+                            </x-table>
                         </div>
                     </form>
                 </div>

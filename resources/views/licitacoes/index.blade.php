@@ -15,8 +15,7 @@
             Licitação</a>
         @endif
 
-        <table
-            class="table table-hover datatable-simples dt-fixed-header dt-paging-50 responsive no-footer table-striped responsive">
+        <x-table>
             <thead>
                 <tr>
                     <th>Descrição</th>
@@ -42,6 +41,6 @@
                 </tr>
                 @endforeach
             </tbody>
-        </table>
+        </x-table>
     </div>
     @endsection

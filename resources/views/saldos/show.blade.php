@@ -13,7 +13,7 @@
     <span><strong>Licitação: </strong></span><span>{{ $saldo->licitacao->descricao }} / {{ $saldo->licitacao->ano }}</span><br />  
     <span><strong>Revista: </strong></span><span>{{ $saldo->revista->name }}</span>
 
-    <table class="table table-hover datatable-simples dt-fixed-header dt-paging-50 responsive no-footer table-striped responsive">
+    <x-table>
         <thead>
             <tr>
                 <th>Nº do Pedido</th>
@@ -42,7 +42,7 @@
                 <th style="text-align: right;">{{ number_format($saldo->valor_contratado, 2, ',', '.') }}</th>
             </tr>
         </tfoot>
-    </table>
+    </x-table>
     
    <div class="container mt-3 col">
         <a href="{{ route('licitacoes.show', $saldo->licitacao_id) }}" class="btn btn-secondary">

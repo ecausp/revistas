@@ -1,9 +1,9 @@
 <div class="card mt-4">
-        <div class="card-header h5">
+    <div class="card-header h5">
         <div class="d-flex align-items-center" style="cursor: pointer;">
             Histórico
         </div>
-
+    </div>
 
 
     <div id="historicoPedidoCard">
@@ -11,9 +11,9 @@
             @if($historico->isEmpty())
                 <p class="text-center text-muted mb-0">Nenhum histórico registrado.</p>
             @else
-                <div class="table-responsive">
-                <table class="table table-hover table-sm datatable-simples dt-fixed-header dt-paging-50 responsive no-footer table-striped responsive mb-0">
-                        <thead class="table-light">
+                <div>
+                <x-table-simples>
+                        <thead>
                             <tr>
                                 <th style="width: 20%;">Data</th>
                                 <th style="width: 20%;">Pessoa</th>
@@ -32,9 +32,9 @@
                                 </tr>
                             @endforeach
                         </tbody>
-                    </table>
+                    </x-table-simples>
                 </div>
             @endif
         </div>
     </div>
-</div>
+
