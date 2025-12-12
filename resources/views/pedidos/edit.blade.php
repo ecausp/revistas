@@ -19,22 +19,20 @@
         @include('pedidos.partials.add_arquivos', ['pedido' => $pedido]) 
         
 
-        <div class="card mt-4 ml-2">
+
+        <div class="card mt-4 w-100">
             <div class="card-header h5">
                 Informações do Pedido
             </div>
 
-            {{-- 1. Formulário Principal para Dados e Serviços (PUT) --}}
             <form action="{{ route('pedidos.update', $pedido->id) }}" method="POST" id="form-principal">
                 @csrf
                 @method('PUT')
                 
-                {{-- CORREÇÃO CRÍTICA DE MARGEM: Adicionando padding (p-4) para evitar que o conteúdo grude nas laterais do card. --}}
                 <div class="p-4"> 
                     @include('pedidos.partials.forms')
                 </div>
                 
-                {{-- Ajustando o padding para o botão final (pt-0 para evitar padding duplo com o mt-5 do forms) --}}
                 <div class="mt-5 p-4 pt-0"> 
                     <button id="btn-salvar" type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salvar Edição</button>
 
@@ -153,7 +151,7 @@ function atualizarTabelaServicosSelecionados() {
     let somaTotal = 0;
 
     if (selecionados && selecionados.length > 0) {
-        html += '<table class="table table-hover datatable-simples dt-fixed-header dt-paging-50 responsive no-footer table-striped responsive mb-0">';
+        html += '<table class="table table-hover dt-fixed-header table-striped mb-0">';
         html += '<thead><tr><th>Empresa</th><th>Descrição</th><th>Unidade</th><th>Prazo (dias)</th><th>Quantidade Disponível</th><th>Quantidade</th><th>Valor Unitário R$</th><th>Valor Total R$</th><th></th></tr></thead><tbody>';
 
         selecionados.forEach(id => {
