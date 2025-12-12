@@ -1,7 +1,8 @@
-<!-- resources/views/pedidos/partials/modal_empenho.blade.php -->
 @if ($pedido->servicos->count() > 0)
+
+{{-- CORREÇÃO 1: data-backdrop (sem bs) para Bootstrap 4 --}}
 <div class="modal fade" id="modalAprovar" tabindex="-1" aria-labelledby="modalAprovarLabel" aria-hidden="true"
-     data-bs-backdrop="static" data-bs-keyboard="false">
+     data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content">
             <div class="card mt-4">
@@ -13,7 +14,6 @@
                 <div class="modal-body">
                     <form id="formAprovar" action="{{ route('pedidos.execucao', $pedido) }}" method="POST">
                         @csrf
-                        <!-- Campo para número da notificação de fornecimento -->
                         <div class="mb-3">
                             <label for="num_notificacao_fornecimento" class="form-label">Número da Notificação de Fornecimento</label>
                             <input type="text" 
@@ -25,8 +25,8 @@
                         </div>
 
                         <p>Preencha o número do empenho para cada serviço antes de enviar:</p>
-                        <div>
-                            <x-table>
+                        
+                            <table class="table table-striped table-hover table-bordered mb-0">
                                 <thead>
                                     <tr>
                                         <th style="width: 15%;">Empresa</th>
@@ -66,13 +66,13 @@
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                        <td colspan="5"></td>
+                                        <td colspan="4"></td>
                                         <td class="text-right"><strong>Valor total do pedido: </strong></td>
                                         <td class="text-right"><strong>{{ number_format($valorTotalPedido, 2, ',', '.') }}</strong></td>
                                         <td>&nbsp;</td>
                                     </tr>
                                 </tfoot>
-                            </x-table>
+                            </table>
                         </div>
                     </form>
                 </div>
@@ -83,7 +83,7 @@
                     </button>
                 </div>
             </div>
-        </div>
+
     </div>
 </div>
 @endif

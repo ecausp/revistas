@@ -24,9 +24,13 @@
 
         @include('pedidos.partials.historico')
 
+         @include('pedidos.partials.modal_empenho')
+         
         <div id="chatContainer" class="no-print">
             @include('chat.view', ['pedido' => $pedido])
         </div>
+
+        
 
     </div>
 </div>
@@ -82,6 +86,7 @@
         </div>
     </div>
 </div>
+
 
 @endsection
 
