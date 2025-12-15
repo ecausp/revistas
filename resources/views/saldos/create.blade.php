@@ -39,8 +39,8 @@
         </div>
 
         {{-- Tabela de saldos --}}
-        <div class="card mt-2 mb-3">
-            <x-table-simples id="tabela-saldos">
+        <div class="card mt-2 mb-3 table-responsive">
+            <table id="tabela-saldos">
                 <thead>
                     <tr>
                         <th class="text-center">Revista</th>
@@ -76,7 +76,7 @@
                     </tr>
                 @endforeach
                 </tbody>
-            </x-table-simples>
+            </table>
         </div>
 
         <div class="container mt-3 col">
