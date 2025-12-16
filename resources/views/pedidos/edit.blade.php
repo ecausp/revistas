@@ -15,25 +15,24 @@
         @include('pedidos.partials.arquivos')
         
         {{-- O PARTIAL INTELIGENTE DE ARQUIVOS É INCLUÍDO AQUI. Ele contém o form#form-arquivos. --}}
+
         @include('pedidos.partials.add_arquivos', ['pedido' => $pedido]) 
         
 
-        <div class="card mt-4 ml-2">
+
+        <div class="card mt-4 w-100">
             <div class="card-header h5">
                 Informações do Pedido
             </div>
 
-            {{-- 1. Formulário Principal para Dados e Serviços (PUT) --}}
             <form action="{{ route('pedidos.update', $pedido->id) }}" method="POST" id="form-principal">
                 @csrf
                 @method('PUT')
                 
-                {{-- CORREÇÃO CRÍTICA DE MARGEM: Adicionando padding (p-4) para evitar que o conteúdo grude nas laterais do card. --}}
                 <div class="p-4"> 
                     @include('pedidos.partials.forms')
                 </div>
                 
-                {{-- Ajustando o padding para o botão final (pt-0 para evitar padding duplo com o mt-5 do forms) --}}
                 <div class="mt-5 p-4 pt-0"> 
                     <button id="btn-salvar" type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salvar Edição</button>
 
@@ -52,10 +51,6 @@
 
 @section('javascripts_bottom')
 @parent
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
 
@@ -156,8 +151,25 @@ function atualizarTabelaServicosSelecionados() {
     let somaTotal = 0;
 
     if (selecionados && selecionados.length > 0) {
-        html += '<table class="table table-hover datatable-simples dt-fixed-header dt-paging-50 responsive no-footer table-striped responsive mb-0">';
-        html += '<thead><tr><th>Empresa</th><th>Descrição</th><th>Unidade</th><th>Prazo (dias)</th><th>Quantidade Disponível</th><th>Quantidade</th><th>Valor Unitário R$</th><th>Valor Total R$</th><th></th></tr></thead><tbody>';
+        
+        // 1. Abertura da DIV para o SCROLL LATERAL
+        html += '<div class="table-responsive">';
+        
+        // 2. Tabela Limpa (Sem datatable-simples, Sem fixed-header)
+        html += '<table class="table table-hover table-striped table-sm mb-0">';
+        
+        // Cabeçalho com white-space: nowrap
+        html += '<thead><tr>';
+        html += '<th style="white-space: nowrap;">Empresa</th>';
+        html += '<th style="white-space: nowrap;">Descrição</th>';
+        html += '<th style="white-space: nowrap;">Unidade</th>';
+        html += '<th class="text-right" style="white-space: nowrap;">Prazo (dias)</th>';
+        html += '<th class="text-right" style="white-space: nowrap;">Qtd. Disp.</th>';
+        html += '<th style="min-width: 100px;">Quantidade</th>'; // Largura fixa pro input
+        html += '<th class="text-right" style="white-space: nowrap;">Valor Unit. (R$)</th>';
+        html += '<th class="text-right" style="white-space: nowrap;">Valor Total (R$)</th>';
+        html += '<th style="width: 40px;"></th>'; // Coluna do botão excluir
+        html += '</tr></thead><tbody>';
 
         selecionados.forEach(id => {
             const option = $('#servico_id').find('option[value="' + id + '"]');
@@ -166,46 +178,62 @@ function atualizarTabelaServicosSelecionados() {
             const unidade = option.data('unidade');
             const prazo = option.data('prazo');
             const valorBr = option.attr('data-valor') || '0,00';
+            const qtdDisponivel = option.data('quantidade-disponivel') || 0; 
             const valor = parseFloat(valorBr.replace('.', '').replace(',', '.')) || 0;
 
             const quantidadePivot = parseFloat(option.data('quantidade')) || 0;
             const quantidadeInicial = quantidadePivot; 
-            
-            // LÊ A QUANTIDADE DISPONÍVEL (AGORA FORNECIDA PELO CONTROLLER)
-            const qtdDisponivel = option.data('quantidade-disponivel') || 0; 
 
             const valorTotal = quantidadeInicial * valor;
 
+            // Define cor vermelha se não tiver empresa, mas mantém o nowrap
+            const errorStyle = (empresa == "Esse serviço não está associado a nenhuma empresa!") 
+                               ? 'color: red; white-space: nowrap;' 
+                               : 'white-space: nowrap;';
+            
+            html += 
+            `<tr data-id="${id}">
+                <td style="${errorStyle}">${empresa}</td>
+                <td style="white-space: nowrap;">${descricao}</td>
+                <td style="white-space: nowrap;">${unidade}</td>
+                <td class="text-right">${prazo}</td>
+                <td class="text-right">${formatarMilharesInteiro(qtdDisponivel)}</td> 
+                <td>
+                    <input type="text" name="quantidades[${id}]" 
+                           class="form-control quantidade-input milhares-mask p-1 text-center" 
+                           value="${formatarMilhares(quantidadeInicial)}" 
+                           data-id="${id}" 
+                           style="min-width: 80px;" />
+                    <div class="quantidade-erro text-danger small mt-1" data-id="${id}" style="display:none;"></div> 
+                </td>
 
-            html += `<tr data-id="${id}">
-                        <td>${empresa}</td>
-                        <td>${descricao}</td>
-                        <td>${unidade}</td>
-                        <td class="text-right">${prazo}</td>
-                        <td class="text-right">${formatarMilharesInteiro(qtdDisponivel)}</td> <td>
-                            <input type="text" name="quantidades[${id}]" class="form-control quantidade-input milhares-mask" value="${formatarMilhares(quantidadeInicial)}" data-id="${id}" />
-                            <div class="quantidade-erro text-danger small mt-1" data-id="${id}" style="display:none;"></div>
-                        </td>
-                        <td class="text-right"> ${formatarValorBrasileiro(valor)}</td>
-                        <td class="valor-total text-right" data-id="${id}">${formatarValorBrasileiro(valorTotal)}</td>
-                        <td class="text-center">
-                            <button type="button" class="btn btn-sm btn-danger remover-servico" data-id="${id}"><i class="fa fa-times" aria-hidden="true"></i></button>
-                        </td>
-                    </tr>`;
-
+                <td class="text-right" style="white-space: nowrap;">${formatarValorBrasileiro(valor)}</td>
+                <td class="valor-total text-right" data-id="${id}" style="white-space: nowrap;">${formatarValorBrasileiro(valorTotal)}</td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-sm btn-danger remover-servico" data-id="${id}">
+                        <i class="fa fa-times" aria-hidden="true"></i>
+                    </button>
+                </td>
+            </tr>`;
+            
             somaTotal += valorTotal;
         });
 
+        // Linha de total
         html += `<tr style="background-color: #f8f9fa;">
-                    <td colspan="6"></td>
-                    <td class="text-right"><strong>Total do Pedido</strong></td>
-                    <td id="soma-total" class="text-right" style="font-weight: bold;">${formatarValorBrasileiro(somaTotal)}</td>
+                    <td colspan="6"></td> 
+                    <td style="white-space: nowrap;"><strong>Total do Pedido</strong></td>
+                    <td id="soma-total" class="text-right" style="font-weight: bold; white-space: nowrap;">${formatarValorBrasileiro(somaTotal)}</td>
                     <td></td>
                  </tr>`;
 
         html += '</tbody></table>';
+        
+        // 4. Fechamento da DIV
+        html += '</div>';
+
     } else {
-        html = '<p>Nenhum serviço selecionado.</p>';
+        html = '<p class="text-center text-muted p-3">Nenhum serviço selecionado.</p>';
     }
 
     $('#tabela-servicos-selecionados').html(html);
@@ -215,7 +243,6 @@ function atualizarTabelaServicosSelecionados() {
         reverse: true
     });
 }
-
 // Quando altera a quantidade manualmente (ADICIONADA VALIDAÇÃO DE LIMITE)
 $(document).on('input', '.quantidade-input', function() {
     let somaTotal = 0;

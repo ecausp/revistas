@@ -12,8 +12,8 @@
         <p><strong>Ano:</strong> {{ $licitacao->ano }}</p>
         <p><strong>Valor Total (R$):</strong> {{ number_format($licitacao->valor_total, 2, ',', '.') }}</p>
 
-        @include('licitacoes.partials.empresas')
         @include('licitacoes.partials.saldos')
+        @include('licitacoes.partials.empresas')
         @include('partials.editor')
 
         <div class="container mt-5 col">
@@ -31,9 +31,4 @@
 
     </div>
 </div>
-@endsection
-
-@section('javascripts_bottom')
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
 @endsection

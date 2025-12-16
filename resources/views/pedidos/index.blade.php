@@ -14,8 +14,7 @@
         @can("acesso-revista")
         <a href="{{ route('pedidos.create') }}" class="btn btn-primary mb-3"><i class="fas fa-plus"></i> Pedido</a>
         @endcan
-        <table
-            class="table table-hover datatable-simples dt-fixed-header dt-paging-50 responsive no-footer table-striped responsive">
+        <x-table>
             <thead>
                 <tr>
                     <th>Nº do Pedido</th>
@@ -50,6 +49,6 @@
                 </tr>
                 @endforeach
             </tbody>
-        </table>
+        </x-table>
     </div>
     @endsection

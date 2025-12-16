@@ -39,8 +39,8 @@
         </div>
 
         {{-- Tabela de saldos --}}
-        <div class="card mt-2 mb-3">
-            <table class="table table-hover table-striped" id="tabela-saldos">
+        <div class="card mt-2 mb-3 table-responsive">
+            <table id="tabela-saldos">
                 <thead>
                     <tr>
                         <th class="text-center">Revista</th>
