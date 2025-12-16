@@ -39,7 +39,6 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
@@ -156,11 +155,25 @@ function atualizarTabelaServicosSelecionados() {
     let somaTotal = 0;
 
     if (selecionados && selecionados.length > 0) {
-        html += '<table class="table table-hover datatable-simples dt-fixed-header dt-paging-50 responsive no-footer table-striped responsive mb-0">';
         
-        // ORDEM DAS COLUNAS
-        html +=
-            '<thead><tr><th>Empresa</th><th>Descrição</th><th>Unidade</th><th>Prazo (dias)</th><th>Quantidade Disponível</th><th>Quantidade</th><th>Valor Unitário (R$)</th><th>Valor Total (R$)</th><th></th></tr></thead><tbody>';
+        // 1. Abertura da DIV que cria o SCROLL LATERAL
+        html += '<div class="table-responsive">';
+        
+        // 2. Tabela Limpa (Sem datatable-simples)
+        html += '<table class="table table-hover table-striped table-sm mb-0">';
+        
+        // Cabeçalho com white-space: nowrap para não quebrar linha
+        html += '<thead><tr>';
+        html += '<th style="white-space: nowrap;">Empresa</th>';
+        html += '<th style="white-space: nowrap;">Descrição</th>';
+        html += '<th style="white-space: nowrap;">Unidade</th>';
+        html += '<th class="text-right" style="white-space: nowrap;">Prazo (dias)</th>';
+        html += '<th class="text-right" style="white-space: nowrap;">Qtd. Disp.</th>';
+        html += '<th style="min-width: 100px;">Quantidade</th>'; // Largura mínima para o input
+        html += '<th class="text-right" style="white-space: nowrap;">Valor Unit. (R$)</th>';
+        html += '<th class="text-right" style="white-space: nowrap;">Valor Total (R$)</th>';
+        html += '<th style="width: 50px;"></th>'; // Coluna do botão
+        html += '</tr></thead><tbody>';
 
         selecionados.forEach(id => {
             const option = $('#servico_id').find('option[value="' + id + '"]');
@@ -170,24 +183,24 @@ function atualizarTabelaServicosSelecionados() {
             const prazo = option.data('prazo');
             const valorBr = option.attr('data-valor') || '0,00';
             const qtdDisponivel = option.data('quantidade-disponivel') || 0; 
-
             const valor = parseFloat(valorBr.replace('.', '').replace(',', '.')) || 0;
 
-            const errorClass = (empresa == "Esse serviço não está associado a nenhuma empresa!") ? 'style="color: red;"' : '';
+            const errorClass = (empresa == "Esse serviço não está associado a nenhuma empresa!") ? 'style="color: red; white-space: nowrap;"' : 'style="white-space: nowrap;"';
             
             html += 
             `<tr data-id="${id}">
                 <td ${errorClass}>${empresa}</td>
-                <td>${descricao}</td>
-                <td>${unidade}</td>
+                <td style="white-space: nowrap;">${descricao}</td>
+                <td style="white-space: nowrap;">${unidade}</td>
                 <td class="text-right">${prazo}</td>
                 <td class="text-right">${formatarMilharesInteiro(qtdDisponivel)}</td> 
                 <td>
-                    <input type="text" name="quantidades[${id}]" class="form-control quantidade-input milhares-mask" data-id="${id}" />
-                    <div class="quantidade-erro text-danger small mt-1" data-id="${id}" style="display:none;"></div> </td>
+                    <input type="text" name="quantidades[${id}]" class="form-control quantidade-input milhares-mask" data-id="${id}" style="min-width: 80px;" />
+                    <div class="quantidade-erro text-danger small mt-1" data-id="${id}" style="display:none;"></div> 
+                </td>
 
-                <td class="text-right">${valor.toFixed(2).replace('.', ',')}</td>
-                <td class="valor-total text-right" data-id="${id}">0,00</td>
+                <td class="text-right" style="white-space: nowrap;">${valor.toFixed(2).replace('.', ',')}</td>
+                <td class="valor-total text-right" data-id="${id}" style="white-space: nowrap;">0,00</td>
                 <td class="text-center">
                     <button type="button" class="btn btn-sm btn-danger remover-servico" data-id="${id}"><i class="fa fa-times" aria-hidden="true"></i></button>
                 </td>
@@ -197,12 +210,13 @@ function atualizarTabelaServicosSelecionados() {
         // Linha de total
         html += `<tr style="background-color: #f8f9fa;">
                     <td colspan="6"></td> 
-                    <td><strong>Total do Pedido</strong></td>
-                    <td id="soma-total" class="text-right" style="font-weight: bold;">0,00</td>
+                    <td style="white-space: nowrap;"><strong>Total do Pedido</strong></td>
+                    <td id="soma-total" class="text-right" style="font-weight: bold; white-space: nowrap;">0,00</td>
                     <td></td>
                  </tr>`;
 
         html += '</tbody></table>';
+        html += '</div>'; // Fecha a div table-responsive
     } else {
         html = '<p>Nenhum serviço selecionado.</p>';
     }
@@ -210,10 +224,7 @@ function atualizarTabelaServicosSelecionados() {
     $('#tabela-servicos-selecionados').html(html);
 
     // Reaplicar máscaras
-    $('.milhares-mask').mask('000.000.000.000.000', {
-    reverse: true
-    });
-    
+    $('.milhares-mask').mask('000.000.000.000.000', { reverse: true });
 }
 
 
