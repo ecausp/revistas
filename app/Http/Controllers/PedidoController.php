@@ -80,6 +80,11 @@ class PedidoController extends Controller
         \UspTheme::activeUrl('pedidos/create');
         $anoAtual = date('Y');
         $licitacao = Licitacao::where('ano', $anoAtual)->first();
+
+        // por hora a solução é essa, já que só há uma licitação por ano, então, caso não ache do ano atual, pega a do ano anterior.
+        if (!$licitacao) {
+            $licitacao = Licitacao::where('ano', ($anoAtual - 1))->first();    
+        }
         
         // 3. Busca de Dados
         // Pega a revista que ele faz parte
