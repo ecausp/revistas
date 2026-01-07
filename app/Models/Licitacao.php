@@ -18,6 +18,7 @@ class Licitacao extends Model
         'descricao',
         'ano',
         'editor',
+        'valor_total',
     ];
 
     public function empresas()
