@@ -17,8 +17,6 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\SaldoController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PedidoServicoController;
-use App\Http\Controllers\AjudaController;
-
 
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -48,6 +46,8 @@ Route::prefix('pedidos')->group(function () {
     Route::get('/servicos-execucao', [PedidoServicoController::class, 'index'])->name('servicos-execucao.index');
 });
 
+// para associar empresas a uma licitacao
+Route::post('/licitacoes/{licitacao}/empresas', [LicitacaoController::class, 'addEmpresas'])->name('licitacoes.addEmpresas');
 
 // pra pegar, na criação de limite, os limites já cadastrados pra uma revista nessa mesma licitação
 Route::get('/limites/total', [LimiteController::class, 'totalPorRevistaELicitacao'])->name('limites.total');

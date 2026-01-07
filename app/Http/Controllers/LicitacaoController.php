@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Licitacao;
-use App\Models\Revista;
+use App\Models\Empresa;
 use App\Models\User;
 use App\Models\Solicitante;
 use App\Models\Saldo;
@@ -55,8 +55,8 @@ class LicitacaoController extends Controller
         \UspTheme::activeUrl('licitacoes');
 
         $licitacoes = Licitacao::orderBy('ano', 'desc')->orderBy('descricao')->get();
-
-        return view('licitacoes.index', compact('licitacoes'));
+        $empresas = Empresa::get();
+        return view('licitacoes.index', compact('licitacoes', 'empresas'));
     }
 
     // Exibir os detalhes de uma licitação
@@ -123,4 +123,22 @@ class LicitacaoController extends Controller
         session()->flash('danger', 'Licitação: ' . $licitacao->descricao . ' - ' . $licitacao->ano . ' removida!');
         return redirect()->route('licitacoes.index');
     }
+
+    public function addEmpresas(Request $request, Licitacao $licitacao)
+    {
+        // Validação básica
+        $request->validate([
+            'empresas' => 'required|array',          // deve ser um array
+            'empresas.*' => 'exists:empresas,id',    // cada ID precisa existir na tabela empresas
+        ]);
+
+        // Vincula as empresas selecionadas à licitação
+        // syncWithoutDetaching evita remover empresas já vinculadas
+        $licitacao->empresas()->syncWithoutDetaching($request->empresas);
+
+        // Redireciona de volta com mensagem de sucesso
+        session()->flash('success', 'Atualizado com sucesso!');
+        return redirect()->route('licitacoes.index');
+    }
+
 }
