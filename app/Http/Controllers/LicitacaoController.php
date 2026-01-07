@@ -34,16 +34,13 @@ class LicitacaoController extends Controller
             'ano' => 'required|digits:4',
             'valor_total' => 'required|numeric',
         ]);
-
-        $licitacao = new Licitacao();
-        $licitacao = [
+ 
+        Licitacao::create([
             'editor' => $request->user()->id,
-            "descricao" => $request->descricao,
-            "ano" => $request->ano,
-            "valor_total" => $request->valor_total,
-        ];
-
-        Licitacao::create($licitacao);
+            'descricao' => $request->descricao,
+            'ano' => $request->ano,
+            'valor_total' => $request->valor_total,
+        ]);
 
         session()->flash('success', 'Cadastrado com sucesso!');
         return redirect()->route('licitacoes.index');
@@ -63,7 +60,8 @@ class LicitacaoController extends Controller
     public function show(Licitacao $licitacao)
     {
         $saldos = NULL;
-        $editor = User::where('id', $licitacao->editor)->first();
+        $editor = User::find($licitacao->editor);
+
         $updated_at = $licitacao->updated_at;
         if(auth()->user()->hasRole(roles: 'financeiro'))
         {
@@ -101,14 +99,13 @@ class LicitacaoController extends Controller
             'valor_total' => 'required|numeric',
         ]);
 
-        $licitacao_editada = [
+        $licitacao->update([
             'editor' => $request->user()->id,
-            "descricao" => $request->descricao,
-            "ano" => $request->ano,
-            "valor_total" => $request->valor_total,
-        ];
-        
-        $licitacao->update($licitacao_editada);
+            'descricao' => $request->descricao,
+            'ano' => $request->ano,
+            'valor_total' => $request->valor_total,
+        ]);
+
 
         session()->flash('success', 'Atualizado com sucesso!');
         return redirect()->route('licitacoes.index');
