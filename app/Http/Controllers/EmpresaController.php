@@ -7,8 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Empresa;
 use App\Models\Contato;
 use App\Models\User;
-use App\Models\EmpresaLicitacao;
-use App\Models\Licitacao;
+use App\Models\EmpresaLicitacaoServico;
+use App\Models\Servico;
 
 class EmpresaController extends Controller
 {
@@ -161,4 +161,70 @@ class EmpresaController extends Controller
     {
         return view('empresas.ajuda');
     }
+
+    public function relacionarLicitacoesServicos(Empresa $empresa)
+    {
+        $this->authorize("admin-financeiro");
+
+        // 1) Pega todas as licitações associadas à empresa
+        $licitacoes_associadas = $empresa->licitacoes()->orderBy('ano', 'desc')->orderBy('descricao')->get();
+
+        // 2) Pega todos os serviços cadastrados no sistema
+        $todos_servicos = Servico::orderBy('descricao')->get();
+
+        // 3) Pega todos os serviços já associados à empresa e a cada licitação
+        $servicos_associados = EmpresaLicitacaoServico::where('empresa_id', $empresa->id)
+            ->whereIn('licitacao_id', $licitacoes_associadas->pluck('id')) // filtra apenas licitações da empresa
+            ->with('servico') // carrega os dados do serviço relacionado
+            ->get();
+
+        // 4) Monta um array organizado por licitação para a view
+        $servicos_para_view = [];
+        foreach ($servicos_associados as $els) {
+            $servicos_para_view[$els->licitacao_id][] = [
+                'id' => $els->servico->id,
+                'descricao' => $els->servico->descricao,
+                'valor_unitario' => $els->valor_unitario,
+                'prazo' => $els->prazo,
+            ];
+        }
+
+        return view('empresas.relacionar-licitacoes-servicos', compact(
+            'empresa','licitacoes_associadas','todos_servicos', 'servicos_para_view'));
+    }
+
+    public function salvarRelacionamento(Request $request, Empresa $empresa)
+    {
+        $this->authorize("admin-financeiro");
+
+        // Validação básica
+        $request->validate([
+            'licitacao_id' => 'required|exists:licitacoes,id',
+            'servicos' => 'required|array',
+            'servicos.*.id' => 'required|exists:servicos,id',
+            'servicos.*.valor_unitario' => 'required|numeric',
+            'servicos.*.prazo' => 'required|integer',
+        ]);
+
+        $licitacao_id = $request->licitacao_id;
+        $servicos = $request->servicos;
+
+        foreach ($servicos as $servico_data) {
+            EmpresaLicitacaoServico::updateOrCreate(
+                [
+                    'empresa_id' => $empresa->id,
+                    'licitacao_id' => $licitacao_id,
+                    'servico_id' => $servico_data['id'],
+                ],
+                [
+                    'valor_unitario' => $servico_data['valor_unitario'],
+                    'prazo' => $servico_data['prazo'],
+                ]
+            );
+        }
+
+        session()->flash('success', 'Relacionamentos salvos com sucesso!');
+        return redirect()->route('empresas.index');
+    }
+
 }

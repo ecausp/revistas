@@ -31,6 +31,8 @@
                         @if(auth()->user()->hasRole('admin') || auth()->user()->hasRole('financeiro'))
                         <a href="{{ route('empresas.edit', $empresa) }}" class="btn btn-primary"><i
                                 class="fas fa-edit"></i></a>
+                        <a href="{{ route('empresas.relacionar-licitacoes-servicos', $empresa) }}" title="Associar Serviços" class="btn btn-primary"><i
+                                class="fas fa-plus"></i></a>
                         @endif
                     </td>
                 </tr>

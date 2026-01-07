@@ -49,6 +49,16 @@ Route::prefix('pedidos')->group(function () {
 // para associar empresas a uma licitacao
 Route::post('/licitacoes/{licitacao}/empresas', [LicitacaoController::class, 'addEmpresas'])->name('licitacoes.addEmpresas');
 
+// para associar licitação e serviço a uma empresa:
+Route::get('/empresas/{empresa}/relacionar-licitacoes-servicos', [EmpresaController::class, 'relacionarLicitacoesServicos'])
+    ->name('empresas.relacionar-licitacoes-servicos')->middleware('auth');
+    
+// Rota para salvar relacionamento empresa -> licitação -> serviços
+Route::post('/empresas/{empresa}/relacionar-licitacoes-servicos', [EmpresaController::class, 'salvarRelacionamento'])
+    ->name('empresas.salvar-relacionamento')
+    ->middleware('auth');
+
+
 // pra pegar, na criação de limite, os limites já cadastrados pra uma revista nessa mesma licitação
 Route::get('/limites/total', [LimiteController::class, 'totalPorRevistaELicitacao'])->name('limites.total');
 
