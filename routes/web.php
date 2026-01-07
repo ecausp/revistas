@@ -114,8 +114,10 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('
 Route::get('/autocomplete', [ContatoController::class, 'autocomplete'])->name('autocomplete');
 Route::get('get-user-details', [ContatoController::class, 'getUserDetails'])->name('get-user-details');
 
-// pra colocar o valor do servico no limite
-Route::get('/servicos/{id}/valor-unitario', [ServicoController::class, 'valorUnitario']);
+// para buscar a relação entre empresa, serviço e empresa na criação de limite:
+Route::get('/licitacoes-servicos/dados',[\App\Http\Controllers\LicitacaoServicoController::class, 'dadosRelacionados'])
+    ->name('licitacoes-servicos.dados');
+
 
 // pra pegar, na criação de limite, o valor total da licitacao
 Route::get('/licitacoes/{licitacao}/valor-total', function (Licitacao $licitacao) {
