@@ -3,7 +3,7 @@
 @section('content')
 <div class="card">
     <div class="card-header h5">
-        Relacionar Licitações e Serviços - Empresa: {{ $empresa->razao_social }}
+        Relacionar Licitações e Serviços para a Empresa: {{ $empresa->razao_social }}
     </div>
     <div class="card-body">
         <form action="{{ route('empresas.salvar-relacionamento', $empresa) }}" method="POST">
@@ -11,42 +11,53 @@
 
             {{-- 1) Escolher a licitação --}}
             <div class="mb-4">
-                <label for="licitacao_id" class="form-label"><strong>1) Escolha a licitação</strong></label>
-                <select name="licitacao_id" id="licitacao_id" class="form-select" required>
-                    <option value="">-- Selecione --</option>
-                    @foreach($licitacoes_associadas as $licitacao)
-                        <option value="{{ $licitacao->id }}">{{ $licitacao->descricao }} ({{ $licitacao->ano }})</option>
-                    @endforeach
-                </select>
+                <div class="card">
+                    <div class="card-header h6">1) Selecione a Licitação:</div>
+                    <div class="card-body">
+                        <select name="licitacao_id" id="licitacao_id" class="form-select" required>
+                            <option value="">-- Selecione --</option>
+                            @foreach($licitacoes_associadas as $licitacao)
+                                <option value="{{ $licitacao->id }}">{{ $licitacao->descricao }} ({{ $licitacao->ano }})</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
             </div>
 
             {{-- 2) Selecionar serviços --}}
             <div class="mb-4">
-                <label for="servicos" class="form-label"><strong>2) Selecione os serviços</strong></label>
-                <select name="servicos[]" id="servicos" class="form-select" multiple>
-                    @foreach($todos_servicos as $servico)
-                        @php
-                            // verifica se este serviço já está associado à licitação e empresa
-                            $selected = false;
-                            foreach($servicos_para_view as $servicos_por_licitacao){
-                                foreach($servicos_por_licitacao as $s){
-                                    if($s['id'] == $servico->id){
-                                        $selected = true;
-                                        break 2;
+                <div class="card">
+                    <div class="card-header h6">2) Selecione os Serviços:</div>
+                    <div class="card-body">
+                        <select name="servicos[]" id="servicos" class="form-select" multiple>
+                        @foreach($todos_servicos as $servico)
+                            @php
+                                // verifica se este serviço já está associado à licitação e empresa
+                                $selected = false;
+                                foreach($servicos_para_view as $servicos_por_licitacao){
+                                    foreach($servicos_por_licitacao as $s){
+                                        if($s['id'] == $servico->id){
+                                            $selected = true;
+                                            break 2;
+                                        }
                                     }
                                 }
-                            }
-                        @endphp
-                        <option value="{{ $servico->id }}" {{ $selected ? 'selected' : '' }}>
-                            {{ $servico->descricao }}
-                        </option>
-                    @endforeach
-                </select>
+                            @endphp
+                            <option value="{{ $servico->id }}" {{ $selected ? 'selected' : '' }}>
+                                {{ $servico->descricao }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
             </div>
 
             {{-- Tabela de serviços selecionados --}}
+            <div class="card">
+                <div class="card-header h6">3) Preencha os Detalhes:</div>
+                    <div class="card-body">
             <div id="tabela-servicos-container" class="mb-4">
-                <table class="table table-bordered">
+                <x-table-simples>
                     <thead>
                         <tr>
                             <th>Descrição</th>
@@ -57,7 +68,7 @@
                     <tbody id="tabela-servicos-body">
                         {{-- Linhas serão preenchidas via JS --}}
                     </tbody>
-                </table>
+                </x-table-simples>
             </div>
 
             <button type="submit" class="btn btn-primary">Salvar Relacionamento</button>
@@ -65,6 +76,9 @@
     </div>
 </div>
 @endsection
+
+
+
 
 @section('styles')
 @parent

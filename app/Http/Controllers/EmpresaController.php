@@ -195,36 +195,54 @@ class EmpresaController extends Controller
 
     public function salvarRelacionamento(Request $request, Empresa $empresa)
     {
-        $this->authorize("admin-financeiro");
+        $this->authorize('admin-financeiro');
 
-        // Validação básica
-        $request->validate([
-            'licitacao_id' => 'required|exists:licitacoes,id',
-            'servicos' => 'required|array',
-            'servicos.*.id' => 'required|exists:servicos,id',
-            'servicos.*.valor_unitario' => 'required|numeric',
-            'servicos.*.prazo' => 'required|integer',
-        ]);
+        // Converte valores monetários do formato brasileiro
+        $servicos = $request->input('servicos', []);
 
-        $licitacao_id = $request->licitacao_id;
-        $servicos = $request->servicos;
-
-        foreach ($servicos as $servico_data) {
-            EmpresaLicitacaoServico::updateOrCreate(
-                [
-                    'empresa_id' => $empresa->id,
-                    'licitacao_id' => $licitacao_id,
-                    'servico_id' => $servico_data['id'],
-                ],
-                [
-                    'valor_unitario' => $servico_data['valor_unitario'],
-                    'prazo' => $servico_data['prazo'],
-                ]
-            );
+        foreach ($servicos as $i => $servico) {
+            if (isset($servico['valor_unitario'])) {
+                $servicos[$i]['valor_unitario'] = str_replace(
+                    ',',
+                    '.',
+                    str_replace('.', '', $servico['valor_unitario'])
+                );
+            }
         }
 
-        session()->flash('success', 'Relacionamentos salvos com sucesso!');
-        return redirect()->route('empresas.index');
+        // Reinsere os dados tratados no request
+        $request->merge([
+            'servicos' => $servicos
+        ]);
+
+        $request->validate([
+            'licitacao_id' => 'required|exists:licitacoes,id',
+            'servicos' => 'required|array|min:1',
+            'servicos.*.id' => 'required|exists:servicos,id',
+            'servicos.*.valor_unitario' => 'required|numeric|min:0',
+            'servicos.*.prazo' => 'required|integer|min:0',
+        ]);
+
+        $licitacaoId = $request->licitacao_id;
+
+        EmpresaLicitacaoServico::where('empresa_id', $empresa->id)
+            ->where('licitacao_id', $licitacaoId)
+            ->delete();
+
+        foreach ($request->servicos as $servico) {
+            EmpresaLicitacaoServico::create([
+                'empresa_id' => $empresa->id,
+                'licitacao_id' => $licitacaoId,
+                'servico_id' => $servico['id'],
+                'valor_unitario' => $servico['valor_unitario'],
+                'prazo' => $servico['prazo'],
+            ]);
+        }
+        
+        session()->flash('success', 'Relacionamento entre empresa, licitação e serviços salvo com sucesso.');
+
+        return redirect()->route('empresas.show', $empresa);
     }
+
 
 }
