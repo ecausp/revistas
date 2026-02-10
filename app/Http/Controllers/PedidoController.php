@@ -297,24 +297,23 @@ class PedidoController extends Controller
         $licitacao = $pedido->licitacao;
         $revista = $pedido->revista;
         
-        // Carregar a relação 'arquivos' (necessário para o partial de arquivos existentes)
+        // Carregar a relação 'arquivos'
         $pedido->load('arquivos'); 
 
-        // 3. Lógica para obter Serviços com Limite (Reutilizando getServicosComLimites)
-        
-        // Recria o formato $servicosComLimite para o forms genérico
+        // 3. Lógica para obter Serviços com Limite
         $servicosComLimite = $this->getServicosComLimites($revista, $licitacao);
         
-        // Carrega as empresas para que o forms possa ler data-empresa (necessário fazer a eager load aqui)
-        // Isso é necessário porque getServicosComLimites não carrega empresas, mas sim limites.
+        // --- REMOVIDO: O bloco que causava o erro "undefined relationship [empresas]" ---
+        // A view agora busca a empresa via DB::table, então não precisamos carregar aqui.
+        /*
         $servicosComLimite->each(function ($item) {
              $item->servico->load('empresas');
         });
+        */
 
-        // 5. Retorna a view, passando o pedido, o solicitante (para o forms) e os serviços no formato correto.
+        // 5. Retorna a view
         return view('pedidos.edit', compact('pedido', 'solicitante', 'servicosComLimite'));
     }
-
     /**
      * Update the specified resource in storage.
      */
@@ -324,10 +323,9 @@ class PedidoController extends Controller
         $request->validate([
             'servicos' => 'array',
             'quantidades' => 'array',
-            // Arquivos e descrições não devem estar aqui, pois são submetidos via storeArquivo
         ]);
         
-        // Autorização (reforçar)
+        // Autorização
         $user = auth()->user();
         $solicitante = Solicitante::where('user_id', $user->id)->first();
 
@@ -347,11 +345,17 @@ class PedidoController extends Controller
         $syncData = [];
 
         foreach ($request->servicos ?? [] as $id) {
-            // Adicionando o valor unitário ao sync (melhor prática)
-            $servico = Servico::find($id);
+            $qtd = $request->quantidades[$id] ?? 1;
+
+            // --- Busca o valor na tabela tripla ---
+            $valorAcordado = \DB::table('empresa_licitacao_servico')
+                ->where('licitacao_id', $pedido->licitacao_id)
+                ->where('servico_id', $id)
+                ->value('valor_unitario');
+
             $syncData[$id] = [
-                'quantidade' => $request->quantidades[$id] ?? 1,
-                'valor_unitario' => $servico ? $servico->valor_unitario : 0, 
+                'quantidade' => $qtd,
+                'valor_unitario' => $valorAcordado ?? 0.00, 
             ];
         }
 
@@ -401,11 +405,18 @@ class PedidoController extends Controller
         // Atualiza os serviços com as quantidades no relacionamento many-to-many (pivot)
         $syncData = [];
         foreach ($servicos as $servicoId) {
-            // Adicionando o valor unitário ao sync (melhor prática)
-            $servico = Servico::find($servicoId);
+            
+            $qtd = $quantidades[$servicoId] ?? 1;
+
+            // --- CORREÇÃO: Busca o valor na tabela tripla ---
+            $valorAcordado = \DB::table('empresa_licitacao_servico')
+                ->where('licitacao_id', $pedido->licitacao_id)
+                ->where('servico_id', $servicoId)
+                ->value('valor_unitario');
+
             $syncData[$servicoId] = [
-                'quantidade' => $quantidades[$servicoId] ?? 1,
-                'valor_unitario' => $servico ? $servico->valor_unitario : 0,
+                'quantidade' => $qtd,
+                'valor_unitario' => $valorAcordado ?? 0.00,
             ];
         }
 
@@ -889,19 +900,22 @@ private function getPedidosDoUsuario()
      */
     private function syncServicosDoPedido(Pedido $pedido, array $validated): void
     {
-        $servicosSelecionados = Servico::whereIn('id', $validated['servicos'])->get()->keyBy('id');
         $dadosParaSync = [];
         
         foreach ($validated['servicos'] as $servicoId) {
-            $servico = $servicosSelecionados->get($servicoId);
             $qtd = $validated['quantidades'][$servicoId] ?? 1;
 
-            if ($servico) {
-                $dadosParaSync[$servicoId] = [
-                    'quantidade' => $qtd,
-                    'valor_unitario' => $servico->valor_unitario,
-                ];
-            }
+            // --- Busca o valor na tabela tripla ---
+            $valor = \DB::table('empresa_licitacao_servico')
+                ->where('licitacao_id', $pedido->licitacao_id)
+                ->where('servico_id', $servicoId)
+                ->value('valor_unitario');
+            
+
+            $dadosParaSync[$servicoId] = [
+                'quantidade' => $qtd,
+                'valor_unitario' => $valor,
+            ];
         }
 
         $pedido->servicos()->sync($dadosParaSync);

@@ -7,46 +7,78 @@
             @php
                 $currentPedido = $pedido ?? null; 
                 $loopServices = $servicosComLimite ?? $servicos;
+                
+                // 1. Descobre qual é a Licitação atual
+                $idLicitacaoAtual = $currentPedido->licitacao_id ?? ($licitacao->id ?? null);
+
+                // 2. BUSCA DADOS COMPLETOS DA RELAÇÃO (Empresa + Valor + Prazo)
+                $mapaDados = collect([]); 
+                
+                if ($idLicitacaoAtual) {
+                    $mapaDados = \DB::table('empresa_licitacao_servico')
+                        ->join('empresas', 'empresa_licitacao_servico.empresa_id', '=', 'empresas.id')
+                        ->where('licitacao_id', $idLicitacaoAtual)
+                        ->select(
+                            'empresa_licitacao_servico.servico_id',
+                            'empresa_licitacao_servico.valor_unitario', 
+                            'empresa_licitacao_servico.prazo',
+                            'empresas.razao_social'
+                        )
+                        ->get()
+                        ->keyBy('servico_id');
+                }
             @endphp
             
             @foreach ($loopServices as $item)
             @php
-                // Acessa o objeto Servico
+                // Normaliza o objeto
                 $servico = $item->servico ?? $item;
 
-                // Prazo
-                $prazo = $servico->prazo ?? '';
+                // Tenta pegar os dados da relação (Tabela Tripla)
+                $dadosRelacao = $mapaDados->get($servico->id);
 
-                // Lê a quantidade atual APENAS se o $currentPedido existir.
-                $quantidadeAtual = ($currentPedido && $currentPedido->servicos) 
-                                   ? ($currentPedido->servicos->find($servico->id)?->pivot->quantidade ?? 0) 
-                                   : 0;
+                // 1. Empresa
+                $nomeEmpresa = $dadosRelacao->razao_social ?? "Esse serviço não está associado a nenhuma empresa nesta licitação!";
                 
-                // Na Criação, o limite é lido do $item. Na Edição, este campo será vazio.
+                // 2. Valor Unitário
+                $valorUnitarioRaw = $dadosRelacao->valor_unitario ?? ($servico->valor_unitario ?? 0);
+                
+                // 3. Prazo
+                $prazo = $dadosRelacao->prazo ?? ($servico->prazo ?? '');
+
+                // Quantidade Atual (Edição)
+                $quantidadeAtual = 0;
+                if ($currentPedido && $currentPedido->servicos) {
+                    $itemNoPedido = $currentPedido->servicos->firstWhere('id', $servico->id);
+                    if ($itemNoPedido && $itemNoPedido->pivot) {
+                        $quantidadeAtual = $itemNoPedido->pivot->quantidade;
+                    }
+                }
+                
+                // Quantidade Disponível (Criação)
                 $quantidadeDisponivel = $item->quantidade_disponivel ?? ''; 
 
-                // Lógica de Empresa (Consistente)
-                $dataEmpresa = $servico->empresas->first()->razao_social ?? "Esse serviço não está associado a nenhuma empresa!";
-
+                // Selected
+                $isSelected = ($currentPedido && $currentPedido->servicos->contains('id', $servico->id));
             @endphp
 
             <option 
                 value="{{ $servico->id }}" 
-                data-empresa="{{ $dataEmpresa }}"
-                data-descricao="{{ $servico->descricao }}" 
+                
+                {{-- Dados vindos da tabela tripla --}}
+                data-empresa="{{ $nomeEmpresa }}"
+                data-valor="{{ number_format($valorUnitarioRaw, 2, ',', '.') }}"
                 data-prazo="{{ $prazo }}"
+
+                data-descricao="{{ $servico->descricao }}" 
                 data-unidade="{{ $servico->unidade_medida }}"
-                data-valor="{{ number_format($servico->valor_unitario, 2, ',', '.') }}"
                 
-                {{-- Data-attribute específico para a tela de Criação para validação de limite --}}
+                {{-- Data-attributes condicionais --}}
                 @if($quantidadeDisponivel) data-quantidade-disponivel="{{ $quantidadeDisponivel }}" @endif
-                
-                {{-- Data-attribute específico para a tela de Edição para carregar o valor salvo --}}
                 @if($quantidadeAtual) data-quantidade="{{ $quantidadeAtual }}" @endif 
                 
-                {{-- Seleciona na Edição (Verifica se $currentPedido existe antes de usar contains) --}}
-                @if ($currentPedido && $currentPedido->servicos->contains($servico->id)) selected @endif>
-                
+                @if ($isSelected) selected @endif
+            >
                 {{ $servico->descricao }} - {{ $servico->unidade_medida }}
             </option>
             @endforeach
@@ -56,20 +88,17 @@
     {{-- Tabela onde os inputs de quantidade são renderizados --}}
     <div id="tabela-servicos-selecionados" class="mt-3"></div>
 
-    {{-- Aviso de Irregularidade (Mesmo ID em ambas as telas) --}}
+    {{-- Aviso de Irregularidade --}}
     <div id="aviso-irregular" class="alert alert-danger mt-2" style="display:none;">
         Não foi possível cadastrar o pedido. Há um serviço sem empresa associada. Entre em contato com o setor financeiro.
     </div>
 
-
-<div class="mb-1">
+    <div class="mb-1">
         <label for="observacoes">Observações</label>
         <textarea class="form-control" id="observacoes" name="observacoes" rows="3">{{ old('observacoes', $pedido->observacoes ?? '') }}</textarea>
     </div>
 
-    {{-- CAMPOS ESCONDIDOS: Otimizados para pegar os dados do objeto disponível --}}
     @php
-        // Define a fonte principal dos dados: Pedido (Edição) ou Solicitante (Criação)
         $source = $pedido ?? $solicitante; 
     @endphp
 
