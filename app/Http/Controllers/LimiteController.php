@@ -45,7 +45,23 @@ class LimiteController extends Controller
         
         $limites = Limite::all();
         
-        return view('limites.index', compact('limites'));
+        // para pegar qual empresa presta cada serviço na licitação específica
+        $empresas = \DB::table('empresa_licitacao_servico')
+        ->join('empresas', 'empresa_licitacao_servico.empresa_id', '=', 'empresas.id')
+        ->select(
+            'empresa_licitacao_servico.licitacao_id',
+            'empresa_licitacao_servico.servico_id',
+            'empresa_licitacao_servico.prazo',
+            'empresas.razao_social',
+            'empresas.cnpj'
+        )
+        ->get()
+        
+        ->keyBy(function ($item) {
+            return $item->licitacao_id . '-' . $item->servico_id;
+        });
+
+        return view('limites.index', compact('limites', 'empresas'));
     }
 
     public function create()

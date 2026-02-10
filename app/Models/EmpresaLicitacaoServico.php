@@ -20,6 +20,7 @@ class EmpresaLicitacaoServico extends Model
         'prazo',
     ];
 
+
     public function empresa()
     {
         return $this->belongsTo(Empresa::class);

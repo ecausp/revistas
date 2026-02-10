@@ -32,14 +32,22 @@
                     <td>{{ $limite->licitacao->descricao }}</td>
                     <td>{{ $limite->revista->name }}</td>
 
-                    @if($limite->servico->empresas()->first() != NULL)
-                    <td>{{ $limite->servico->empresas()->first()->razao_social }}</td>
-                    @else
-                    <td style="color: red;">Esse serviço não está associado a nenhuma empresa</td>
-                    @endif
+
+                    {{-- Lógica da Empresa --}}
+                @php
+                    // Monta a chave "licitacao-servico"
+                    $chave = $limite->licitacao_id . '-' . $limite->servico_id;
+                    $objetoRelacaoEmpresaServico = $empresas->get($chave);
+                @endphp
+                
+                @if($objetoRelacaoEmpresaServico)
+                    <td>{{ $objetoRelacaoEmpresaServico->razao_social }}</td>
+                @else
+                    <td style="color: red;">serviço não está associado a nenhuma empresa</td>
+                @endif
 
                     <td>{{ $limite->servico->descricao }}</td>
-                    <td class="text-right">{{ number_format($limite->servico->prazo, 0, ',', '.') }}</td>
+                    <td class="text-right">{{ number_format($objetoRelacaoEmpresaServico->prazo, 0, ',', '.') }}</td>
                     <td class="text-right">{{ number_format($limite->quantidade, 0, ',', '.') }}</td>
                     <td class="text-right">{{ number_format($limite->valor_unitario, 2, ',', '.') }}</td>
                     <td class="text-right">{{ number_format(($limite->quantidade * $limite->valor_unitario), 2, ',', '.') }} </td>

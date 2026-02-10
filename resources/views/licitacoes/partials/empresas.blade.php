@@ -72,7 +72,7 @@
                     --}}
                         <table class="table table-striped table-hover mb-0">
                             <thead>
-                                <tr>
+                                <tr>    
                                     <th>Serviço</th>
                                     <th>Unidade</th>
                                     <th class="text-right">Prazo (dias)</th>
