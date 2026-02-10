@@ -81,12 +81,14 @@
                             </thead>
                             <tbody>
                                 @foreach ($empresa->servicos as $servico)
+                                @if($servico->licitacao->id == $licitacao->id)
                                 <tr>
-                                    <td>{{ $servico->descricao }}</td>
-                                    <td>{{ $servico->unidade_medida }}</td>
+                                    <td>{{ $servico->servico->descricao }}</td>
+                                    <td>{{ $servico->servico->unidade_medida }}</td>
                                     <td class="text-right">{{ $servico->prazo }}</td>
                                     <td class="text-right">{{ number_format($servico->valor_unitario, 2, ',', '.') }}</td>
                                 </tr>
+                                @endif
                                 @endforeach
                             </tbody>
                         </table>
