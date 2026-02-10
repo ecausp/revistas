@@ -56,7 +56,7 @@ class LimiteController extends Controller
             'empresas.cnpj'
         )
         ->get()
-        
+
         ->keyBy(function ($item) {
             return $item->licitacao_id . '-' . $item->servico_id;
         });
@@ -92,8 +92,16 @@ class LimiteController extends Controller
         $this->authorize("admin-financeiro");
         $editor = User::where('id', $limite->editor)->first();
         $updated_at = $limite->updated_at;
-
-        return view('limites.show', compact('limite','editor', 'updated_at'));
+        $dadosRelacaoLimiteEmpresa = \DB::table('empresa_licitacao_servico')
+        ->join('empresas', 'empresa_licitacao_servico.empresa_id', '=', 'empresas.id')
+        ->where('licitacao_id', $limite->licitacao_id)
+        ->where('servico_id', $limite->servico_id)
+        ->select(
+            'empresas.razao_social',
+            'empresa_licitacao_servico.prazo'
+        )
+        ->first(); // Retorna um objeto ou null
+        return view('limites.show', compact('limite','editor', 'updated_at', 'dadosRelacaoLimiteEmpresa'));
     }
 
     public function edit(Limite $limite)
