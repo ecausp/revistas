@@ -25,7 +25,7 @@
                         <option value="">Selecione</option>
                         @foreach ($revistas as $revista)
                             <option value="{{ $revista->id }}">
-                                {{ $revista->descricao }}
+                                {{ $revista->name }}
                             </option>
                         @endforeach
                     </select>
