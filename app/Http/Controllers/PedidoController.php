@@ -13,6 +13,7 @@ use App\Models\Empresa;
 use App\Models\Contato;
 use App\Models\User;
 use App\Models\Arquivo;
+use App\Models\EmpresaLicitacaoServico;
 
 use App\States\Concluido;
 use Illuminate\Support\Facades\Storage;
@@ -260,9 +261,10 @@ class PedidoController extends Controller
         else if(Contato::where('user_id', auth()->id())->exists())
         {
             $servico_do_pedido = $pedido->servicos->first();
-            $empresa_do_pedido = $servico_do_pedido->empresas->pluck('id');
+            $relacao_servico_pedido = EmpresaLicitacaoServico::where('servico_id', $servico_do_pedido->id)->first();
+            $empresa_do_pedido = $relacao_servico_pedido->empresa_id;
             $empresa_do_contato = Contato::where('user_id', auth()->id())->first()->empresa_id;
-            if($empresa_do_pedido->contains($empresa_do_contato))
+            if($empresa_do_pedido == $empresa_do_contato)
             {
                 return view('pedidos.show', compact('historico','pedido', 'licitacao', 'solicitante', 'servicos', 'dados'));
             }
@@ -545,7 +547,10 @@ class PedidoController extends Controller
     {
 
         // só pode ser enviado se o usuário for contato da empresa que recebeu o pedido
-        $contatos = $pedido->servicos()->first()->empresas()->first()->contatos;
+        $relacao_servico_empresa = EmpresaLicitacaoServico::where('servico_id', $pedido->servicos()->first()->id)->first();
+        $empresa = Empresa::where('id', $relacao_servico_empresa->empresa_id)->first();
+        
+        $contatos = $empresa->contatos;
         if(Contato::where('user_id', auth()->id())->exists() && $contatos->contains('user_id', auth()->id()))
         {
             // 1. Atualiza o status do pedido
