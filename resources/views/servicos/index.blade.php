@@ -22,8 +22,8 @@
             <tbody>
                 @foreach ($servicos as $servico)
                 <tr>
-                    <td>{{ $servico->descricao }}</td>
-                    <td>{{ $servico->unidade_medida }}</td>
+                    <td>{{ $servico->servico->descricao }}</td>
+                    <td>{{ $servico->servico->unidade_medida }}</td>
                     <td>
                         <a href="{{ route('servicos.show', $servico) }}" class="btn btn-primary"><i
                                 class="fas fa-eye"></i> </a>
