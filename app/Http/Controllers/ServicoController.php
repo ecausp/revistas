@@ -6,6 +6,7 @@ use App\Models\Servico;
 use App\Models\User;
 use App\Models\Contato;
 use App\Models\Empresa;
+use App\Models\EmpresaLicitacaoServico;
 use Illuminate\Http\Request;
 
 class ServicoController extends Controller
@@ -94,8 +95,10 @@ class ServicoController extends Controller
         {
             $contato = Contato::where('user_id', auth()->id())->first();
             $empresa_do_contato = Empresa::where('id', $contato->empresa_id)->first();
-            $empresas_prestantes = $servico->empresas->pluck('id');
-            if($empresas_prestantes->contains($empresa_do_contato->id))
+            $relacaoEmpresaServico = EmpresaLicitacaoServico::where('servico_id', $servico->id)->first();
+            $empresas_prestantes = $relacaoEmpresaServico->empresa_id;
+
+            if($empresas_prestantes == $empresa_do_contato->id)
             {
                 $editor = User::where('id', $servico->editor)->first();
                 $updated_at = $servico->updated_at;
