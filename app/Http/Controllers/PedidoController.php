@@ -604,7 +604,10 @@ class PedidoController extends Controller
                 session()->flash('danger', 'Erro: serviço inválido ou não pertence a este pedido.');
                 return back();
             }
-            $pedidoServico->data_vencimento = $pedido->updated_at->addDays($pedidoServico->servico->prazo)->format('Y-m-d');
+            $relacao = EmpresaLicitacaoServico::where('id', $pedidoServico->servico_id)->first();
+            $prazo = $relacao->prazo;
+            $pedidoServico->data_vencimento = $pedido->updated_at->addDays($prazo)->format('Y-m-d');
+
             $pedidoServico->num_empenho = $numEmpenho;
             $pedidoServico->save();
         }
