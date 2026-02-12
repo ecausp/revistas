@@ -37,7 +37,7 @@ class PedidoServico extends Pivot
         $hoje = \Carbon\Carbon::today();
         $vencimento = \Carbon\Carbon::parse($this->data_vencimento)->startOfDay();
         $diasRestantes = $hoje->diffInDays($vencimento, false);
-
+        //dd($hoje, $vencimento, $diasRestantes);
         if ($diasRestantes <= 0) {
             $class = 'bg-danger text-white ml-1';
             $text = '0';
