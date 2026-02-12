@@ -223,9 +223,22 @@ class PedidoController extends Controller
         $servicos = Servico::all();
         $historico = PedidoHistorico::where('id_pedido', $pedido->id)->orderBy('created_at', 'desc')->get();
 
+        // Busca os dados complementares (Empresa, Prazo, Valor Unitário) da tabela de licitação
+        $dados = \DB::table('empresa_licitacao_servico')
+            ->join('empresas', 'empresa_licitacao_servico.empresa_id', '=', 'empresas.id')
+            ->where('licitacao_id', $pedido->licitacao_id)
+            ->select(
+                'empresa_licitacao_servico.servico_id',
+                'empresa_licitacao_servico.prazo',
+                'empresas.razao_social',
+                'empresa_licitacao_servico.valor_unitario'
+            )
+            ->get()
+            ->keyBy('servico_id');
+
         // se for admin ou financeiro pode ver sem restrição
         if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro'))
-            return view('pedidos.show', compact('historico','pedido', 'licitacao', 'solicitante', 'servicos'));
+            return view('pedidos.show', compact('historico','pedido', 'licitacao', 'solicitante', 'servicos', 'dados'));
         // Se for um solicitante de uma revista, pode visualizar os pedidos da sua revista
         else if(Solicitante::where('user_id', auth()->id())->exists())
         {
@@ -234,7 +247,7 @@ class PedidoController extends Controller
             
             if($revista_do_usuario == $revista_do_pedido)
             {
-                return view('pedidos.show', compact('historico','pedido', 'licitacao', 'solicitante', 'servicos'));
+                return view('pedidos.show', compact('historico','pedido', 'licitacao', 'solicitante', 'servicos', 'dados'));
             }        
             else
             {
@@ -251,7 +264,7 @@ class PedidoController extends Controller
             $empresa_do_contato = Contato::where('user_id', auth()->id())->first()->empresa_id;
             if($empresa_do_pedido->contains($empresa_do_contato))
             {
-                return view('pedidos.show', compact('historico','pedido', 'licitacao', 'solicitante', 'servicos'));
+                return view('pedidos.show', compact('historico','pedido', 'licitacao', 'solicitante', 'servicos', 'dados'));
             }
             else
             {
@@ -499,15 +512,16 @@ class PedidoController extends Controller
 
             $pedido->adicionarHistorico($pedido->status);
             
-            $servicos = $pedido->servicos()->pluck('servicos.id');        
-            $empresas = Empresa::whereHas('servicos', function ($query) use ($servicos) {
-                    $query->whereIn('servicos.id', $servicos);})->get();
-            $empresas->load('contatos'); // faz uma única query pra todos
-            $contatos = $empresas
-                ->pluck('contatos')   // pega a coleção de contatos de cada empresa
-                ->flatten()           // junta tudo
-                ->values();           // reindexa
-        
+            $servicos = $pedido->servicos->pluck('id');        
+            $empresas = Empresa::whereIn('id', function($query) use ($pedido, $servicos) {
+                $query->select('empresa_id')
+                ->from('empresa_licitacao_servico')
+                ->where('licitacao_id', $pedido->licitacao_id)
+                ->whereIn('servico_id', $servicos);
+            })->with('contatos')->get();
+            
+            $contatos = $empresas->pluck('contatos')->flatten();
+
             foreach($contatos as $contato){
                 Mail::to($contato->user->email)->send(new PedidoEnviadoParaEmpresaMail($pedido));
             }        
@@ -563,7 +577,6 @@ class PedidoController extends Controller
         }
     }
 
-
     public function paraExecucao(Request $request, Pedido $pedido)
     {
 
@@ -613,15 +626,16 @@ class PedidoController extends Controller
         session()->flash('success', 'Pedido enviado para execução.');
 
         // 7) Notifica os contatos da empresa
-        $servicos = $pedido->servicos()->pluck('servicos.id');        
-        $empresas = Empresa::whereHas('servicos', function ($query) use ($servicos) {
-            $query->whereIn('servicos.id', $servicos);})->get();
-        $empresas->load('contatos'); // faz uma única query pra todos
-        $contatos = $empresas
-            ->pluck('contatos')   // pega a coleção de contatos de cada empresa
-            ->flatten()           // junta tudo
-            ->values();           // reindexa
-            
+        $servicos = $pedido->servicos->pluck('id');     
+        $empresas = Empresa::whereIn('id', function($query) use ($pedido, $servicos) {
+        $query->select('empresa_id')
+              ->from('empresa_licitacao_servico')
+              ->where('licitacao_id', $pedido->licitacao_id)
+              ->whereIn('servico_id', $servicos);
+    })->with('contatos')->get(); 
+
+    $contatos = $empresas->pluck('contatos')->flatten();
+
         foreach($contatos as $contato){
             Mail::to($contato->user->email)->send(new PedidoEnviadoParaExecucaoMail($pedido));
         }     
@@ -689,14 +703,18 @@ class PedidoController extends Controller
         $pedido->adicionarHistorico($pedido->status, $request->observacao);
         
         // Notifica os contatos da empresa
-        $servicos = $pedido->servicos()->pluck('servicos.id');        
-        $empresas = Empresa::whereHas('servicos', function ($query) use ($servicos) {
-            $query->whereIn('servicos.id', $servicos);})->get();
-        $empresas->load('contatos'); // faz uma única query pra todos
-        $contatos = $empresas
-            ->pluck('contatos')   // pega a coleção de contatos de cada empresa
-            ->flatten()           // junta tudo
-            ->values();           // reindexa
+    
+        $servicoIds = $pedido->servicos->pluck('id');
+
+        // 2. Busca as empresas que estão ligadas a estes serviços NESTA Licitação específica
+        $empresas = Empresa::whereIn('id', function($query) use ($pedido, $servicoIds) {
+        $query->select('empresa_id')
+              ->from('empresa_licitacao_servico')
+              ->where('licitacao_id', $pedido->licitacao_id)
+              ->whereIn('servico_id', $servicoIds);
+    })->with('contatos')->get(); 
+
+    $contatos = $empresas->pluck('contatos')->flatten();
             
         foreach($contatos as $contato){
             Mail::to($contato->user->email)->send(new PedidoDevolvidoParaExecucaoMail($pedido));
@@ -768,15 +786,18 @@ class PedidoController extends Controller
         $pedido->adicionarHistorico($pedido->status, 'Pedido Concluido');
 
         // Notifica os contatos da empresa
-        $servicos = $pedido->servicos()->pluck('servicos.id');        
-        $empresas = Empresa::whereHas('servicos', function ($query) use ($servicos) {
-            $query->whereIn('servicos.id', $servicos);})->get();
-        $empresas->load('contatos'); // faz uma única query pra todos
-        $contatos = $empresas
-            ->pluck('contatos')   // pega a coleção de contatos de cada empresa
-            ->flatten()           // junta tudo
-            ->values();           // reindexa
-            
+        // 1. Pega os IDs dos serviços deste pedido de forma simples
+        $servicoIds = $pedido->servicos->pluck('id');
+
+        // 2. Busca as empresas que estão ligadas a estes serviços NESTA Licitação específica
+        $empresas = Empresa::whereIn('id', function($query) use ($pedido, $servicoIds) {
+            $query->select('empresa_id')
+                ->from('empresa_licitacao_servico')
+                ->where('licitacao_id', $pedido->licitacao_id)
+                ->whereIn('servico_id', $servicoIds);
+        })->with('contatos')->get();
+
+        $contatos = $empresas->pluck('contatos')->flatten();
         foreach($contatos as $contato){
             Mail::to($contato->user->email)->send(new PedidoConcluidoMail($pedido));
         }     
@@ -826,18 +847,19 @@ private function getPedidosDoUsuario()
         // 3. Contato (vê pedidos com serviços da sua empresa)
         if (Contato::where('user_id', $user->id)->exists()) {
             $contato = Contato::where('user_id', $user->id)->first();
-            $empresa = Empresa::where('id', $contato->empresa_id)->first();
             
-            // Verifica se a empresa e seus serviços existem
-            if ($empresa) {
-                $servicos = $empresa->servicos->pluck('id');
-                return Pedido::whereHas('servicos', function ($query) use ($servicos) {
-                    $query->whereIn('servicos.id', $servicos);
-                })
-                ->orderBy('id', 'desc')
-                ->get();
-            }
+            // Busca IDs dos serviços que esta empresa presta (independente de licitação, para listar histórico geral)
+            $servicosDaEmpresa = \DB::table('empresa_licitacao_servico')
+                ->where('empresa_id', $contato->empresa_id)
+                ->pluck('servico_id');
+
+            return Pedido::whereHas('servicos', function ($query) use ($servicosDaEmpresa) {
+                $query->whereIn('servicos.id', $servicosDaEmpresa);
+            })
+            ->orderBy('id', 'desc')
+            ->get();
         }
+        
         
         // 4. Usuário logado sem papel relevante cadastrado
         return collect(); // Retorna uma coleção vazia
