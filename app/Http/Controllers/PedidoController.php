@@ -605,10 +605,8 @@ class PedidoController extends Controller
                 return back();
             }
             $relacao = EmpresaLicitacaoServico::where('servico_id', $pedidoServico->servico_id)->first();
-            //dd($pedidoServico->servico_id, $pedidoServico->servico, $relacao);
             $prazo = $relacao->prazo;
             $pedidoServico->data_vencimento = $pedido->updated_at->addDays($prazo)->format('Y-m-d');
-            //dd($pedidoServico->servico->descricao, $prazo, $pedidoServico->data_vencimento);
             $pedidoServico->num_empenho = $numEmpenho;
             $pedidoServico->save();
         }

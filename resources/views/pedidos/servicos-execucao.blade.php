@@ -29,7 +29,7 @@
                             {{ $ps->pedido->id }}
                         </a>
                     </td>
-                    <td>{{ $ps->servico->empresas->first()->razao_social}}</td>
+                    <td>{{ $empresa->razao_social}}</td>
                     <td>{{ $ps->servico->descricao }}</td>
                     <td>{{ $ps->num_empenho }}</td>
                     <td class="text-right">

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Solicitante;
 use App\Models\Contato;
 use App\Models\Empresa;
+use App\Models\EmpresaLicitacaoServico;
 use App\Models\PedidoServico;
 class HomeController extends Controller
 {
@@ -25,17 +26,24 @@ class HomeController extends Controller
         $contato = (($user) ? Contato::where('user_id', $user->id)->first() : null);
         if ($contato) {
             $empresa = Empresa::where('id', $contato->empresa_id)->first();
+    
             if ($empresa) {
-                $servicosIds = $empresa->servicos->pluck('id');
-                $pedidoServicos =  PedidoServico::whereHas('pedido', function ($q) {
-                        $q->where('status', 'em_execucao');
+                $pedidoServicos = PedidoServico::query()
+                    ->select('pedido_servico.*')
+                    ->join('pedidos', 'pedido_servico.pedido_id', '=', 'pedidos.id') // junta com a tabela de Pedidos para pegar a Licitação e o Status
+                    ->join('empresa_licitacao_servico', function($join) use ($empresa) {
+                        $join->on('pedidos.licitacao_id', '=', 'empresa_licitacao_servico.licitacao_id')
+                        ->on('pedido_servico.servico_id', '=', 'empresa_licitacao_servico.servico_id')
+                        ->where('empresa_licitacao_servico.empresa_id', '=', $empresa->id);
                     })
-                    ->whereIn('servico_id', $servicosIds)
-                    ->with(['pedido', 'servico.empresas'])
-                    ->get();
-            }
-            return view('pedidos.servicos-execucao', compact('pedidoServicos'));
-        }
-        return view('welcome');
+            
+            ->where('pedidos.status', 'em_execucao')
+            ->with(['pedido', 'servico'])
+            ->get();
+            
+        return view('pedidos.servicos-execucao', compact('pedidoServicos', 'empresa'));
+    }
+}
+return view('welcome');
     }
 }
