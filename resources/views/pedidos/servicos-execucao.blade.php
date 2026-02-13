@@ -9,43 +9,43 @@
         Serviços em Execução
     </div>
     <div class="card-body">
-
         <x-table>
             <thead>
                 <tr>
                     <th style="width: 10%;">Nº do Pedido</th>
-                    <th style="width: 25%;">Empresa</th> 
+                    <th style="width: 25%;">Empresa</th>
                     <th style="width: 35%;">Serviço</th>
                     <th style="width: 20%;">Num Empenho</th>
                     <th style="width: 10%;">Prazo (dias)</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach ($pedidoServicos as $ps)
+                @foreach ($listaUnificada as $item)
+                    @php
+                        $ps = $item->pedido_servico; // O objeto PedidoServico original
+                        $empresa = $item->empresa;   // O objeto com dados da Empresa (ou null)
+                    @endphp
+
                 <tr>
                     <td>
                         <a href="{{ route('pedidos.show', $ps->pedido) }}">
                             {{ $ps->pedido->id }}
                         </a>
                     </td>
-                    
+            
+                    {{-- Coluna da Empresa --}}
                     <td>
-                        @php
-                            // Cria a chave para buscar no mapa (se necessário)
-                            $chaveMap = $ps->pedido->licitacao_id . '-' . $ps->servico_id;
-                        @endphp
-
-                        @if(isset($empresa))
-                            {{-- CASO 1: Visão do Contato (Variável global única) --}}
+                        @if($empresa)
                             {{ $empresa->razao_social }}
-                        @elseif(isset($mapaEmpresas) && isset($mapaEmpresas[$chaveMap]))
-                            {{-- CASO 2: Visão do Admin (Busca no Mapa enviado pelo controller) --}}
-                            {{ $mapaEmpresas[$chaveMap] }}
+                            {{-- Você pode até colocar mais dados agora se quiser, ex: --}}
+                            {{-- <br><small>{{ $empresa->cnpj }}</small> --}}
+                        @else
+                            <span class="text-muted">Não identificada</span>
                         @endif
                     </td>
 
                     <td>{{ $ps->servico->descricao }}</td>
-                    <td>{{ $ps->num_empenho }}</td>
+                    <td>{{ $ps->num_empenho ?? '-' }}</td>
                     <td class="text-right">
                         {{ $ps->servico->prazo }} {!! $ps->diasRestantesBadge() !!}
                     </td>

@@ -7,42 +7,54 @@ use App\Models\Empresa;
 use App\Models\PedidoServico;
 use App\Models\Contato;
 use App\Models\Solicitante;
+use Illuminate\Support\Facades\DB;
 
 class PedidoServicoController extends Controller
 {
     public function index()
     {
-        // 1. Busca os itens
+        // 1. Busca os itens (PedidoServico)
         $pedidoServicos = $this->getPedidoServicosDoUsuario();
 
-        // 2. Busca o mapa de empresas correspondente a esses itens
-        $mapaEmpresas = $this->getMapaEmpresas($pedidoServicos);
+        // 2. Busca os DADOS COMPLETOS das empresas correspondentes
+        // Retorna um array onde a chave é "licitacao_id-servico_id" e o valor é o OBJETO com dados da empresa
+        $mapaEmpresas = $this->getMapaEmpresasObjetos($pedidoServicos);
 
-        // 3. Manda tudo pra view
-        return view('pedidos.servicos-execucao', compact('pedidoServicos', 'mapaEmpresas'));
+        // 3. Monta a lista unificada (ViewModel)
+        // Transformamos a coleção original numa lista padronizada para a View
+        $listaUnificada = $pedidoServicos->map(function ($item) use ($mapaEmpresas) {
+            
+            // Cria a chave única para buscar no mapa
+            $chave = $item->pedido->licitacao_id . '-' . $item->servico_id;
+            
+            // Retorna um objeto simples contendo o par Item + Empresa
+            return (object) [
+                'pedido_servico' => $item,
+                'empresa'        => $mapaEmpresas[$chave]
+            ];
+        });
+
+        // 4. Manda a lista unificada para a view
+        return view('pedidos.servicos-execucao', compact('listaUnificada'));
     }
 
-
    /**
-     * Função 1: Busca APENAS os itens (PedidoServico) baseada no papel do usuário.
-     * Retorna a coleção pura, sem inventar moda com nomes de empresa dentro.
+     * Busca APENAS os itens (PedidoServico) baseada no papel do usuário.
      */
     private function getPedidoServicosDoUsuario()
     {
         $user = auth()->user();
         
-        // Query base: Itens em execução com as relações necessárias
         $query = PedidoServico::whereHas('pedido', function ($q) {
                 $q->where('status', 'em_execucao');
             })
-            ->with(['pedido', 'servico']); // Trazemos o pedido (pra pegar licitacao_id) e servico
+            ->with(['pedido', 'servico']); 
 
         // 1. Contato (Filtra apenas serviços da sua empresa)
         if (Contato::where('user_id', $user->id)->exists()) {
             $contato = Contato::where('user_id', $user->id)->first();
             $empresaId = $contato->empresa_id;
 
-            // Faz o Join para garantir que é serviço desta empresa nesta licitação
             return $query->select('pedido_servico.*')
                 ->join('pedidos', 'pedido_servico.pedido_id', '=', 'pedidos.id')
                 ->join('empresa_licitacao_servico', function($join) use ($empresaId) {
@@ -61,34 +73,36 @@ class PedidoServicoController extends Controller
             });
         }
 
-        // 3. Admin/Financeiro (Pega tudo que sobrou da query base)
+        // 3. Admin/Financeiro (Pega tudo)
         return $query->get();
     }
 
     /**
-     * Função 2: Recebe a lista de itens e descobre quem são as empresas.
-     * Retorna um array onde a CHAVE é "licitacao_id-servico_id" e o VALOR é o "Nome da Empresa".
+     * Recebe a lista de itens e retorna OBJETOS com dados da empresa.
      */
-    private function getMapaEmpresas($pedidoServicos)
+    private function getMapaEmpresasObjetos($pedidoServicos)
     {
         if ($pedidoServicos->isEmpty()) {
             return [];
         }
 
-        // Extrai IDs únicos para a consulta ser leve
         $licitacaoIds = $pedidoServicos->pluck('pedido.licitacao_id')->unique();
         $servicoIds = $pedidoServicos->pluck('servico_id')->unique();
 
-        // Busca na tabela tripla
-        return \DB::table('empresa_licitacao_servico')
+        return DB::table('empresa_licitacao_servico')
             ->join('empresas', 'empresa_licitacao_servico.empresa_id', '=', 'empresas.id')
             ->whereIn('licitacao_id', $licitacaoIds)
             ->whereIn('servico_id', $servicoIds)
-            ->select('licitacao_id', 'servico_id', 'empresas.razao_social')
+            // Selecionamos as chaves para montar o mapa + TODOS os dados da empresa
+            ->select(
+                'empresa_licitacao_servico.licitacao_id', 
+                'empresa_licitacao_servico.servico_id', 
+                'empresas.*'
+            )
             ->get()
-            // Transforma num array associativo para busca rápida: ['5-10' => 'Empresa X']
             ->mapWithKeys(function ($item) {
-                return [$item->licitacao_id . '-' . $item->servico_id => $item->razao_social];
+                // A chave é composta, o valor é o objeto inteiro da linha (dados da empresa)
+                return [$item->licitacao_id . '-' . $item->servico_id => $item];
             });
     }
 }
