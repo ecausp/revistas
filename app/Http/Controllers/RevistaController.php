@@ -50,8 +50,8 @@ class RevistaController extends Controller
     {
         $this->authorize("admin-financeiro");
         
-        $centros_despesas = Financeiro::ListarCentrosDespesas();
-        $responsaveis_centro_despesa =  ReplicadoTemp::listarServidoresDocentes();
+        $centros_despesas = $this->listarCentrosDespesas();
+        $responsaveis_centro_despesa =  $this->listarServidoresDocentes();
         
         \UspTheme::activeUrl('revistas/create');
         return view('revistas.create', compact('centros_despesas', 'responsaveis_centro_despesa'));
@@ -128,8 +128,8 @@ class RevistaController extends Controller
         $solicitante = Solicitante::Where('user_id', $user->id)->first();
         if($user->hasAnyRole(['admin','financeiro']) || $solicitante != null && $solicitante->revista_id == $revista->id)
         {
-            $centros_despesas = Financeiro::ListarCentrosDespesas();
-            $responsaveis_centro_despesa =  ReplicadoTemp::listarServidoresDocentes();
+            $centros_despesas = $this->listarCentrosDespesas();
+            $responsaveis_centro_despesa =  $this->listarServidoresDocentes();
         
             return view('revistas.edit', compact('revista', 'centros_despesas','responsaveis_centro_despesa'));
         }
@@ -183,5 +183,16 @@ class RevistaController extends Controller
         session()->flash('danger', 'Revista: ' . $revista->name . ' removida!');
         
         return redirect()->route('revistas.index');
+    }
+
+
+    protected function listarCentrosDespesas()
+    {
+        return Financeiro::ListarCentrosDespesas();
+    }
+
+    protected function listarServidoresDocentes()
+    {
+        return ReplicadoTemp::listarServidoresDocentes();
     }
 }

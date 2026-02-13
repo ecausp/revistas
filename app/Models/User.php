@@ -53,11 +53,10 @@ class User extends Authenticatable
         // busca pelo codpes pra ver se já existe
         $user = self::where('codpes', $codpes)->first();
         
-        // pega os dados da pessoa pelo codpes do banco de Pessoas
-        $dados = Pessoa::dump($codpes);
-
-        // caso não exista, cria um novo
+        // caso não exista, busca dados e cria
         if (!$user) {
+            $dados = Pessoa::dump($codpes);
+
             $user = self::create([
                 'name' => $dados['nompesttd'],
                 'email' => Pessoa::email($codpes),

@@ -28,7 +28,7 @@
                     <td>{{ $revista->centro_despesa }}</td>
                     <td>
                         @foreach (explode(',', $revista->responsavel_centro_despesa) as $editorRevista)
-                            {{ \Uspdev\Replicado\Pessoa::dump($editorRevista)['nompesttd'] }} @if (!$loop->last) , @endif
+                            {{ \Uspdev\Replicado\Pessoa::dump($editorRevista)['nompesttd'] ?? $editorRevista }} @if (!$loop->last) , @endif
                         @endforeach
                     </td>
                     <td>
