@@ -7,11 +7,6 @@ use Illuminate\Http\Request;
 
 class LicitacaoServicoController extends Controller
 {
-    /**
-     * Retorna dados da relação licitação + serviço:
-     * - valor_unitario
-     * - empresa (razao_social)
-     */
     public function dadosRelacionados(Request $request)
     {
         $request->validate([

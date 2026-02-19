@@ -115,9 +115,10 @@ Route::get('/autocomplete', [ContatoController::class, 'autocomplete'])->name('a
 Route::get('get-user-details', [ContatoController::class, 'getUserDetails'])->name('get-user-details');
 
 // para buscar a relação entre empresa, serviço e empresa na criação de limite:
+Route::middleware(['auth'])->group(function(){
 Route::get('/licitacoes-servicos/dados',[\App\Http\Controllers\LicitacaoServicoController::class, 'dadosRelacionados'])
     ->name('licitacoes-servicos.dados');
-
+});
 
 // pra pegar, na criação de limite, o valor total da licitacao
 Route::get('/licitacoes/{licitacao}/valor-total', function (Licitacao $licitacao) {

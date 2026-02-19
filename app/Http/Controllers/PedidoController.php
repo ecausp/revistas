@@ -667,37 +667,52 @@ class PedidoController extends Controller
 
     }
 
-    public function paraConferencia(Pedido $pedido)
+   public function paraConferencia(Pedido $pedido)
     {
+        // 1. Pegamos o ID do serviço para buscar a empresa vinculada
+        $servicoId = $pedido->servicos()->first()->id;
 
-        // só pode ser enviado se o usuário for contato da empresa que recebeu o pedido
-        $contatos = $pedido->servicos()->first()->empresas()->first()->contatos;
+        // 2. Buscamos a empresa e os contatos via tabela tripla (padronizando com suas outras funções)
+        $empresa = Empresa::whereIn('id', function($query) use ($pedido, $servicoId) {
+            $query->select('empresa_id')
+                ->from('empresa_licitacao_servico')
+                ->where('licitacao_id', $pedido->licitacao_id)
+                ->where('servico_id', $servicoId);
+        })->with('contatos')->first();
+
+        $contatos = $empresa ? $empresa->contatos : collect();
+
+        // 3. Verificação de permissão: o usuário logado é um dos contatos dessa empresa?
         if(Contato::where('user_id', auth()->id())->exists() && $contatos->contains('user_id', auth()->id()))
         {
-            // 1. Atualiza o status do pedido
+            // Atualiza o status
             $pedido->status->transitionTo(EmConferencia::class);
             $pedido->save();
 
             $pedido->adicionarHistorico($pedido->status);
         
+            // Notificações
             foreach($pedido->revista->solicitantes as $solicitante){
-            Mail::to($solicitante->user->email)->send(new PedidoEmConferenciaMail($pedido));
+                Mail::to($solicitante->user->email)->send(new PedidoEmConferenciaMail($pedido));
             }      
             Mail::to($pedido->revista->email_revista)->send(new PedidoEmConferenciaMail($pedido));
 
             session()->flash('success', 'Pedido enviado por e-mail para os responsáveis da revista.');
             
-            // redireciona o usuario:
+            // Redirecionamento
             $contato = Contato::where('user_id', auth()->id())->first();
-            $empresa = Empresa::where('id', $contato->empresa_id)->first();
-            $servicos = $empresa->servicos->pluck('id');
-            $pedidos = Pedido::whereHas('servicos', function ($query) use ($servicos) {
-            $query->whereIn('servicos.id', $servicos);})->get();
+            $empresaResponsavel = Empresa::where('id', $contato->empresa_id)->first();
+            $servicosDaEmpresa = $empresaResponsavel->servicos->pluck('id');
+            
+            $pedidos = Pedido::whereHas('servicos', function ($query) use ($servicosDaEmpresa) {
+                $query->whereIn('servicos.id', $servicosDaEmpresa);
+            })->get();
+
             return view('pedidos.index', compact('pedidos'));
         }
         else
         {
-            session()->flash('danger', 'Usuário não é representante da empresa e não pode enviar pedidos para o setor financeiro.');
+            session()->flash('danger', 'Usuário não é representante da empresa responsável e não pode enviar para conferência.');
             return redirect()->route('home');
         }
     }

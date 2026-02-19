@@ -11,6 +11,7 @@ use App\Models\Servico;
 
 class EmpresaLicitacaoServico extends Model
 {
+    use HasFactory;
     protected $table = 'empresa_licitacao_servico';
     protected $fillable = [
         'empresa_id',
