@@ -14,16 +14,20 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($empresa->servicos as $servico)
-            <tr>
-                <td>{{ $servico->descricao }}</td>
-                <td class="text-right">{{ number_format($servico->valor_unitario, 2, ',', '.') }}</td>
-                <td>{{ $servico->unidade_medida }}</td>
-                <td class="text-right">{{ number_format($servico->prazo, 0, ',', '.') }}</td>
-                <td><a href="{{ route('servicos.show', $servico) }}" class="btn btn-primary"><i class="fas fa-eye"></i>
-                    </a></td>
-            </tr>
-            @endforeach
+        @foreach ($empresa->servicos as $els)
+        <tr>
+            <td>{{ $els->servico->descricao }}</td>
+            <td class="text-right">{{ number_format($els->valor_unitario, 2, ',', '.') }}</td>
+            <td>{{ $els->servico->unidade_medida }}</td>
+            <td class="text-right">{{ number_format($els->prazo, 0, ',', '.') }}</td>
+            <td>
+                <a href="{{ route('servicos.show', $els->servico) }}" class="btn btn-primary">
+                    <i class="fas fa-eye"></i>
+                </a>
+            </td>
+        </tr>
+        @endforeach
+
         </tbody>
     </x-table-simples>
 </div>

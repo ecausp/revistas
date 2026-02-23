@@ -6,6 +6,7 @@ use App\Models\Servico;
 use App\Models\User;
 use App\Models\Contato;
 use App\Models\Empresa;
+use App\Models\EmpresaLicitacaoServico;
 use Illuminate\Http\Request;
 
 class ServicoController extends Controller
@@ -19,7 +20,8 @@ class ServicoController extends Controller
         // admin e financeiro podem visualizar todos os servicos
         if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro'))
         {
-            $servicos = Servico::all();
+            $servicos = EmpresaLicitacaoServico::all();
+            //dd($servicos);
             return view('servicos.index', compact('servicos'));
         }
         // se o usuario for contato de uma empresa, só pode ver os serviços prestados pela sua empresa
@@ -28,7 +30,7 @@ class ServicoController extends Controller
             $contato = Contato::where('user_id', auth()->id())->first();
             $empresa = Empresa::where('id', $contato->empresa_id)->first();
             $servicos = $empresa->servicos;
-
+            //dd($servicos);
             return view('servicos.index', compact('servicos'));
         }
         else
@@ -65,8 +67,6 @@ class ServicoController extends Controller
         $validated = $request->validate([
             'descricao' => 'required',
             'unidade_medida' => 'required',
-            'valor_unitario' => 'required|numeric',
-            'prazo' => 'required|numeric',
         ]);
     
         // Adiciona o editor manualmente
@@ -78,8 +78,6 @@ class ServicoController extends Controller
             return response()->json([
                 'id' => $servico->id,
                 'descricao' => $servico->descricao,
-                'unidade_medida' => $servico->unidade_medida,
-                'prazo' => $servico->prazo,
             ]);
         }
         
@@ -98,8 +96,10 @@ class ServicoController extends Controller
         {
             $contato = Contato::where('user_id', auth()->id())->first();
             $empresa_do_contato = Empresa::where('id', $contato->empresa_id)->first();
-            $empresas_prestantes = $servico->empresas->pluck('id');
-            if($empresas_prestantes->contains($empresa_do_contato->id))
+            $relacaoEmpresaServico = EmpresaLicitacaoServico::where('servico_id', $servico->id)->first();
+            $empresas_prestantes = $relacaoEmpresaServico->empresa_id;
+
+            if($empresas_prestantes == $empresa_do_contato->id)
             {
                 $editor = User::where('id', $servico->editor)->first();
                 $updated_at = $servico->updated_at;
@@ -149,24 +149,18 @@ class ServicoController extends Controller
      */
     public function update(Request $request, Servico $servico)
     {
-                $this->authorize("admin-financeiro");
+        $this->authorize("admin-financeiro");
 
-        // Primeiro remove os pontos e depois troca a virgula por ponto
-        $request['valor_unitario'] = str_replace(',', '.', str_replace('.', '', $request->valor_unitario));
 
         $request->validate([
             'descricao' => 'required',
             'unidade_medida' => 'required',
-            'valor_unitario' => 'required|numeric',
-            'prazo' => 'required|numeric',
         ]);
         
         $servico_editado = [
             'editor' => $request->user()->id,
-            "descicao" => $request->descricao,
+            "descricao" => $request->descricao,
             "unidade_medida" => $request->unidade_medida,
-            "valor_unitario" => $request->valor_unitario,
-            "prazo" => $request->prazo,
         ];
         
         $servico->update($servico_editado);

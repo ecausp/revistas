@@ -73,7 +73,7 @@ class SolicitanteController extends Controller
         $revista_id = $request->query('revista_id'); // pega o id da revista enviado pelo frontend
 
         // Pega a lista de servidores do ReplicadoTemp
-        $servidores = ReplicadoTemp::listarServidoresDocentes();
+        $servidores = $this->listarServidoresDocentes();
 
         // Filtra servidores pelo nome
         $matches = array_filter($servidores, function ($pessoa) use ($nome) {
@@ -105,7 +105,10 @@ class SolicitanteController extends Controller
         return response()->json(array_values($result));
     }
 
-
+    protected function listarServidoresDocentes()
+    {
+        return ReplicadoTemp::listarServidoresDocentes();
+    }
 
 
 }

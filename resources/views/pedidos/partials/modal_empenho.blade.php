@@ -1,6 +1,6 @@
 @if ($pedido->servicos->count() > 0)
 
-{{-- CORREÇÃO 1: data-backdrop (sem bs) para Bootstrap 4 --}}
+{{-- CORREÇÃO 1: data-backdrop (sem bs) para Bootstrap 4/5 Legacy --}}
 <div class="modal fade" id="modalAprovar" tabindex="-1" aria-labelledby="modalAprovarLabel" aria-hidden="true"
      data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-xl modal-dialog-centered">
@@ -26,6 +26,7 @@
 
                         <p>Preencha o número do empenho para cada serviço antes de enviar:</p>
                         
+                        <div class="table-responsive">
                             <table class="table table-striped table-hover table-bordered mb-0">
                                 <thead>
                                     <tr>
@@ -40,28 +41,46 @@
                                 </thead>
                                 <tbody>
                                     @php
-                                    $valorTotalPedido = 0;
+                                        $valorTotalPedido = 0;
                                     @endphp
+
                                     @foreach ($pedido->servicos as $servico)
-                                    @php
-                                    $valorTotalServico = $servico->pivot->quantidade * $servico->valor_unitario;
-                                    $valorTotalPedido += $valorTotalServico;
-                                    @endphp
-                                    <tr id="servico-{{ $servico->id }}">
-                                        <td>{{ $servico->empresas->first()->razao_social }}</td>
-                                        <td>{{ $servico->descricao }}</td>
-                                        <td>{{ $servico->unidade_medida }}</td>
-                                        <td class="text-right">{{ number_format($servico->valor_unitario, 2, ',', '.') }}</td>
-                                        <td class="text-right">{{ number_format($servico->pivot->quantidade, 0, ',', '.') }}</td>
-                                        <td class="text-right">{{ number_format($valorTotalServico, 2, ',', '.') }}</td>
-                                        <td>
-                                            <input type="text" 
-                                                class="form-control" 
-                                                name="empenhos[{{ $servico->pivot->id }}]" 
-                                                value="{{ old('empenhos.' . $servico->pivot->id) }}" 
-                                                required>
-                                        </td>
-                                    </tr>
+                                        @php
+                                            // 1. Busca Empresa no Mapa (Enviado pelo Controller)
+                                            $dadosRelacao = $dados->get($servico->id);
+                                            $nomeEmpresa = $dadosRelacao->razao_social ?? 'Empresa não identificada';
+
+                                            // 2. Dados Reais do Pedido (Pivot)
+                                            $quantidade = $servico->pivot->quantidade;
+                                            $valorUnitario = $servico->pivot->valor_unitario; // Pega o valor gravado, não o genérico
+
+                                            // 3. Totais
+                                            $valorTotalServico = $quantidade * $valorUnitario;
+                                            $valorTotalPedido += $valorTotalServico;
+                                        @endphp
+
+                                        <tr id="servico-{{ $servico->id }}">
+                                            {{-- Empresa Corrigida --}}
+                                            <td>{{ $nomeEmpresa }}</td>
+                                            
+                                            <td>{{ $servico->descricao }}</td>
+                                            <td>{{ $servico->unidade_medida }}</td>
+                                            
+                                            {{-- Valor Unitário Corrigido (Pivot) --}}
+                                            <td class="text-right">{{ number_format($valorUnitario, 2, ',', '.') }}</td>
+                                            
+                                            <td class="text-right">{{ number_format($quantidade, 0, ',', '.') }}</td>
+                                            <td class="text-right">{{ number_format($valorTotalServico, 2, ',', '.') }}</td>
+                                            
+                                            <td>
+                                                <input type="text" 
+                                                    class="form-control" 
+                                                    name="empenhos[{{ $servico->pivot->id }}]" 
+                                                    value="{{ old('empenhos.' . $servico->pivot->id) }}" 
+                                                    placeholder="Nº Empenho"
+                                                    required>
+                                            </td>
+                                        </tr>
                                     @endforeach
                                 </tbody>
                                 <tfoot>
@@ -83,7 +102,7 @@
                     </button>
                 </div>
             </div>
-
+        </div>
     </div>
 </div>
 @endif

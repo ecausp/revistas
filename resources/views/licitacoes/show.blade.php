@@ -13,7 +13,7 @@
         <p><strong>Valor Total (R$):</strong> {{ number_format($licitacao->valor_total, 2, ',', '.') }}</p>
 
         @include('licitacoes.partials.saldos')
-        @include('licitacoes.partials.empresas')
+        @include('licitacoes.partials.empresas', ['licitacao' => $licitacao])
         @include('partials.editor')
 
         <div class="container mt-5 col">

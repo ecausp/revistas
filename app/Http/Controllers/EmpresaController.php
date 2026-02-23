@@ -6,10 +6,8 @@ use Illuminate\Http\Request;
 
 use App\Models\Empresa;
 use App\Models\Contato;
-use App\Models\EmpresaServico;
 use App\Models\User;
-use App\Models\EmpresaLicitacao;
-use App\Models\Licitacao;
+use App\Models\EmpresaLicitacaoServico;
 use App\Models\Servico;
 
 class EmpresaController extends Controller
@@ -18,49 +16,30 @@ class EmpresaController extends Controller
     public function create()
     {
         $this->authorize("admin-financeiro");
-        
-        $licitacoes = Licitacao::orderBy('ano', 'desc')->orderBy('descricao')->get();
-        $servicos = Servico::orderBy('descricao', 'desc')->get();
-        $unidades_medida = $stringArray = explode(",", config('revistas.unidadesMedida'));
-        
         \UspTheme::activeUrl('empresas/create');
         
-        return view('empresas.create', compact('licitacoes', 'servicos', 'unidades_medida'));
+        return view('empresas.create');
     }
     
     //armazenar a nova empresa
     public function store(Request $request)
     {
         $this->authorize("admin-financeiro");
-        
+
+        // Validação dos campos obrigatórios
         $request->validate([
             'cnpj' => 'required',
             'razao_social' => 'required',
-            'licitacao_id' => 'required',
         ]);
 
-        $empresa = new Empresa();
-        $empresa->editor = $request->user()->id;
-        $empresa->cnpj = $request->cnpj;
-        $empresa->razao_social = $request->razao_social;
-        $empresa->save();
+        // Cria a empresa
+        Empresa::create([
+            'editor' => $request->user()->id,
+            'cnpj' => $request->cnpj,
+            'razao_social' => $request->razao_social,
+        ]);
 
-        if ($request->has('servico_id')) {
-            foreach ($request->servico_id as $servicoId) {
-                EmpresaServico::create([
-                    'empresa_id' => $empresa->id,
-                    'servico_id' => $servicoId,
-                ]);
-            }
-        }
-
-        $relacao = new EmpresaLicitacao();
-        $relacao->empresa_id = $empresa->id;
-        $relacao->licitacao_id = $request->licitacao_id;
-        $relacao->valor = 1000;
-        $relacao->save();
-        
-        session()->flash('success', 'Cadastrado com sucesso!');
+        session()->flash('success', 'Empresa cadastrada com sucesso!');
         return redirect()->route('empresas.index');
     }
 
@@ -140,53 +119,33 @@ class EmpresaController extends Controller
     // Exibir o formulário para editar uma empresa
     public function edit(Empresa $empresa)
     {
-                $this->authorize("admin-financeiro");
+        $this->authorize("admin-financeiro");
 
-        $licitacoes = Licitacao::orderBy('ano', 'desc')->orderBy('descricao')->get();
-        $servicos = Servico::orderBy('descricao', 'desc')->get();
-        $unidades_medida = $stringArray = explode(",", config('revistas.unidadesMedida'));
-        // pega os serviços que estão associados a essa empresa;
-        $servicos_associados = $empresa->servicos->pluck('id')->toArray();
-
-        return view('empresas.edit', compact('empresa', 'licitacoes', 'servicos','unidades_medida', 'servicos_associados'));
+        return view('empresas.edit', compact('empresa'));
     }
     
     // Atualizar os dados de uma empresa
     public function update(Request $request, Empresa $empresa)
     {
-                $this->authorize("admin-financeiro");
-  
+        $this->authorize("admin-financeiro");
+
         // Validação dos campos
         $request->validate([
             'cnpj' => 'required',
             'razao_social' => 'required',
         ]);
-        
-        // Dados para atualização da empresa
-        $empresa_editada = [
+
+        // Atualiza apenas os campos principais da empresa
+        $empresa->update([
             'editor' => $request->user()->id,
-            "cnpj" => $request->cnpj,
-            "razao_social" => $request->razao_social,
-        ];
-        
-        // Atualiza a empresa
-        $empresa->update($empresa_editada);
-        
-        // Remove relações antigas entre empresa e serviços
-        EmpresaServico::where('empresa_id', $empresa->id)->delete();
-                
-        if ($request->has('servico_id')) {
-            foreach ($request->servico_id as $servicoId) {
-                EmpresaServico::create([
-                    'empresa_id' => $empresa->id,
-                    'servico_id' => $servicoId,
-                ]);
-            }
-        }
+            'cnpj' => $request->cnpj,
+            'razao_social' => $request->razao_social,
+        ]);
 
         session()->flash('success', 'Atualizado com sucesso!');
         return redirect()->route('empresas.index');
     }
+
     
     public function destroy(Empresa $empresa)
     {
@@ -202,4 +161,88 @@ class EmpresaController extends Controller
     {
         return view('empresas.ajuda');
     }
+
+    public function relacionarLicitacoesServicos(Empresa $empresa)
+    {
+        $this->authorize("admin-financeiro");
+
+        // 1) Pega todas as licitações associadas à empresa
+        $licitacoes_associadas = $empresa->licitacoes()->orderBy('ano', 'desc')->orderBy('descricao')->get();
+
+        // 2) Pega todos os serviços cadastrados no sistema
+        $todos_servicos = Servico::orderBy('descricao')->get();
+
+        // 3) Pega todos os serviços já associados à empresa e a cada licitação
+        $servicos_associados = EmpresaLicitacaoServico::where('empresa_id', $empresa->id)
+            ->whereIn('licitacao_id', $licitacoes_associadas->pluck('id')) // filtra apenas licitações da empresa
+            ->with('servico') // carrega os dados do serviço relacionado
+            ->get();
+
+        // 4) Monta um array organizado por licitação para a view
+        $servicos_para_view = [];
+        foreach ($servicos_associados as $els) {
+            $servicos_para_view[$els->licitacao_id][] = [
+                'id' => $els->servico->id,
+                'descricao' => $els->servico->descricao,
+                'valor_unitario' => $els->valor_unitario,
+                'prazo' => $els->prazo,
+            ];
+        }
+
+        return view('empresas.relacionar-licitacoes-servicos', compact(
+            'empresa','licitacoes_associadas','todos_servicos', 'servicos_para_view'));
+    }
+
+    public function salvarRelacionamento(Request $request, Empresa $empresa)
+    {
+        $this->authorize('admin-financeiro');
+
+        // Converte valores monetários do formato brasileiro
+        $servicos = $request->input('servicos', []);
+
+        foreach ($servicos as $i => $servico) {
+            if (isset($servico['valor_unitario'])) {
+                $servicos[$i]['valor_unitario'] = str_replace(
+                    ',',
+                    '.',
+                    str_replace('.', '', $servico['valor_unitario'])
+                );
+            }
+        }
+
+        // Reinsere os dados tratados no request
+        $request->merge([
+            'servicos' => $servicos
+        ]);
+
+        $request->validate([
+            'licitacao_id' => 'required|exists:licitacoes,id',
+            'servicos' => 'required|array|min:1',
+            'servicos.*.id' => 'required|exists:servicos,id',
+            'servicos.*.valor_unitario' => 'required|numeric|min:0',
+            'servicos.*.prazo' => 'required|integer|min:0',
+        ]);
+
+        $licitacaoId = $request->licitacao_id;
+
+        EmpresaLicitacaoServico::where('empresa_id', $empresa->id)
+            ->where('licitacao_id', $licitacaoId)
+            ->delete();
+
+        foreach ($request->servicos as $servico) {
+            EmpresaLicitacaoServico::create([
+                'empresa_id' => $empresa->id,
+                'licitacao_id' => $licitacaoId,
+                'servico_id' => $servico['id'],
+                'valor_unitario' => $servico['valor_unitario'],
+                'prazo' => $servico['prazo'],
+            ]);
+        }
+        
+        session()->flash('success', 'Relacionamento entre empresa, licitação e serviços salvo com sucesso.');
+
+        return redirect()->route('empresas.show', $empresa);
+    }
+
+
 }

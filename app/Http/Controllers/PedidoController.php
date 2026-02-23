@@ -13,6 +13,7 @@ use App\Models\Empresa;
 use App\Models\Contato;
 use App\Models\User;
 use App\Models\Arquivo;
+use App\Models\EmpresaLicitacaoServico;
 
 use App\States\Concluido;
 use Illuminate\Support\Facades\Storage;
@@ -216,57 +217,77 @@ class PedidoController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Pedido $pedido)
-    {
-        $licitacao = $pedido->licitacao;
-        $solicitante = $pedido->solicitante;
-        $servicos = Servico::all();
-        $historico = PedidoHistorico::where('id_pedido', $pedido->id)->orderBy('created_at', 'desc')->get();
+public function show(Pedido $pedido)
+{
+    // 1. Carregamento Otimizado (Eager Loading) seguindo a sua tabela tripla
+    $pedido->load([
+        'chats.user', 
+        'servicos.empresasLicitacoes.empresa.contatos'
+    ]);
 
-        // se for admin ou financeiro pode ver sem restrição
-        if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro'))
-            return view('pedidos.show', compact('historico','pedido', 'licitacao', 'solicitante', 'servicos'));
-        // Se for um solicitante de uma revista, pode visualizar os pedidos da sua revista
-        else if(Solicitante::where('user_id', auth()->id())->exists())
-        {
-            $revista_do_pedido = $pedido->revista->id;
-            $revista_do_usuario = Solicitante::where('user_id', auth()->id())->first()->revista->id;
-            
-            if($revista_do_usuario == $revista_do_pedido)
-            {
-                return view('pedidos.show', compact('historico','pedido', 'licitacao', 'solicitante', 'servicos'));
-            }        
-            else
-            {
-            session()->flash('danger', 'Esse pedido não pertence à sua revista.');
-            return redirect()->route('home');
+    $licitacao = $pedido->licitacao;
+    $solicitante = $pedido->solicitante;
+    $servicos = Servico::all();
+    $historico = PedidoHistorico::where('id_pedido', $pedido->id)
+        ->orderBy('created_at', 'desc')
+        ->get();
 
-            }
-        }
-        // se for um contato de uma empresa, só pode visualizar os pedidos que tem serviços da sua empresa
-        else if(Contato::where('user_id', auth()->id())->exists())
-        {
-            $servico_do_pedido = $pedido->servicos->first();
-            $empresa_do_pedido = $servico_do_pedido->empresas->pluck('id');
-            $empresa_do_contato = Contato::where('user_id', auth()->id())->first()->empresa_id;
-            if($empresa_do_pedido->contains($empresa_do_contato))
-            {
-                return view('pedidos.show', compact('historico','pedido', 'licitacao', 'solicitante', 'servicos'));
-            }
-            else
-            {
-                session()->flash('danger', 'Usuário não possui acesso a esse recurso. Favor contatar financeiro.');
-                return redirect()->route('home');
-            }
-        }
+    // 2. Coleta de IDs de Contatos percorrendo a árvore correta
+    $contatosIds = $pedido->servicos->flatMap(function ($servico) {
+        return $servico->empresasLicitacoes->flatMap(function ($relacao) {
+            return $relacao->empresa->contatos->pluck('user_id');
+        });
+    })->unique()->toArray();
 
-        else
-        {
-            session()->flash('danger', 'Usuário não possui acesso a esse recurso. Favor contatar financeiro.');
-            return redirect()->route('home');
+    // 3. Busca os dados complementares (Query Builder - Retorna Objetos)
+    $dados = \DB::table('empresa_licitacao_servico')
+    ->join('empresas', 'empresa_licitacao_servico.empresa_id', '=', 'empresas.id')
+    ->where('licitacao_id', $pedido->licitacao_id)
+    ->select(
+        'empresa_licitacao_servico.servico_id',
+        'empresa_licitacao_servico.prazo',
+        'empresas.razao_social',
+        'empresa_licitacao_servico.valor_unitario'
+    )
+    ->get()
+    ->keyBy('servico_id'); // Aqui os itens são stdClass (Objetos)
 
-        }
+    $viewData = compact('historico', 'pedido', 'licitacao', 'solicitante', 'servicos', 'dados', 'contatosIds');
+
+    // Admin ou Financeiro
+    if (auth()->user()->hasRole('admin') || auth()->user()->hasRole('financeiro')) {
+        return view('pedidos.show', $viewData);
     }
+
+    // Solicitante
+    if (Solicitante::where('user_id', auth()->id())->exists()) {
+        $solicitante_atual = Solicitante::where('user_id', auth()->id())->first();
+        if ($solicitante_atual->revista_id == $pedido->revista_id) {
+            return view('pedidos.show', $viewData);
+        }
+        session()->flash('danger', 'Esse pedido não pertence à sua revista.');
+        return redirect()->route('home');
+    }
+
+    // Contato
+    if (Contato::where('user_id', auth()->id())->exists()) {
+        $contato = Contato::where('user_id', auth()->id())->first();
+        
+        // Verifica se a empresa do contato está na lista de empresas do pedido
+        $empresaNoPedido = $pedido->servicos->flatMap->empresasLicitacoes
+            ->pluck('empresa_id')
+            ->contains($contato->empresa_id);
+
+        if ($empresaNoPedido) {
+            return view('pedidos.show', $viewData);
+        }
+        session()->flash('danger', 'Usuário não possui acesso a esse recurso.');
+        return redirect()->route('home');
+    }
+
+    session()->flash('danger', 'Acesso negado.');
+    return redirect()->route('home');
+}
 
     /**
      * Show the form for editing the specified resource.
@@ -297,24 +318,23 @@ class PedidoController extends Controller
         $licitacao = $pedido->licitacao;
         $revista = $pedido->revista;
         
-        // Carregar a relação 'arquivos' (necessário para o partial de arquivos existentes)
+        // Carregar a relação 'arquivos'
         $pedido->load('arquivos'); 
 
-        // 3. Lógica para obter Serviços com Limite (Reutilizando getServicosComLimites)
-        
-        // Recria o formato $servicosComLimite para o forms genérico
+        // 3. Lógica para obter Serviços com Limite
         $servicosComLimite = $this->getServicosComLimites($revista, $licitacao);
         
-        // Carrega as empresas para que o forms possa ler data-empresa (necessário fazer a eager load aqui)
-        // Isso é necessário porque getServicosComLimites não carrega empresas, mas sim limites.
+        // --- REMOVIDO: O bloco que causava o erro "undefined relationship [empresas]" ---
+        // A view agora busca a empresa via DB::table, então não precisamos carregar aqui.
+        /*
         $servicosComLimite->each(function ($item) {
              $item->servico->load('empresas');
         });
+        */
 
-        // 5. Retorna a view, passando o pedido, o solicitante (para o forms) e os serviços no formato correto.
+        // 5. Retorna a view
         return view('pedidos.edit', compact('pedido', 'solicitante', 'servicosComLimite'));
     }
-
     /**
      * Update the specified resource in storage.
      */
@@ -324,10 +344,9 @@ class PedidoController extends Controller
         $request->validate([
             'servicos' => 'array',
             'quantidades' => 'array',
-            // Arquivos e descrições não devem estar aqui, pois são submetidos via storeArquivo
         ]);
         
-        // Autorização (reforçar)
+        // Autorização
         $user = auth()->user();
         $solicitante = Solicitante::where('user_id', $user->id)->first();
 
@@ -347,11 +366,17 @@ class PedidoController extends Controller
         $syncData = [];
 
         foreach ($request->servicos ?? [] as $id) {
-            // Adicionando o valor unitário ao sync (melhor prática)
-            $servico = Servico::find($id);
+            $qtd = $request->quantidades[$id] ?? 1;
+
+            // --- Busca o valor na tabela tripla ---
+            $valorAcordado = \DB::table('empresa_licitacao_servico')
+                ->where('licitacao_id', $pedido->licitacao_id)
+                ->where('servico_id', $id)
+                ->value('valor_unitario');
+
             $syncData[$id] = [
-                'quantidade' => $request->quantidades[$id] ?? 1,
-                'valor_unitario' => $servico ? $servico->valor_unitario : 0, 
+                'quantidade' => $qtd,
+                'valor_unitario' => $valorAcordado ?? 0.00, 
             ];
         }
 
@@ -401,11 +426,18 @@ class PedidoController extends Controller
         // Atualiza os serviços com as quantidades no relacionamento many-to-many (pivot)
         $syncData = [];
         foreach ($servicos as $servicoId) {
-            // Adicionando o valor unitário ao sync (melhor prática)
-            $servico = Servico::find($servicoId);
+            
+            $qtd = $quantidades[$servicoId] ?? 1;
+
+            // --- CORREÇÃO: Busca o valor na tabela tripla ---
+            $valorAcordado = \DB::table('empresa_licitacao_servico')
+                ->where('licitacao_id', $pedido->licitacao_id)
+                ->where('servico_id', $servicoId)
+                ->value('valor_unitario');
+
             $syncData[$servicoId] = [
-                'quantidade' => $quantidades[$servicoId] ?? 1,
-                'valor_unitario' => $servico ? $servico->valor_unitario : 0,
+                'quantidade' => $qtd,
+                'valor_unitario' => $valorAcordado ?? 0.00,
             ];
         }
 
@@ -488,15 +520,16 @@ class PedidoController extends Controller
 
             $pedido->adicionarHistorico($pedido->status);
             
-            $servicos = $pedido->servicos()->pluck('servicos.id');        
-            $empresas = Empresa::whereHas('servicos', function ($query) use ($servicos) {
-                    $query->whereIn('servicos.id', $servicos);})->get();
-            $empresas->load('contatos'); // faz uma única query pra todos
-            $contatos = $empresas
-                ->pluck('contatos')   // pega a coleção de contatos de cada empresa
-                ->flatten()           // junta tudo
-                ->values();           // reindexa
-        
+            $servicos = $pedido->servicos->pluck('id');        
+            $empresas = Empresa::whereIn('id', function($query) use ($pedido, $servicos) {
+                $query->select('empresa_id')
+                ->from('empresa_licitacao_servico')
+                ->where('licitacao_id', $pedido->licitacao_id)
+                ->whereIn('servico_id', $servicos);
+            })->with('contatos')->get();
+            
+            $contatos = $empresas->pluck('contatos')->flatten();
+
             foreach($contatos as $contato){
                 Mail::to($contato->user->email)->send(new PedidoEnviadoParaEmpresaMail($pedido));
             }        
@@ -520,7 +553,10 @@ class PedidoController extends Controller
     {
 
         // só pode ser enviado se o usuário for contato da empresa que recebeu o pedido
-        $contatos = $pedido->servicos()->first()->empresas()->first()->contatos;
+        $relacao_servico_empresa = EmpresaLicitacaoServico::where('servico_id', $pedido->servicos()->first()->id)->first();
+        $empresa = Empresa::where('id', $relacao_servico_empresa->empresa_id)->first();
+        
+        $contatos = $empresa->contatos;
         if(Contato::where('user_id', auth()->id())->exists() && $contatos->contains('user_id', auth()->id()))
         {
             // 1. Atualiza o status do pedido
@@ -552,7 +588,6 @@ class PedidoController extends Controller
         }
     }
 
-
     public function paraExecucao(Request $request, Pedido $pedido)
     {
 
@@ -575,7 +610,9 @@ class PedidoController extends Controller
                 session()->flash('danger', 'Erro: serviço inválido ou não pertence a este pedido.');
                 return back();
             }
-            $pedidoServico->data_vencimento = $pedido->updated_at->addDays($pedidoServico->servico->prazo)->format('Y-m-d');
+            $relacao = EmpresaLicitacaoServico::where('servico_id', $pedidoServico->servico_id)->first();
+            $prazo = $relacao->prazo;
+            $pedidoServico->data_vencimento = $pedido->updated_at->addDays($prazo)->format('Y-m-d');
             $pedidoServico->num_empenho = $numEmpenho;
             $pedidoServico->save();
         }
@@ -602,15 +639,16 @@ class PedidoController extends Controller
         session()->flash('success', 'Pedido enviado para execução.');
 
         // 7) Notifica os contatos da empresa
-        $servicos = $pedido->servicos()->pluck('servicos.id');        
-        $empresas = Empresa::whereHas('servicos', function ($query) use ($servicos) {
-            $query->whereIn('servicos.id', $servicos);})->get();
-        $empresas->load('contatos'); // faz uma única query pra todos
-        $contatos = $empresas
-            ->pluck('contatos')   // pega a coleção de contatos de cada empresa
-            ->flatten()           // junta tudo
-            ->values();           // reindexa
-            
+        $servicos = $pedido->servicos->pluck('id');     
+        $empresas = Empresa::whereIn('id', function($query) use ($pedido, $servicos) {
+        $query->select('empresa_id')
+              ->from('empresa_licitacao_servico')
+              ->where('licitacao_id', $pedido->licitacao_id)
+              ->whereIn('servico_id', $servicos);
+    })->with('contatos')->get(); 
+
+    $contatos = $empresas->pluck('contatos')->flatten();
+
         foreach($contatos as $contato){
             Mail::to($contato->user->email)->send(new PedidoEnviadoParaExecucaoMail($pedido));
         }     
@@ -635,37 +673,52 @@ class PedidoController extends Controller
 
     }
 
-    public function paraConferencia(Pedido $pedido)
+   public function paraConferencia(Pedido $pedido)
     {
+        // 1. Pegamos o ID do serviço para buscar a empresa vinculada
+        $servicoId = $pedido->servicos()->first()->id;
 
-        // só pode ser enviado se o usuário for contato da empresa que recebeu o pedido
-        $contatos = $pedido->servicos()->first()->empresas()->first()->contatos;
+        // 2. Buscamos a empresa e os contatos via tabela tripla (padronizando com suas outras funções)
+        $empresa = Empresa::whereIn('id', function($query) use ($pedido, $servicoId) {
+            $query->select('empresa_id')
+                ->from('empresa_licitacao_servico')
+                ->where('licitacao_id', $pedido->licitacao_id)
+                ->where('servico_id', $servicoId);
+        })->with('contatos')->first();
+
+        $contatos = $empresa ? $empresa->contatos : collect();
+
+        // 3. Verificação de permissão: o usuário logado é um dos contatos dessa empresa?
         if(Contato::where('user_id', auth()->id())->exists() && $contatos->contains('user_id', auth()->id()))
         {
-            // 1. Atualiza o status do pedido
+            // Atualiza o status
             $pedido->status->transitionTo(EmConferencia::class);
             $pedido->save();
 
             $pedido->adicionarHistorico($pedido->status);
         
+            // Notificações
             foreach($pedido->revista->solicitantes as $solicitante){
-            Mail::to($solicitante->user->email)->send(new PedidoEmConferenciaMail($pedido));
+                Mail::to($solicitante->user->email)->send(new PedidoEmConferenciaMail($pedido));
             }      
             Mail::to($pedido->revista->email_revista)->send(new PedidoEmConferenciaMail($pedido));
 
             session()->flash('success', 'Pedido enviado por e-mail para os responsáveis da revista.');
             
-            // redireciona o usuario:
+            // Redirecionamento
             $contato = Contato::where('user_id', auth()->id())->first();
-            $empresa = Empresa::where('id', $contato->empresa_id)->first();
-            $servicos = $empresa->servicos->pluck('id');
-            $pedidos = Pedido::whereHas('servicos', function ($query) use ($servicos) {
-            $query->whereIn('servicos.id', $servicos);})->get();
+            $empresaResponsavel = Empresa::where('id', $contato->empresa_id)->first();
+            $servicosDaEmpresa = $empresaResponsavel->servicos->pluck('id');
+            
+            $pedidos = Pedido::whereHas('servicos', function ($query) use ($servicosDaEmpresa) {
+                $query->whereIn('servicos.id', $servicosDaEmpresa);
+            })->get();
+
             return view('pedidos.index', compact('pedidos'));
         }
         else
         {
-            session()->flash('danger', 'Usuário não é representante da empresa e não pode enviar pedidos para o setor financeiro.');
+            session()->flash('danger', 'Usuário não é representante da empresa responsável e não pode enviar para conferência.');
             return redirect()->route('home');
         }
     }
@@ -678,14 +731,18 @@ class PedidoController extends Controller
         $pedido->adicionarHistorico($pedido->status, $request->observacao);
         
         // Notifica os contatos da empresa
-        $servicos = $pedido->servicos()->pluck('servicos.id');        
-        $empresas = Empresa::whereHas('servicos', function ($query) use ($servicos) {
-            $query->whereIn('servicos.id', $servicos);})->get();
-        $empresas->load('contatos'); // faz uma única query pra todos
-        $contatos = $empresas
-            ->pluck('contatos')   // pega a coleção de contatos de cada empresa
-            ->flatten()           // junta tudo
-            ->values();           // reindexa
+    
+        $servicoIds = $pedido->servicos->pluck('id');
+
+        // 2. Busca as empresas que estão ligadas a estes serviços NESTA Licitação específica
+        $empresas = Empresa::whereIn('id', function($query) use ($pedido, $servicoIds) {
+        $query->select('empresa_id')
+              ->from('empresa_licitacao_servico')
+              ->where('licitacao_id', $pedido->licitacao_id)
+              ->whereIn('servico_id', $servicoIds);
+    })->with('contatos')->get(); 
+
+    $contatos = $empresas->pluck('contatos')->flatten();
             
         foreach($contatos as $contato){
             Mail::to($contato->user->email)->send(new PedidoDevolvidoParaExecucaoMail($pedido));
@@ -757,15 +814,18 @@ class PedidoController extends Controller
         $pedido->adicionarHistorico($pedido->status, 'Pedido Concluido');
 
         // Notifica os contatos da empresa
-        $servicos = $pedido->servicos()->pluck('servicos.id');        
-        $empresas = Empresa::whereHas('servicos', function ($query) use ($servicos) {
-            $query->whereIn('servicos.id', $servicos);})->get();
-        $empresas->load('contatos'); // faz uma única query pra todos
-        $contatos = $empresas
-            ->pluck('contatos')   // pega a coleção de contatos de cada empresa
-            ->flatten()           // junta tudo
-            ->values();           // reindexa
-            
+        // 1. Pega os IDs dos serviços deste pedido de forma simples
+        $servicoIds = $pedido->servicos->pluck('id');
+
+        // 2. Busca as empresas que estão ligadas a estes serviços NESTA Licitação específica
+        $empresas = Empresa::whereIn('id', function($query) use ($pedido, $servicoIds) {
+            $query->select('empresa_id')
+                ->from('empresa_licitacao_servico')
+                ->where('licitacao_id', $pedido->licitacao_id)
+                ->whereIn('servico_id', $servicoIds);
+        })->with('contatos')->get();
+
+        $contatos = $empresas->pluck('contatos')->flatten();
         foreach($contatos as $contato){
             Mail::to($contato->user->email)->send(new PedidoConcluidoMail($pedido));
         }     
@@ -815,18 +875,19 @@ private function getPedidosDoUsuario()
         // 3. Contato (vê pedidos com serviços da sua empresa)
         if (Contato::where('user_id', $user->id)->exists()) {
             $contato = Contato::where('user_id', $user->id)->first();
-            $empresa = Empresa::where('id', $contato->empresa_id)->first();
             
-            // Verifica se a empresa e seus serviços existem
-            if ($empresa) {
-                $servicos = $empresa->servicos->pluck('id');
-                return Pedido::whereHas('servicos', function ($query) use ($servicos) {
-                    $query->whereIn('servicos.id', $servicos);
-                })
-                ->orderBy('id', 'desc')
-                ->get();
-            }
+            // Busca IDs dos serviços que esta empresa presta (independente de licitação, para listar histórico geral)
+            $servicosDaEmpresa = \DB::table('empresa_licitacao_servico')
+                ->where('empresa_id', $contato->empresa_id)
+                ->pluck('servico_id');
+
+            return Pedido::whereHas('servicos', function ($query) use ($servicosDaEmpresa) {
+                $query->whereIn('servicos.id', $servicosDaEmpresa);
+            })
+            ->orderBy('id', 'desc')
+            ->get();
         }
+        
         
         // 4. Usuário logado sem papel relevante cadastrado
         return collect(); // Retorna uma coleção vazia
@@ -889,19 +950,22 @@ private function getPedidosDoUsuario()
      */
     private function syncServicosDoPedido(Pedido $pedido, array $validated): void
     {
-        $servicosSelecionados = Servico::whereIn('id', $validated['servicos'])->get()->keyBy('id');
         $dadosParaSync = [];
         
         foreach ($validated['servicos'] as $servicoId) {
-            $servico = $servicosSelecionados->get($servicoId);
             $qtd = $validated['quantidades'][$servicoId] ?? 1;
 
-            if ($servico) {
-                $dadosParaSync[$servicoId] = [
-                    'quantidade' => $qtd,
-                    'valor_unitario' => $servico->valor_unitario,
-                ];
-            }
+            // --- Busca o valor na tabela tripla ---
+            $valor = \DB::table('empresa_licitacao_servico')
+                ->where('licitacao_id', $pedido->licitacao_id)
+                ->where('servico_id', $servicoId)
+                ->value('valor_unitario');
+            
+
+            $dadosParaSync[$servicoId] = [
+                'quantidade' => $qtd,
+                'valor_unitario' => $valor,
+            ];
         }
 
         $pedido->servicos()->sync($dadosParaSync);

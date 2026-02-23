@@ -58,7 +58,7 @@
                     @php
                     $devolucao = "";
                     
-                    if ($pedido->status == "em_analise_empresa") {
+                    if ($pedido->status == "em_analise_empresa" || $pedido->status == "em_analise_financeiro") {
                         $devolucao = 'pedidos.elaboracao';
                     }
                     else if ($pedido->status = "em_conferencia") {

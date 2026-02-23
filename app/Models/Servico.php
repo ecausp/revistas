@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+use App\Models\EmpresaLicitacaoServico;
+
 class Servico extends Model
 {
     use HasFactory;
@@ -12,16 +14,13 @@ class Servico extends Model
     protected $table = 'servicos';
     protected $fillable = [
         "descricao",
-        "quantidade",
         "unidade_medida",
-        "valor_unitario",
-        "editor",
-        "prazo",
+        "editor"
     ];
 
-    public function empresas()
+    public function empresasLicitacoes()
     {
-        return $this->belongsToMany(Empresa::class, 'empresa_servico');
+        return $this->hasMany(EmpresaLicitacaoServico::class);
     }
 
     public function pedidos()

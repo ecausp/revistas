@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Licitacao;
-use App\Models\Revista;
+use App\Models\Empresa;
 use App\Models\User;
 use App\Models\Solicitante;
 use App\Models\Saldo;
@@ -34,16 +34,13 @@ class LicitacaoController extends Controller
             'ano' => 'required|digits:4',
             'valor_total' => 'required|numeric',
         ]);
-
-        $licitacao = new Licitacao();
-        $licitacao = [
+ 
+        Licitacao::create([
             'editor' => $request->user()->id,
-            "descricao" => $request->descricao,
-            "ano" => $request->ano,
-            "valor_total" => $request->valor_total,
-        ];
-
-        Licitacao::create($licitacao);
+            'descricao' => $request->descricao,
+            'ano' => $request->ano,
+            'valor_total' => $request->valor_total,
+        ]);
 
         session()->flash('success', 'Cadastrado com sucesso!');
         return redirect()->route('licitacoes.index');
@@ -55,15 +52,16 @@ class LicitacaoController extends Controller
         \UspTheme::activeUrl('licitacoes');
 
         $licitacoes = Licitacao::orderBy('ano', 'desc')->orderBy('descricao')->get();
-
-        return view('licitacoes.index', compact('licitacoes'));
+        $empresas = Empresa::get();
+        return view('licitacoes.index', compact('licitacoes', 'empresas'));
     }
 
     // Exibir os detalhes de uma licitação
     public function show(Licitacao $licitacao)
     {
         $saldos = NULL;
-        $editor = User::where('id', $licitacao->editor)->first();
+        $editor = User::find($licitacao->editor);
+
         $updated_at = $licitacao->updated_at;
         if(auth()->user()->hasRole(roles: 'financeiro'))
         {
@@ -101,14 +99,13 @@ class LicitacaoController extends Controller
             'valor_total' => 'required|numeric',
         ]);
 
-        $licitacao_editada = [
+        $licitacao->update([
             'editor' => $request->user()->id,
-            "descricao" => $request->descricao,
-            "ano" => $request->ano,
-            "valor_total" => $request->valor_total,
-        ];
-        
-        $licitacao->update($licitacao_editada);
+            'descricao' => $request->descricao,
+            'ano' => $request->ano,
+            'valor_total' => $request->valor_total,
+        ]);
+
 
         session()->flash('success', 'Atualizado com sucesso!');
         return redirect()->route('licitacoes.index');
@@ -123,4 +120,22 @@ class LicitacaoController extends Controller
         session()->flash('danger', 'Licitação: ' . $licitacao->descricao . ' - ' . $licitacao->ano . ' removida!');
         return redirect()->route('licitacoes.index');
     }
+
+    public function addEmpresas(Request $request, Licitacao $licitacao)
+    {
+        // Validação básica
+        $request->validate([
+            'empresas' => 'required|array',          // deve ser um array
+            'empresas.*' => 'exists:empresas,id',    // cada ID precisa existir na tabela empresas
+        ]);
+
+        // Vincula as empresas selecionadas à licitação
+        // syncWithoutDetaching evita remover empresas já vinculadas
+        $licitacao->empresas()->syncWithoutDetaching($request->empresas);
+
+        // Redireciona de volta com mensagem de sucesso
+        session()->flash('success', 'Atualizado com sucesso!');
+        return redirect()->route('licitacoes.index');
+    }
+
 }

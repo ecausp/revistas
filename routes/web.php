@@ -17,8 +17,6 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\SaldoController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PedidoServicoController;
-use App\Http\Controllers\AjudaController;
-
 
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -47,6 +45,18 @@ Route::fallback(function(){
 Route::prefix('pedidos')->group(function () {
     Route::get('/servicos-execucao', [PedidoServicoController::class, 'index'])->name('servicos-execucao.index');
 });
+
+// para associar empresas a uma licitacao
+Route::post('/licitacoes/{licitacao}/empresas', [LicitacaoController::class, 'addEmpresas'])->name('licitacoes.addEmpresas');
+
+// para associar licitação e serviço a uma empresa:
+Route::get('/empresas/{empresa}/relacionar-licitacoes-servicos', [EmpresaController::class, 'relacionarLicitacoesServicos'])
+    ->name('empresas.relacionar-licitacoes-servicos')->middleware('auth');
+    
+// Rota para salvar relacionamento empresa -> licitação -> serviços
+Route::post('/empresas/{empresa}/relacionar-licitacoes-servicos', [EmpresaController::class, 'salvarRelacionamento'])
+    ->name('empresas.salvar-relacionamento')
+    ->middleware('auth');
 
 
 // pra pegar, na criação de limite, os limites já cadastrados pra uma revista nessa mesma licitação
@@ -104,8 +114,11 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('
 Route::get('/autocomplete', [ContatoController::class, 'autocomplete'])->name('autocomplete');
 Route::get('get-user-details', [ContatoController::class, 'getUserDetails'])->name('get-user-details');
 
-// pra colocar o valor do servico no limite
-Route::get('/servicos/{id}/valor-unitario', [ServicoController::class, 'valorUnitario']);
+// para buscar a relação entre empresa, serviço e empresa na criação de limite:
+Route::middleware(['auth'])->group(function(){
+Route::get('/licitacoes-servicos/dados',[\App\Http\Controllers\LicitacaoServicoController::class, 'dadosRelacionados'])
+    ->name('licitacoes-servicos.dados');
+});
 
 // pra pegar, na criação de limite, o valor total da licitacao
 Route::get('/licitacoes/{licitacao}/valor-total', function (Licitacao $licitacao) {

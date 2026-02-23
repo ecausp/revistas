@@ -5,18 +5,6 @@
 </div>
 
 <div class="mb-1">
-    <label for="valor_unitario" class="form-label">Valor Unitário</label>
-    <input type="text" class="form-control money" name="valor_unitario" id="valor_unitario" value="{{ old('valor_unitario', isset($servico) ? $servico->valor_unitario
-        : '') }}" placeholder="0,00" required></input>
-</div>
-
-<div class="mb-1">
-    <label for="prazo" class="form-label">Prazo (dias corridos)</label>
-    <input type="text" class="form-control" name="prazo" id="prazo" value="{{ old('prazo', isset($servico) ? $servico->prazo
-        : '') }}" placeholder="0" required></input>
-</div>
-
-<div class="mb-1">
     <label for="unidade_medida" class="form-label">Unidade de Medida</label>
 
     @if (isset($servico))
