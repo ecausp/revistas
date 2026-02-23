@@ -32,6 +32,7 @@ class Chat extends Model
      */
     public static function enviarMensagem(Pedido $pedido, User $autor, string $mensagem)
     {
+        
         $chat = self::create([
             'pedido_id' => $pedido->id,
             'user_id'   => $autor->id,
@@ -46,20 +47,21 @@ class Chat extends Model
      /**
      * Retorna todos os usuários participantes do chat desse pedido.
      */
-    public static function participantesDoChat(Pedido $pedido)
-    {
-        $usuarios = $pedido->revista->solicitantes->map(fn($s) => $s->user);
+public static function participantesDoChat(Pedido $pedido)
+{
+    $usuarios = $pedido->revista->solicitantes->map(fn($s) => $s->user);
 
-        foreach ($pedido->servicos as $servico) {
-            foreach ($servico->empresas as $empresa) {
-                $usuarios = $usuarios->merge(
-                    $empresa->contatos->map(fn($c) => $c->user)
-                );
-            }
+    foreach ($pedido->servicos as $servico) {
+        // CORREÇÃO: Usar o relacionamento correto definido no Model Servico
+        foreach ($servico->empresasLicitacoes as $relacao) {
+            $usuarios = $usuarios->merge(
+                $relacao->empresa->contatos->map(fn($c) => $c->user)
+            );
         }
-
-        return $usuarios->unique('id');
     }
+
+    return $usuarios->unique('id');
+}
 
      /**
      * Envia e-mail para todos os participantes (exceto o autor).

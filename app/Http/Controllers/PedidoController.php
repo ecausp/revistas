@@ -217,71 +217,77 @@ class PedidoController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Pedido $pedido)
-    {
-        $licitacao = $pedido->licitacao;
-        $solicitante = $pedido->solicitante;
-        $servicos = Servico::all();
-        $historico = PedidoHistorico::where('id_pedido', $pedido->id)->orderBy('created_at', 'desc')->get();
+public function show(Pedido $pedido)
+{
+    // 1. Carregamento Otimizado (Eager Loading) seguindo a sua tabela tripla
+    $pedido->load([
+        'chats.user', 
+        'servicos.empresasLicitacoes.empresa.contatos'
+    ]);
 
-        // Busca os dados complementares (Empresa, Prazo, Valor Unitário) da tabela de licitação
-        $dados = \DB::table('empresa_licitacao_servico')
-            ->join('empresas', 'empresa_licitacao_servico.empresa_id', '=', 'empresas.id')
-            ->where('licitacao_id', $pedido->licitacao_id)
-            ->select(
-                'empresa_licitacao_servico.servico_id',
-                'empresa_licitacao_servico.prazo',
-                'empresas.razao_social',
-                'empresa_licitacao_servico.valor_unitario'
-            )
-            ->get()
-            ->keyBy('servico_id');
+    $licitacao = $pedido->licitacao;
+    $solicitante = $pedido->solicitante;
+    $servicos = Servico::all();
+    $historico = PedidoHistorico::where('id_pedido', $pedido->id)
+        ->orderBy('created_at', 'desc')
+        ->get();
 
-        // se for admin ou financeiro pode ver sem restrição
-        if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro'))
-            return view('pedidos.show', compact('historico','pedido', 'licitacao', 'solicitante', 'servicos', 'dados'));
-        // Se for um solicitante de uma revista, pode visualizar os pedidos da sua revista
-        else if(Solicitante::where('user_id', auth()->id())->exists())
-        {
-            $revista_do_pedido = $pedido->revista->id;
-            $revista_do_usuario = Solicitante::where('user_id', auth()->id())->first()->revista->id;
-            
-            if($revista_do_usuario == $revista_do_pedido)
-            {
-                return view('pedidos.show', compact('historico','pedido', 'licitacao', 'solicitante', 'servicos', 'dados'));
-            }        
-            else
-            {
-            session()->flash('danger', 'Esse pedido não pertence à sua revista.');
-            return redirect()->route('home');
+    // 2. Coleta de IDs de Contatos percorrendo a árvore correta
+    $contatosIds = $pedido->servicos->flatMap(function ($servico) {
+        return $servico->empresasLicitacoes->flatMap(function ($relacao) {
+            return $relacao->empresa->contatos->pluck('user_id');
+        });
+    })->unique()->toArray();
 
-            }
-        }
-        // se for um contato de uma empresa, só pode visualizar os pedidos que tem serviços da sua empresa
-        else if(Contato::where('user_id', auth()->id())->exists())
-        {
-            $servico_do_pedido = $pedido->servicos->first();
-            $relacao_servico_pedido = EmpresaLicitacaoServico::where('servico_id', $servico_do_pedido->id)->first();
-            $empresa_do_pedido = $relacao_servico_pedido->empresa_id;
-            $empresa_do_contato = Contato::where('user_id', auth()->id())->first()->empresa_id;
-            if($empresa_do_pedido == $empresa_do_contato)
-            {
-                return view('pedidos.show', compact('historico','pedido', 'licitacao', 'solicitante', 'servicos', 'dados'));
-            }
-            else
-            {
-                session()->flash('danger', 'Usuário não possui acesso a esse recurso. Favor contatar financeiro.');
-                return redirect()->route('home');
-            }
-        }
+    // 3. Busca os dados complementares (Query Builder - Retorna Objetos)
+    $dados = \DB::table('empresa_licitacao_servico')
+    ->join('empresas', 'empresa_licitacao_servico.empresa_id', '=', 'empresas.id')
+    ->where('licitacao_id', $pedido->licitacao_id)
+    ->select(
+        'empresa_licitacao_servico.servico_id',
+        'empresa_licitacao_servico.prazo',
+        'empresas.razao_social',
+        'empresa_licitacao_servico.valor_unitario'
+    )
+    ->get()
+    ->keyBy('servico_id'); // Aqui os itens são stdClass (Objetos)
 
-        else
-        {
-            session()->flash('danger', 'Usuário não possui acesso a esse recurso. Favor contatar financeiro.');
-            return redirect()->route('home');
+    $viewData = compact('historico', 'pedido', 'licitacao', 'solicitante', 'servicos', 'dados', 'contatosIds');
 
-        }
+    // Admin ou Financeiro
+    if (auth()->user()->hasRole('admin') || auth()->user()->hasRole('financeiro')) {
+        return view('pedidos.show', $viewData);
     }
+
+    // Solicitante
+    if (Solicitante::where('user_id', auth()->id())->exists()) {
+        $solicitante_atual = Solicitante::where('user_id', auth()->id())->first();
+        if ($solicitante_atual->revista_id == $pedido->revista_id) {
+            return view('pedidos.show', $viewData);
+        }
+        session()->flash('danger', 'Esse pedido não pertence à sua revista.');
+        return redirect()->route('home');
+    }
+
+    // Contato
+    if (Contato::where('user_id', auth()->id())->exists()) {
+        $contato = Contato::where('user_id', auth()->id())->first();
+        
+        // Verifica se a empresa do contato está na lista de empresas do pedido
+        $empresaNoPedido = $pedido->servicos->flatMap->empresasLicitacoes
+            ->pluck('empresa_id')
+            ->contains($contato->empresa_id);
+
+        if ($empresaNoPedido) {
+            return view('pedidos.show', $viewData);
+        }
+        session()->flash('danger', 'Usuário não possui acesso a esse recurso.');
+        return redirect()->route('home');
+    }
+
+    session()->flash('danger', 'Acesso negado.');
+    return redirect()->route('home');
+}
 
     /**
      * Show the form for editing the specified resource.
