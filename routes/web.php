@@ -102,9 +102,9 @@ Route::get('/solicitantes/create/{revista}', SolicitanteController::class . '@cr
 Route::post('/solicitantes', SolicitanteController::class .'@store')->name('solicitantes.store');
 
 // logon
-Route::get('/login_empresa', [AuthController::class, 'showLogin'])->name('login')->middleware(EnsureUserIsLogged::class);
-Route::post('/login_empresa', [AuthController::class, 'login'])->name('login')->middleware(EnsureUserIsLogged::class);
-Route::get('/logout', function(){Auth::logout();})->middleware(EnsureUserIsLogged::class);
+Route::get('/login_empresa', [AuthController::class, 'showLogin'])->name('login_empresa');
+Route::post('/login_empresa', [AuthController::class, 'login'])->name('login_empresa');
+Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/esqueci-senha', [AuthController::class, 'showForgotPassword'])->name('password.request');
 Route::post('/esqueci-senha', [AuthController::class, 'sendResetLink'])->name('password.email');
 Route::get('/reset-password/{token}', [AuthController::class, 'showResetPassword'])->name('password.reset');
