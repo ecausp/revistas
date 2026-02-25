@@ -21,7 +21,7 @@
 
             @if (!Auth::check())
             <p>
-                <a href="{{ route('login') }}" class="btn btn-success"><i class="fas fa-sign-in-alt"
+                <a href="{{ route('login_empresa') }}" class="btn btn-success"><i class="fas fa-sign-in-alt"
                         aria-hidden="true"></i> Empresa</a>
             </p>
             @endif

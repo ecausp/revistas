@@ -35,16 +35,21 @@ class AuthController extends Controller
         }
 
         session()->flash('danger', 'Credenciais inválidas!');
-        return redirect()->route('login');
+        return redirect()->route('login_empresa');
     }   
 
     // encerra a sessão
-    public function logout()
+    public function logout(Request $request)
     {
-        session()->forget('user_id'); // Remove o usuário da sessão
+        // Força o logout no guard 'web' explicitamente
+        auth('web')->logout();
+        
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
-        session()->flash('sucess', 'Logout realizado com sucesso!');
-        return redirect()->route('login');
+        session()->flash('success', 'Logout realizado com sucesso!');
+        
+        return redirect()->route('login_empresa');
     }
 
     // carrega a página de "esqueci a senha"
