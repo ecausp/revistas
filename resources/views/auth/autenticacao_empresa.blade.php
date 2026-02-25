@@ -10,7 +10,7 @@
     </div>
 
     <div class="card-body">
-        <form action="{{ route('login') }}" method="POST">
+        <form action="{{ route('login_empresa') }}" method="POST">
             @csrf
             <div class="mb-1">
                 <label for="email" class="form-label">Email</label>
