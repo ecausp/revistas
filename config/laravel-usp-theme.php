@@ -84,6 +84,25 @@ $submenu1 = [
     ],
     [
         'type' => 'divider',
+        'can' => 'admin-financeiro'
+    ],
+    [
+        'type' => 'header',
+        'text' => '<i class="fas fa-tasks" aria-hidden="true"></i> Serviços',
+        'can' => 'admin-financeiro'
+    ],
+    [
+        'text' => '<i class="fas fa-plus-circle" aria-hidden="true"></i> Cadastrar',
+        'url' => 'servicos/create',
+        'can' => 'admin-financeiro'
+    ],
+    [
+        'text' => '<i class="fas fa-list-ul" aria-hidden="true"></i> Listar',
+        'url' => 'servicos',
+        'can' => 'admin-financeiro'
+    ],
+    [
+        'type' => 'divider',
         'can' => 'acesso-empresa'
     ],
     [
@@ -118,25 +137,6 @@ $submenu1 = [
     [
         'text' => '<i class="fas fa-list-ul" aria-hidden="true"></i> Listar',
         'url' => 'limites',
-        'can' => 'admin-financeiro'
-    ],
-        [
-        'type' => 'divider',
-        'can' => 'admin-financeiro'
-    ],
-    [
-        'type' => 'header',
-        'text' => '<i class="fas fa-tasks" aria-hidden="true"></i> Serviços',
-        'can' => 'admin-financeiro'
-    ],
-    [
-        'text' => '<i class="fas fa-plus-circle" aria-hidden="true"></i> Cadastrar',
-        'url' => 'servicos/create',
-        'can' => 'admin-financeiro'
-    ],
-    [
-        'text' => '<i class="fas fa-list-ul" aria-hidden="true"></i> Listar',
-        'url' => 'servicos',
         'can' => 'admin-financeiro'
     ],
 ];
@@ -190,7 +190,7 @@ $right_menu = [
         'can' => 'badge-revista',
     ],
 
-    
+
     // [
     //     'text' => '<i class="fas fa-cog" aria-hidden="true"></i>',
     //     'title' => 'Configurações',
