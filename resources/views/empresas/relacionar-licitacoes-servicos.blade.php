@@ -71,7 +71,7 @@
                 </x-table-simples>
             </div>
 
-            <button type="submit" class="btn btn-primary">Salvar Relacionamento</button>
+            <button type="submit" class="btn btn-primary">Salvar</button>
         </form>
     </div>
 </div>
