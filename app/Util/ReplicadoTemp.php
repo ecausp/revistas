@@ -23,8 +23,8 @@ class ReplicadoTemp
         
         $query = "SELECT L.*, P.* 
                     FROM LOCALIZAPESSOA L INNER JOIN PESSOA P ON (L.codpes = P.codpes)
-                    WHERE L.codundclg IN (:codundclg) AND L.sitatl = 'A' AND L.codfncetr = 0 
-                    AND L.tipvinext IN ('Servidor', 'Docente') 
+                    WHERE L.codundclg IN (:codundclg) AND L.sitatl = 'A'
+                    AND (L.tipvinext IN ('Servidor', 'Docente') OR L.tipvin = 'ESTAGIARIORH')
                     ORDER BY P.nompesttd";
 
 
