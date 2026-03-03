@@ -28,7 +28,7 @@
             <tbody>
                 @foreach ($licitacoes as $licitacao)
                 <tr>
-                    <td>{{ $licitacao->descricao }}</td>
+                    <td>{{ $licitacao->descricao }} - {{ $licitacao->ano }}</td>
                     <td>{{ $licitacao->ano }}</td>
                     <td class="text-right">{{ number_format($licitacao->valor_total, 2, ',', '.') }}</td>
 
