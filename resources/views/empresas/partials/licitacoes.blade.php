@@ -14,7 +14,7 @@
         <tbody>
             @foreach ($empresa->licitacoes as $licitacao)
             <tr>
-                <td>{{ $licitacao->descricao }}</td>
+                <td>{{ $licitacao->descricao }} - {{ $licitacao->ano }}</td>
                 <td>{{ $licitacao->ano }}</td>
                 <td><a href="{{ route('licitacoes.show', $licitacao) }}" class="btn btn-primary"><i
                             class="fas fa-eye"></i> </a></td>
