@@ -22,14 +22,14 @@
             <tbody>
                 @foreach ($servicos as $servico)
                 <tr>
-                    <td>{{ $servico->servico->descricao }}</td>
-                    <td>{{ $servico->servico->unidade_medida }}</td>
+                    <td>{{ $servico->descricao }}</td>
+                    <td>{{ $servico->unidade_medida }}</td>
                     <td>
-                        <a href="{{ route('servicos.show', $servico->servico) }}" class="btn btn-primary"><i
+                        <a href="{{ route('servicos.show', $servico) }}" class="btn btn-primary"><i
                                 class="fas fa-eye"></i> </a>
                                 
                         @if(auth()->user()->hasRole('admin') || auth()->user()->hasRole('financeiro'))
-                        <a href="{{ route('servicos.edit', $servico->servico) }}" class="btn btn-primary"><i
+                        <a href="{{ route('servicos.edit', $servico) }}" class="btn btn-primary"><i
                                 class="fas fa-edit"></i></a>
                         @endif
                     </td>
