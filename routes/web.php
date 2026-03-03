@@ -144,7 +144,8 @@ Route::post('/pedidos/{pedido}/chat', [ChatController::class, 'store'])->name('c
 Route::post('/pedidos/{pedido}/anexar-arquivos', [PedidoController::class, 'storeArquivo'])
     ->name('pedidos.store-arquivo');
 
-
+// rota para os serviços que tem uma licitação e empresa associados
+Route::get('/servicos-licitacoes', [ServicoController::class, 'servicosLicitacoes'])->name('servicos-licitacoes.index');
 
 
 // ALTERAÇÕES DE STATUS

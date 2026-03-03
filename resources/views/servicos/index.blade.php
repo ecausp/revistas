@@ -14,6 +14,7 @@
         <x-table>
             <thead>
                 <tr>
+                    <th>ID</th>
                     <th>Serviço</th>
                     <th>Unidade de Medida</th>
                     <th>Ações</th>
@@ -22,6 +23,7 @@
             <tbody>
                 @foreach ($servicos as $servico)
                 <tr>
+                    <td>{{ $servico->id }}</td>
                     <td>{{ $servico->descricao }}</td>
                     <td>{{ $servico->unidade_medida }}</td>
                     <td>

@@ -191,4 +191,30 @@ class ServicoController extends Controller
     ]);
 }
 
+    public function servicosLicitacoes()
+    {   
+        \UspTheme::activeUrl('servicos-licitacoes');
+        // admin e financeiro podem visualizar todos os servicos
+        if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro'))
+        {
+            $servicos = EmpresaLicitacaoServico::all();
+            return view('servicos.licitacoes-index', compact('servicos'));
+        }
+        // se o usuario for contato de uma empresa, só pode ver os serviços prestados pela sua empresa
+        else if(Contato::where('user_id', auth()->id())->exists())
+        {
+            $contato = Contato::where('user_id', auth()->id())->first();
+            $empresa = Empresa::where('id', $contato->empresa_id)->first();
+            $servicos = $empresa->servicos;
+            
+            return view('servicos.licitacoes-index', compact('servicos'));
+        }
+        else
+        {
+            session()->flash('error', 'Usuário não está associado a nenhuma empresa!');
+            
+            return redirect()->route('home');
+        }
+    }
+
 }
