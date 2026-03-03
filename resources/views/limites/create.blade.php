@@ -37,7 +37,7 @@
                         <option value="">Selecione</option>
                         @foreach ($licitacoes as $licitacao)
                             <option value="{{ $licitacao->id }}">
-                                {{ $licitacao->descricao }}
+                                {{ $licitacao->descricao }} - {{ $licitacao->ano }}
                             </option>
                         @endforeach
                     </select>

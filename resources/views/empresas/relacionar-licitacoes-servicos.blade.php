@@ -17,7 +17,7 @@
                         <select name="licitacao_id" id="licitacao_id" class="form-select" required>
                             <option value="">-- Selecione --</option>
                             @foreach($licitacoes_associadas as $licitacao)
-                                <option value="{{ $licitacao->id }}">{{ $licitacao->descricao }} ({{ $licitacao->ano }})</option>
+                                <option value="{{ $licitacao->id }}">{{ $licitacao->descricao }} - {{ $licitacao->ano }}</option>
                             @endforeach
                         </select>
                     </div>
