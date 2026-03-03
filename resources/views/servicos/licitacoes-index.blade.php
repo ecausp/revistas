@@ -16,8 +16,10 @@
                 <tr>
                     <th>Serviço</th>
                     <th>Empresa</th>
-                    <td>Licitação</td>
+                    <th>Licitação</th>
                     <th>Unidade de Medida</th>
+                    <th>Valor Unitário</th>
+                    <th>Prazo (dias)</th>
                     <th>Ações</th>
                 </tr>
             </thead>
@@ -28,13 +30,18 @@
                     <td>{{ $servico->empresa->razao_social }}</td>
                     <td>{{ $servico->licitacao->descricao }} - {{ $servico->licitacao->ano }}</td>
                     <td>{{ $servico->servico->unidade_medida }}</td>
+                    <td style="text-align: right;">{{ $servico->valor_unitario }}</td>
+                    <td style="text-align: right;">{{ $servico->prazo }}</td>
                     <td>
-                        <a href="{{ route('servicos.show', $servico) }}" class="btn btn-primary"><i
+                        <a href="{{ route('servicos.show', $servico->servico) }}" class="btn btn-primary"><i
                                 class="fas fa-eye"></i> </a>
                                 
                         @if(auth()->user()->hasRole('admin') || auth()->user()->hasRole('financeiro'))
-                        <a href="{{ route('servicos.edit', $servico) }}" class="btn btn-primary"><i
+                        @if(!$servico->servico->limites()->exists())
+                        
+                        <a href="{{ route('servicos-licitacoes.edit', $servico->servico) }}" class="btn btn-primary"><i
                                 class="fas fa-edit"></i></a>
+                        @endif
                         @endif
                     </td>
                 </tr>
