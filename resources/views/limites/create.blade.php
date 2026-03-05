@@ -97,7 +97,7 @@
                  RESUMO FINANCEIRO
             ========================== --}}
             <div class="valor-disponivel">
-                <h6>Resumo financeiro</h6>
+                <h4><strong>Resumo financeiro</strong></h4>
 
                 <div class="linha-valor">
                     <span>Recurso disponível</span>
@@ -124,7 +124,7 @@
                  AÇÕES
             ========================== --}}
             <div class="mt-4 text-right">
-                <button type="submit" class="btn btn-success">
+                <button type="submit" class="btn btn-success" id="btn-salvar">
                     Salvar limite
                 </button>
             </div>
@@ -258,17 +258,27 @@ $(document).ready(function () {
     }
 
     function calcularDiferenca() {
-        let base   = parseFloat($('#valor_recurso_financeiro').text().replace(/\./g,'').replace(',','.')) || 0;
-        let usados = parseFloat($('#valor_limites_cadastrados').text().replace(/\./g,'').replace(',','.')) || 0;
-        let pedido = parseFloat($('#valor_total_pedido').text().replace(/\./g,'').replace(',','.')) || 0;
+    // Mantendo exatamente os nomes que você já usava
+    let base   = parseFloat($('#valor_recurso_financeiro').text().replace(/\./g,'').replace(',','.')) || 0;
+    let usados = parseFloat($('#valor_limites_cadastrados').text().replace(/\./g,'').replace(',','.')) || 0;
+    let pedido = parseFloat($('#valor_total_pedido').text().replace(/\./g,'').replace(',','.')) || 0;
 
-        let diff = base - (usados + pedido);
+    let diff = base - (usados + pedido);
 
-        $('#diferenca_valores')
-            .text(diff.toLocaleString('pt-BR', { minimumFractionDigits: 2 }))
-            .removeClass('valor-positivo valor-negativo valor-zero')
-            .addClass(diff > 0 ? 'valor-positivo' : diff < 0 ? 'valor-negativo' : 'valor-zero');
+    // 1. Atualiza o texto na tela usando a sua variável 'diff'
+    $('#diferenca_valores').text(
+        diff.toLocaleString('pt-BR', { minimumFractionDigits: 2 })
+    );
+
+    // 2. Trava do botão e cores usando a sua lógica
+    if (diff < 0) {
+        $('#diferenca_valores').removeClass('valor-positivo valor-zero').addClass('valor-negativo');
+        $('#btn-salvar').prop('disabled', true).css('cursor', 'not-allowed');
+    } else {
+        $('#diferenca_valores').removeClass('valor-negativo valor-zero').addClass('valor-positivo');
+        $('#btn-salvar').prop('disabled', false).css('cursor', 'pointer');
     }
+}
 
     $('#licitacao_id, #servico_id').on('change', carregarDadosRelacao);
     $('#licitacao_id, #revista_id').on('change', carregarValorRecursoFinanceiro);
