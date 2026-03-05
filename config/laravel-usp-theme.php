@@ -3,7 +3,15 @@
 $submenuAjuda = [
     [
         'text' => '<i class="fas fa-building" aria-hidden="true"></i> Empresa',
-        'url' => 'empresas/ajuda',
+        'url' => 'ajuda/empresas',
+    ],
+    [
+        'text' => '<i class="fas fa-building" aria-hidden="true"></i> Financeiro',
+        'url' => 'ajuda/financeiro',
+    ],
+    [
+        'text' => '<i class="fas fa-building" aria-hidden="true"></i> Revista',
+        'url' => 'ajuda/revista',
     ],
 
 ];

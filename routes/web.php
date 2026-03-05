@@ -65,6 +65,8 @@ Route::get('/limites/total', [LimiteController::class, 'totalPorRevistaELicitaca
 
 // para acessar as ajudas:
 Route::get('/ajuda/empresas', [AjudaController::class, 'empresasAjuda'])->name('ajuda.empresas');
+Route::get('/ajuda/financeiro', [AjudaController::class, 'financeiroAjuda'])->name('ajuda.financeiro');
+Route::get('/ajuda/revista', [AjudaController::class, 'revistaAjuda'])->name('ajuda.revista');
 
 
 Route::resource('licitacoes', LicitacaoController::class)->parameters(['licitacoes' => 'licitacao']);
