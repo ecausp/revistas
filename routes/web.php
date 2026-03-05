@@ -15,6 +15,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\SaldoController;
+use App\Http\Controllers\AjudaController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PedidoServicoController;
 
@@ -63,7 +64,7 @@ Route::post('/empresas/{empresa}/relacionar-licitacoes-servicos', [EmpresaContro
 Route::get('/limites/total', [LimiteController::class, 'totalPorRevistaELicitacao'])->name('limites.total');
 
 // para acessar as ajudas:
-Route::get('/empresas/ajuda', [EmpresaController::class, 'empresasAjuda'])->name('empresas.ajuda');
+Route::get('/ajuda/empresas', [AjudaController::class, 'empresasAjuda'])->name('ajuda.empresas');
 
 
 Route::resource('licitacoes', LicitacaoController::class)->parameters(['licitacoes' => 'licitacao']);
