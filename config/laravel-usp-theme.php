@@ -37,7 +37,7 @@ $submenuPedidos = [
     ],
     [
         'text' => '<i class="fas fa-list-ul" aria-hidden="true"></i> Listar',
-        'url' => 'servicos',
+        'url' => 'servicos-licitacoes',
         'can' => 'acesso-empresa'
     ],
     [

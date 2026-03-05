@@ -6,6 +6,7 @@ use App\Models\Servico;
 use App\Models\User;
 use App\Models\Contato;
 use App\Models\Empresa;
+use App\Models\Limite;
 use App\Models\EmpresaLicitacaoServico;
 use Illuminate\Http\Request;
 
@@ -20,8 +21,7 @@ class ServicoController extends Controller
         // admin e financeiro podem visualizar todos os servicos
         if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro'))
         {
-            $servicos = EmpresaLicitacaoServico::all();
-            //dd($servicos);
+            $servicos = Servico::all();
             return view('servicos.index', compact('servicos'));
         }
         // se o usuario for contato de uma empresa, só pode ver os serviços prestados pela sua empresa
@@ -29,8 +29,8 @@ class ServicoController extends Controller
         {
             $contato = Contato::where('user_id', auth()->id())->first();
             $empresa = Empresa::where('id', $contato->empresa_id)->first();
-            $servicos = $empresa->servicos;
-            //dd($servicos);
+            $servicos = $empresa->servicos->pluck('servico');
+            
             return view('servicos.index', compact('servicos'));
         }
         else
@@ -138,7 +138,7 @@ class ServicoController extends Controller
      */
     public function edit(Servico $servico)
     {
-                $this->authorize("admin-financeiro");
+        $this->authorize("admin-financeiro");
 
         $unidades_medida = $stringArray = explode(",", config('revistas.unidadesMedida'));
         return view('servicos.edit', compact('servico', 'unidades_medida'));
@@ -192,4 +192,57 @@ class ServicoController extends Controller
     ]);
 }
 
+    public function servicosLicitacoes()
+    {   
+        \UspTheme::activeUrl('servicos-licitacoes');
+        // admin e financeiro podem visualizar todos os servicos
+        if(auth()->user()->hasRole('admin') || auth()->user()->hasRole(roles: 'financeiro'))
+        {
+            $servicos = EmpresaLicitacaoServico::all();
+            return view('servicos.licitacoes-index', compact('servicos'));
+        }
+        // se o usuario for contato de uma empresa, só pode ver os serviços prestados pela sua empresa
+        else if(Contato::where('user_id', auth()->id())->exists())
+        {
+            $contato = Contato::where('user_id', auth()->id())->first();
+            $empresa = Empresa::where('id', $contato->empresa_id)->first();
+            $servicos = $empresa->servicos;
+            
+            return view('servicos.licitacoes-index', compact('servicos'));
+        }
+        else
+        {
+            session()->flash('error', 'Usuário não está associado a nenhuma empresa!');
+            
+            return redirect()->route('home');
+        }
+    }
+
+    public function editarServicoLicitacao(Servico $servico)
+    {
+        if(!$servico->limites()->exists())
+        {
+            $relacao = EmpresaLicitacaoServico::where('servico_id', $servico->id)->first();
+
+            return view('servicos.licitacoes-editar', compact('relacao'));
+        }
+        else
+            session()->flash('error', 'Esse serviço não pode ser editado!');
+            return redirect()->route('home');
+        
+    }
+
+public function updateServicoLicitacao(Request $request, EmpresaLicitacaoServico $relacao)
+{
+    if($relacao->servico->limites()->exists()){
+        return redirect()->back()->with('error', 'Alteração não permitida: Este serviço possui limites vinculados.');
+    }
+
+    $valorFormatado = str_replace(['.', ','], ['', '.'], $request->valor_unitario);
+    $relacao->valor_unitario = $valorFormatado;
+    $relacao->prazo = $request->prazo;
+    $relacao->save();
+
+    return redirect()->route('servicos-licitacoes.index')->with('success', 'Serviço atualizado com sucesso!');
+}
 }

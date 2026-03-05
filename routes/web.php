@@ -144,8 +144,12 @@ Route::post('/pedidos/{pedido}/chat', [ChatController::class, 'store'])->name('c
 Route::post('/pedidos/{pedido}/anexar-arquivos', [PedidoController::class, 'storeArquivo'])
     ->name('pedidos.store-arquivo');
 
+// rota para os serviços que tem uma licitação e empresa associados
+Route::get('/servicos-licitacoes', [ServicoController::class, 'servicosLicitacoes'])->name('servicos-licitacoes.index');
 
-
+// rota para editar os serviços que tem uma licitação e empresa associados (mudar valor unitário e prazo)
+Route::get('servicos-licitacoes/edit/{servico}', [ServicoController::class, 'editarServicoLicitacao'])->name('servicos-licitacoes.edit');
+Route::put('/servicos-licitacoes/{relacao}', [ServicoController::class, 'updateServicoLicitacao'])->name('servicos-licitacoes.update');
 
 // ALTERAÇÕES DE STATUS
 # 1 - envia para analise da empresa

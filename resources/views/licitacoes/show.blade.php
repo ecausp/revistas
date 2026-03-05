@@ -6,7 +6,7 @@
 
 <div class="card">
     <div class="card-header h5">
-        Licitação: {{ $licitacao->descricao }}
+        Licitação: {{ $licitacao->descricao }} - {{ $licitacao->ano }}
     </div>
     <div class="card-body">
         <p><strong>Ano:</strong> {{ $licitacao->ano }}</p>
