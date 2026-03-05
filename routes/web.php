@@ -63,9 +63,8 @@ Route::post('/empresas/{empresa}/relacionar-licitacoes-servicos', [EmpresaContro
 Route::get('/limites/total', [LimiteController::class, 'totalPorRevistaELicitacao'])->name('limites.total');
 
 // para acessar as ajudas:
-Route::middleware(['auth'])->group(function(){
-    Route::get('/empresas/ajuda', [EmpresaController::class, 'empresasAjuda'])->name('empresas.ajuda');
-});
+Route::get('/empresas/ajuda', [EmpresaController::class, 'empresasAjuda'])->name('empresas.ajuda');
+
 
 Route::resource('licitacoes', LicitacaoController::class)->parameters(['licitacoes' => 'licitacao']);
 
