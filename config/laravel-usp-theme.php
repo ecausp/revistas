@@ -4,7 +4,6 @@ $submenuAjuda = [
     [
         'text' => '<i class="fas fa-building" aria-hidden="true"></i> Empresa',
         'url' => 'empresas/ajuda',
-        'can' => 'logado'
     ],
 
 ];
@@ -165,7 +164,6 @@ $right_menu = [
     [
         'text' => '<i class="fas fa-question-circle"></i> Ajuda',
         'submenu' => $submenuAjuda,
-        'can' => 'logado',
     ],
     [
         'key' => 'senhaunica-socialite',
