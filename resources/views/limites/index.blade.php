@@ -29,7 +29,7 @@
             <tbody>
                 @foreach ($limites as $limite)
                 <tr>
-                    <td>{{ $limite->licitacao->descricao }}</td>
+                    <td>{{ $limite->licitacao->descricao }} - {{ $limite->licitacao->ano }}</td>
                     <td>{{ $limite->revista->name }}</td>
 
 
