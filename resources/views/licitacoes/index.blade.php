@@ -53,6 +53,9 @@
                         <button type="button" class="btn btn-primary" title="Associar Empresas à Licitação" data-bs-toggle="modal" data-bs-target="#empresasModal{{ $licitacao->id }}">
                             <i class="fas fa-building"></i>
                         </button>
+                    
+                        <a href="{{ route('saldos.create', ['licitacao' => $licitacao->id]) }}" class="btn btn-primary">
+                            <i class="fas fa-money-bill"></i></a>
 
                         <!-- Inclui o modal partial -->
                         @include('licitacoes.partials.modal-empresas', ['licitacao' => $licitacao, 'empresas' => $empresas])

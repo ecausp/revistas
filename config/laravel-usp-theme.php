@@ -3,8 +3,15 @@
 $submenuAjuda = [
     [
         'text' => '<i class="fas fa-building" aria-hidden="true"></i> Empresa',
-        'url' => 'empresas/ajuda',
-        'can' => 'logado'
+        'url' => 'ajuda/empresas',
+    ],
+    [
+        'text' => '<i class="fas fa-calculator" aria-hidden="true"></i> Financeiro',
+        'url' => 'ajuda/financeiro',
+    ],
+    [
+        'text' => '<i class="fas fa-book" aria-hidden="true"></i> Revista',
+        'url' => 'ajuda/revista',
     ],
 
 ];
@@ -165,7 +172,6 @@ $right_menu = [
     [
         'text' => '<i class="fas fa-question-circle"></i> Ajuda',
         'submenu' => $submenuAjuda,
-        'can' => 'logado',
     ],
     [
         'key' => 'senhaunica-socialite',
