@@ -32,10 +32,12 @@
                         @endforeach
                     </td>
                     <td>
-                        <a href="{{ route('revistas.show', $revista) }}" class="btn btn-primary"><i
+                        <a href="{{ route('revistas.show', $revista) }}" class="btn btn-primary" title="Visualizar Revista"><i
                                 class="fas fa-eye"></i> </a>
-                        <a href="{{ route('revistas.edit', $revista) }}" class="btn btn-primary"><i
+                        <a href="{{ route('revistas.edit', $revista) }}" class="btn btn-primary" title="Editar Revista"><i
                                 class="fas fa-edit"></i></a>
+                        <a href="{{ route('solicitantes.create',  $revista)}}" class="btn btn-primary" title="Cadastrar Solicitante"><i 
+                                class="fas fa-user"></i></a>
                     </td>
                 </tr>
                 @endforeach
