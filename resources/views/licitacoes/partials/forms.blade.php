@@ -23,19 +23,6 @@
         @endif
     </button>
 
-    @if (isset($licitacao))
-    <a href="{{ route('empresas.create',  $licitacao )}}" class="btn btn-success"><i class="fas fa-building"></i>
-        Empresa(s)</a>
-    @endif
-
-    @if(auth()->user()->hasRole('financeiro') && isset($licitacao))
-    <a href="{{ route('saldos.create', ['licitacao' => $licitacao->id]) }}" 
-       class="btn btn-success">
-        <i class="fas fa-money-bill"></i> Recursos financeiros
-    </a>
-    @endif
-
-
     <a href="{{ route('licitacoes.index') }}" class="btn btn-secondary"><i class="fas fa-chevron-left"></i>
         Voltar</a>
 </div>
