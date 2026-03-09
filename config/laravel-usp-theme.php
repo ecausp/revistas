@@ -6,11 +6,11 @@ $submenuAjuda = [
         'url' => 'ajuda/empresas',
     ],
     [
-        'text' => '<i class="fas fa-building" aria-hidden="true"></i> Financeiro',
+        'text' => '<i class="fas fa-calculator" aria-hidden="true"></i> Financeiro',
         'url' => 'ajuda/financeiro',
     ],
     [
-        'text' => '<i class="fas fa-building" aria-hidden="true"></i> Revista',
+        'text' => '<i class="fas fa-book" aria-hidden="true"></i> Revista',
         'url' => 'ajuda/revista',
     ],
 
