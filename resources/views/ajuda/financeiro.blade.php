@@ -72,11 +72,11 @@
                     </li>
                     <li>
                       Esse menu contém um campo que traz todas as empresas que estão cadastradas no sistema, bata selecionar a empresa desejada e clicar em 
-                      <span class="badge badge-primary p-2"><i class="fas fa-save" aria-hidden="true"></i>Salvar</span> para salvar.
+                      <span class="badge badge-primary p-2"><i class="fas fa-save" aria-hidden="true"></i> Salvar</span> para salvar.
                     </li>
                     <li>
                       Caso a empresa desejada não seja encontrada, basta clicar em 
-                      <span class="badge badge-primary p-2"><i class="fas fa-plus" aria-hidden="true"></i>Cadastrar nova empresa</span> para ser redirecionado para a página de cadastro de uma nova empresa.
+                      <span class="badge badge-primary p-2"><i class="fas fa-plus" aria-hidden="true"></i> Cadastrar nova empresa</span> para ser redirecionado para a página de cadastro de uma nova empresa.
                     </li>
                     <li>Cao seja necessário cadastrar uma nova empresa, basta repetir esse passo-a-passo para associá-la com a licitação.</li>
                 </ol>
