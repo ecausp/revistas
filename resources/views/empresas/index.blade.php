@@ -26,13 +26,16 @@
                     <td>{{ $empresa->cnpj }}</td>
                     <td>{{ $empresa->razao_social }}</td>
                     <td>
-                        <a href="{{ route('empresas.show', $empresa) }}" class="btn btn-primary"><i
+                        <a href="{{ route('empresas.show', $empresa) }}" class="btn btn-primary" title="Visualizar Empresa"><i
                                 class="fas fa-eye"></i> </a>
                         @if(auth()->user()->hasRole('admin') || auth()->user()->hasRole('financeiro'))
-                        <a href="{{ route('empresas.edit', $empresa) }}" class="btn btn-primary"><i
+                        <a href="{{ route('empresas.edit', $empresa) }}" class="btn btn-primary" title="Editar informações da Empresa"><i
                                 class="fas fa-edit"></i></a>
                         <a href="{{ route('empresas.relacionar-licitacoes-servicos', $empresa) }}" title="Associar Serviços" class="btn btn-primary"><i
                                 class="fas fa-plus"></i></a>
+                        <a href="{{ route('contatos.create', $empresa)}}" class="btn btn-primary" title="Cadastrar Contato">
+                            <i class="fas fa-user"></i></a>
+
                         @endif
                     </td>
                 </tr>
