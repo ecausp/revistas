@@ -102,10 +102,7 @@
                     </li>
                     <li>
                       Na tabela de licitações, sob a coluna <span class="badge badge-light p-2">Ações</span> clique no botão 
-                      <span class="badge badge-primary p-2"><i class="fas fa-edit" aria-hidden="true"> </i></span> para abrir a página de Edição da Licitação.
-                    </li>
-                    <li>
-                      Na página de Edição da Licitação, clique no botão <span class="badge badge-success p-2"><i class="fas fa-money-bill" aria-hidden="true"> </i> Recursos Financeiros</span> para abrir o menu de Recursos Financeiros para abrir a página de cadastro de Recursos Financeiros.
+                      <span class="badge badge-primary p-2"><i class="fas fa-money-bill" aria-hidden="true"> </i></span> para abrir a página de Cadastro de Recursos Financeiros da Licitação.
                     </li>
                     <li>
                       Na página de cadastro de Recursos Financeiros, haverá um menu onde é possível selecionar todas as revistas para as quais se deseja cadastrar os valores dos Recursos Financeiros.
@@ -139,11 +136,7 @@
                   </li>
                   <li>
                     Na tabela de Empresas, sob a coluna <span class="badge badge-light p-2"> Ações</span>, clique no botão 
-                    <span class="badge badge-primary p-2"><i class="fas fa-edit" aria-hidden="true"> </i></span> para abrir a página de Edição da Empresa.
-                  </li>
-                  <li>
-                    Na página de Edição da Empresa, clique no botão <span class="badge badge-success p-2"><i class="fas fa-user" aria-hidden="true"> </i> Contato(s)</span> 
-                    para abrir o menu de Contato(s) para abrir a página de Cadastro de Contato da Empresa
+                    <span class="badge badge-primary p-2"><i class="fas fa-user" aria-hidden="true"> </i></span> para abrir a página de cadastro de Contato da Empresa.
                   </li>
                   <li>
                     Preencha no formulário as informações do Contato e, quando tiver terminado, basta clicar em 
