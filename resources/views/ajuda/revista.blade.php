@@ -12,7 +12,7 @@
 
 		<div class="accordion" id="accordionAjuda">
 		
-        <div class="card">
+      <div class="card">
 			<div class="card-header" id="heading1">
 			  <h2 class="mb-0">
 				<button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapse0" aria-expanded="true" aria-controls="collapse0">
@@ -30,10 +30,7 @@
                     Abaixo do item <span class="badge badge-light p-2"><i class="fas fa-book" aria-hidden="true"> </i> Revistas</span>, selecione <span class="badge badge-light p-2"><i class="fas fa-list-ul" aria-hidden="true"> </i> Listar</span> para abrir a lista de Revistas.</li>
                   </li>
                   <li>
-                    Nos botões de ações clique no botão <span class="badge badge-primary p-2"><i class="fas fa-edit" aria-hidden="true"> </i></span> para Editar as informações da Revista.
-                  </li>
-                  <li>
-                    Uma vez na página de edição, clique no botão  <span class="badge badge-warning p-2"><i class="fas fa-user" aria-hidden="true"></i> Solicitante(s)</span> para abrir a página de Cadastro de Solicitantes.
+                    Nos botões de ações clique no botão <span class="badge badge-primary p-2"><i class="fas fa-user" aria-hidden="true"> </i></span> para acessar a página de Cadastro de Solicitantes.
                   </li>
                   <li>
                     Preencha o nome do Solicitante que deseja cadastrar no campo correspondente e o sistema deve preencher automaticamente as outras informações. Caso o Solicitante desejado não seja encontrado, entre em contato com o suporte.
@@ -46,7 +43,7 @@
 			</div>
 		  </div>
 
-    <div class="card">
+      <div class="card">
 			<div class="card-header" id="heading1">
 			  <h2 class="mb-0">
 				<button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapse1" aria-expanded="true" aria-controls="collapse1">
