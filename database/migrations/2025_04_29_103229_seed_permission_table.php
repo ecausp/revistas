@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
+use Spatie\Permission\PermissionRegistrar;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -11,15 +12,36 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Permission::firstOrCreate(['name' => 'revistas.empresa']);
-        Permission::firstOrCreate(['name' => 'revistas.financeiro']);
-        Permission::firstOrCreate(['name' => 'revistas.revista']);
+        $guardName = 'web';
+        $permissions = ['revistas.empresa', 'revistas.financeiro', 'revistas.revista'];
+        $permissionModels = collect();
 
-        $revista = Role::firstOrCreate(['name' => 'revista']);
-        $revista->givePermissionTo(['revistas.empresa', 'revistas.financeiro', 'revistas.revista']);
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
 
-        $admin = Role::firstOrCreate(["name"=>"admin"]);
-        $admin->givePermissionTo(['revistas.empresa', 'revistas.financeiro', 'revistas.revista']);
+        foreach ($permissions as $permissionName) {
+            $permissionModels->push(
+                Permission::query()->firstOrCreate([
+                    'name' => $permissionName,
+                    'guard_name' => $guardName,
+                ])
+            );
+        }
+
+        $revista = Role::query()->firstOrCreate([
+            'name' => 'revista',
+            'guard_name' => $guardName,
+        ]);
+        $admin = Role::query()->firstOrCreate([
+            'name' => 'admin',
+            'guard_name' => $guardName,
+        ]);
+
+        $permissionModels = $permissionModels->unique('id')->values();
+
+        $revista->syncPermissions($permissionModels);
+        $admin->syncPermissions($permissionModels);
+
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
     }
 
     /**
