@@ -33,3 +33,5 @@ docker-compose.yaml
 127_0_0_1.sql
 
 .codex
+
+.phpunit.result.cache
