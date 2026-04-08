@@ -18,6 +18,8 @@ class HomeController extends Controller
         $solicitante = (($user) ? Solicitante::where('user_id', $user->id)->first() : null);
         
         if ($solicitante) {
+            // Preserve flash messages when home performs an additional redirect.
+            session()->reflash();
             return redirect()->route('revistas.show', $solicitante->revista_id);
         }
         

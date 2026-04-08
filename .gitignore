@@ -29,6 +29,9 @@ php.ini
 docker-compose.yaml
 /docker-compose
 
-
 # banco de dados
 127_0_0_1.sql
+
+.codex
+
+.phpunit.result.cache
