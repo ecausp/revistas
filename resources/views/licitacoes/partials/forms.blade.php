@@ -5,7 +5,7 @@
 
 <div class="mb-1">
     <label for="ano" class="form-label">Ano</label>
-    <input type="month" class="form-control" name="ano" id="ano" value="{{ old('ano', isset($licitacao) ? $licitacao->ano : date('Y')) }}" placeholder="{{ date('Y') }}" required>
+    <input type="text" class="form-control" name="ano" id="ano" value="{{ old('ano', isset($licitacao) ? $licitacao->ano : date('Y')) }}" placeholder="{{ date('Y') }}" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required>
 </div>
 
 <div class="mb-1">

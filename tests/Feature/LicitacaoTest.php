@@ -60,7 +60,12 @@ class LicitacaoTest extends TestCase
     public function apenas_usuarios_com_permissao_podem_acessar_create_de_licitacao()
     {
         // Financeiro acessa
-        $this->actingAs($this->financeiro)->get(route('licitacoes.create'))->assertOk();
+        $this->actingAs($this->financeiro)
+            ->get(route('licitacoes.create'))
+            ->assertOk()
+            ->assertSee('name="ano"', false)
+            ->assertSee('type="text"', false)
+            ->assertDontSee('type="month"', false);
 
         // Usuário comum é barrado pela Policy/Authorize
         $this->actingAs($this->userComum)->get(route('licitacoes.create'))->assertForbidden();
