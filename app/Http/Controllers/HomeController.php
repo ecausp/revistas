@@ -7,6 +7,7 @@ use App\Models\Solicitante;
 use App\Models\Contato;
 use App\Models\Empresa;
 use App\Models\PedidoServico;
+use App\Models\EmpresaLicitacaoServico;
 
 class HomeController extends Controller
 {
@@ -30,7 +31,7 @@ class HomeController extends Controller
             $empresa = Empresa::find($contato->empresa_id);
     
             if ($empresa) {
-                $pedidoServicos = PedidoServico::query()
+                $pedidoServicosQuery = PedidoServico::query()
                     ->select('pedido_servico.*')
                     ->join('pedidos', 'pedido_servico.pedido_id', '=', 'pedidos.id')
                     ->join('empresa_licitacao_servico', function($join) use ($empresa) {
@@ -39,8 +40,11 @@ class HomeController extends Controller
                         ->where('empresa_licitacao_servico.empresa_id', '=', $empresa->id);
                     })
                     ->where('pedidos.status', 'em_execucao')
-                    ->with(['pedido', 'servico'])
-                    ->get();
+                    ->with(['pedido', 'servico']);
+
+                $pedidoServicos = EmpresaLicitacaoServico::aplicarFiltroDaEmpresaVigente(
+                    $pedidoServicosQuery
+                )->get();
                 
                 $listaUnificada = $pedidoServicos->map(function ($item) use ($empresa) {
                     return (object) [

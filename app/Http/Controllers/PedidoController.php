@@ -232,15 +232,16 @@ public function show(Pedido $pedido)
         ->orderBy('created_at', 'desc')
         ->get();
 
-    // 2. Coleta de IDs de Contatos percorrendo a árvore correta
-    $contatosIds = $pedido->servicos->flatMap(function ($servico) {
-        return $servico->empresasLicitacoes->flatMap(function ($relacao) {
-            return $relacao->empresa->contatos->pluck('user_id');
-        });
-    })->unique()->toArray();
+    $contatosIds = $this->empresasVigentesDoPedido($pedido)
+        ->pluck('contatos')
+        ->flatten()
+        ->pluck('user_id')
+        ->unique()
+        ->toArray();
 
     // 3. Busca os dados complementares (Query Builder - Retorna Objetos)
-    $dados = \DB::table('empresa_licitacao_servico')
+    $dados = EmpresaLicitacaoServico::query()
+    ->daEmpresaVigente()
     ->join('empresas', 'empresa_licitacao_servico.empresa_id', '=', 'empresas.id')
     ->where('licitacao_id', $pedido->licitacao_id)
     ->select(
@@ -369,7 +370,8 @@ public function show(Pedido $pedido)
             $qtd = $request->quantidades[$id] ?? 1;
 
             // --- Busca o valor na tabela tripla ---
-            $valorAcordado = \DB::table('empresa_licitacao_servico')
+            $valorAcordado = EmpresaLicitacaoServico::query()
+                ->daEmpresaVigente()
                 ->where('licitacao_id', $pedido->licitacao_id)
                 ->where('servico_id', $id)
                 ->value('valor_unitario');
@@ -430,7 +432,8 @@ public function show(Pedido $pedido)
             $qtd = $quantidades[$servicoId] ?? 1;
 
             // --- CORREÇÃO: Busca o valor na tabela tripla ---
-            $valorAcordado = \DB::table('empresa_licitacao_servico')
+            $valorAcordado = EmpresaLicitacaoServico::query()
+                ->daEmpresaVigente()
                 ->where('licitacao_id', $pedido->licitacao_id)
                 ->where('servico_id', $servicoId)
                 ->value('valor_unitario');
@@ -520,13 +523,7 @@ public function show(Pedido $pedido)
 
             $pedido->adicionarHistorico($pedido->status);
             
-            $servicos = $pedido->servicos->pluck('id');        
-            $empresas = Empresa::whereIn('id', function($query) use ($pedido, $servicos) {
-                $query->select('empresa_id')
-                ->from('empresa_licitacao_servico')
-                ->where('licitacao_id', $pedido->licitacao_id)
-                ->whereIn('servico_id', $servicos);
-            })->with('contatos')->get();
+            $empresas = $this->empresasVigentesDoPedido($pedido);
             
             $contatos = $empresas->pluck('contatos')->flatten();
 
@@ -639,13 +636,7 @@ public function show(Pedido $pedido)
         session()->flash('success', 'Pedido enviado para execução.');
 
         // 7) Notifica os contatos da empresa
-        $servicos = $pedido->servicos->pluck('id');     
-        $empresas = Empresa::whereIn('id', function($query) use ($pedido, $servicos) {
-        $query->select('empresa_id')
-              ->from('empresa_licitacao_servico')
-              ->where('licitacao_id', $pedido->licitacao_id)
-              ->whereIn('servico_id', $servicos);
-    })->with('contatos')->get(); 
+        $empresas = $this->empresasVigentesDoPedido($pedido);
 
     $contatos = $empresas->pluck('contatos')->flatten();
 
@@ -677,14 +668,7 @@ public function show(Pedido $pedido)
     {
         // 1. Pegamos o ID do serviço para buscar a empresa vinculada
         $servicoId = $pedido->servicos()->first()->id;
-
-        // 2. Buscamos a empresa e os contatos via tabela tripla (padronizando com suas outras funções)
-        $empresa = Empresa::whereIn('id', function($query) use ($pedido, $servicoId) {
-            $query->select('empresa_id')
-                ->from('empresa_licitacao_servico')
-                ->where('licitacao_id', $pedido->licitacao_id)
-                ->where('servico_id', $servicoId);
-        })->with('contatos')->first();
+        $empresa = $this->empresasVigentesDoPedido($pedido, collect([$servicoId]))->first();
 
         $contatos = $empresa ? $empresa->contatos : collect();
 
@@ -734,13 +718,7 @@ public function show(Pedido $pedido)
     
         $servicoIds = $pedido->servicos->pluck('id');
 
-        // 2. Busca as empresas que estão ligadas a estes serviços NESTA Licitação específica
-        $empresas = Empresa::whereIn('id', function($query) use ($pedido, $servicoIds) {
-        $query->select('empresa_id')
-              ->from('empresa_licitacao_servico')
-              ->where('licitacao_id', $pedido->licitacao_id)
-              ->whereIn('servico_id', $servicoIds);
-    })->with('contatos')->get(); 
+        $empresas = $this->empresasVigentesDoPedido($pedido, $servicoIds);
 
     $contatos = $empresas->pluck('contatos')->flatten();
             
@@ -817,13 +795,7 @@ public function show(Pedido $pedido)
         // 1. Pega os IDs dos serviços deste pedido de forma simples
         $servicoIds = $pedido->servicos->pluck('id');
 
-        // 2. Busca as empresas que estão ligadas a estes serviços NESTA Licitação específica
-        $empresas = Empresa::whereIn('id', function($query) use ($pedido, $servicoIds) {
-            $query->select('empresa_id')
-                ->from('empresa_licitacao_servico')
-                ->where('licitacao_id', $pedido->licitacao_id)
-                ->whereIn('servico_id', $servicoIds);
-        })->with('contatos')->get();
+        $empresas = $this->empresasVigentesDoPedido($pedido, $servicoIds);
 
         $contatos = $empresas->pluck('contatos')->flatten();
         foreach($contatos as $contato){
@@ -877,7 +849,8 @@ private function getPedidosDoUsuario()
             $contato = Contato::where('user_id', $user->id)->first();
             
             // Busca IDs dos serviços que esta empresa presta (independente de licitação, para listar histórico geral)
-            $servicosDaEmpresa = \DB::table('empresa_licitacao_servico')
+            $servicosDaEmpresa = EmpresaLicitacaoServico::query()
+                ->daEmpresaVigente()
                 ->where('empresa_id', $contato->empresa_id)
                 ->pluck('servico_id');
 
@@ -956,7 +929,8 @@ private function getPedidosDoUsuario()
             $qtd = $validated['quantidades'][$servicoId] ?? 1;
 
             // --- Busca o valor na tabela tripla ---
-            $valor = \DB::table('empresa_licitacao_servico')
+            $valor = EmpresaLicitacaoServico::query()
+                ->daEmpresaVigente()
                 ->where('licitacao_id', $pedido->licitacao_id)
                 ->where('servico_id', $servicoId)
                 ->value('valor_unitario');
@@ -1012,5 +986,17 @@ private function getPedidosDoUsuario()
             }
         }
         return $arquivos_salvos;
+    }
+    private function empresasVigentesDoPedido(Pedido $pedido, $servicoIds = null)
+    {
+        $servicoIds ??= $pedido->servicos->pluck('id');
+
+        $empresaIds = EmpresaLicitacaoServico::query()
+            ->daEmpresaVigente()
+            ->where('licitacao_id', $pedido->licitacao_id)
+            ->whereIn('servico_id', $servicoIds)
+            ->select('empresa_id');
+
+        return Empresa::whereIn('id', $empresaIds)->with('contatos')->get();
     }
 }

@@ -7,6 +7,7 @@ use App\Models\Limite;
 use App\Models\Revista;
 use App\Models\Servico;
 use App\Models\User;
+use App\Models\EmpresaLicitacaoServico;
 use Illuminate\Http\Request;
 
 class LimiteController extends Controller
@@ -46,7 +47,8 @@ class LimiteController extends Controller
         $limites = Limite::all();
         
         // para pegar qual empresa presta cada serviço na licitação específica
-        $empresas = \DB::table('empresa_licitacao_servico')
+        $empresas = EmpresaLicitacaoServico::query()
+        ->daEmpresaVigente()
         ->join('empresas', 'empresa_licitacao_servico.empresa_id', '=', 'empresas.id')
         ->select(
             'empresa_licitacao_servico.licitacao_id',
@@ -92,7 +94,8 @@ class LimiteController extends Controller
         $this->authorize("admin-financeiro");
         $editor = User::where('id', $limite->editor)->first();
         $updated_at = $limite->updated_at;
-        $dadosRelacaoLimiteEmpresa = \DB::table('empresa_licitacao_servico')
+        $dadosRelacaoLimiteEmpresa = EmpresaLicitacaoServico::query()
+        ->daEmpresaVigente()
         ->join('empresas', 'empresa_licitacao_servico.empresa_id', '=', 'empresas.id')
         ->where('licitacao_id', $limite->licitacao_id)
         ->where('servico_id', $limite->servico_id)

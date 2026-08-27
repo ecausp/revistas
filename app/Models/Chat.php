@@ -51,13 +51,15 @@ public static function participantesDoChat(Pedido $pedido)
 {
     $usuarios = $pedido->revista->solicitantes->map(fn($s) => $s->user);
 
-    foreach ($pedido->servicos as $servico) {
-        // CORREÇÃO: Usar o relacionamento correto definido no Model Servico
-        foreach ($servico->empresasLicitacoes as $relacao) {
-            $usuarios = $usuarios->merge(
-                $relacao->empresa->contatos->map(fn($c) => $c->user)
-            );
-        }
+    $empresaIds = EmpresaLicitacaoServico::query()
+        ->daEmpresaVigente()
+        ->where('licitacao_id', $pedido->licitacao_id)
+        ->whereIn('servico_id', $pedido->servicos->pluck('id'))
+        ->pluck('empresa_id');
+
+    $empresas = Empresa::whereIn('id', $empresaIds)->with('contatos.user')->get();
+    foreach ($empresas as $empresa) {
+        $usuarios = $usuarios->merge($empresa->contatos->map(fn($contato) => $contato->user));
     }
 
     return $usuarios->unique('id');

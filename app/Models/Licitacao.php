@@ -23,7 +23,10 @@ class Licitacao extends Model
 
     public function empresas()
     {
-        return $this->belongsToMany(Empresa::class, 'empresa_licitacao')->withTimestamps();
+        return $this->belongsToMany(Empresa::class, 'empresa_licitacao')
+            ->withPivot(['classificacao', 'vigente', 'motivo_substituicao'])
+            ->withTimestamps()
+            ->orderByPivot('classificacao');
     }
     
     // Serviços dessa licitação

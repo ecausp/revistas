@@ -48,6 +48,51 @@ class LicitacaoServicoTest extends TestCase
     }
 
     /** @test */
+    public function dados_relacionados_considera_apenas_a_empresa_vigente()
+    {
+        $licitacao = Licitacao::factory()->create();
+        $servico = Servico::factory()->create();
+        [$vencedora, $substituta] = Empresa::factory()->count(2)->create();
+
+        $licitacao->empresas()->attach([
+            $vencedora->id => [
+                'classificacao' => 1,
+                'vigente' => false,
+                'motivo_substituicao' => null,
+            ],
+            $substituta->id => [
+                'classificacao' => 2,
+                'vigente' => true,
+                'motivo_substituicao' => 'Substituição contratual.',
+            ],
+        ]);
+        EmpresaLicitacaoServico::factory()->create([
+            'empresa_id' => $vencedora->id,
+            'licitacao_id' => $licitacao->id,
+            'servico_id' => $servico->id,
+            'valor_unitario' => 100,
+        ]);
+        EmpresaLicitacaoServico::factory()->create([
+            'empresa_id' => $substituta->id,
+            'licitacao_id' => $licitacao->id,
+            'servico_id' => $servico->id,
+            'valor_unitario' => 125,
+        ]);
+
+        $response = $this->actingAs($this->user)
+            ->getJson(route('licitacoes-servicos.dados', [
+                'licitacao_id' => $licitacao->id,
+                'servico_id' => $servico->id,
+            ]));
+
+        $response->assertOk();
+        $response->assertJson([
+            'valor_unitario' => 125,
+            'empresa' => ['id' => $substituta->id],
+        ]);
+    }
+
+    /** @test */
     public function retorna_404_quando_a_relacao_licitacao_servico_nao_existe()
     {
         $licitacao = Licitacao::factory()->create();

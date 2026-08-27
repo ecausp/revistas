@@ -7,6 +7,7 @@ use App\Models\Empresa;
 use App\Models\PedidoServico;
 use App\Models\Contato;
 use App\Models\Solicitante;
+use App\Models\EmpresaLicitacaoServico;
 use Illuminate\Support\Facades\DB;
 
 class PedidoServicoController extends Controller
@@ -55,14 +56,15 @@ class PedidoServicoController extends Controller
             $contato = Contato::where('user_id', $user->id)->first();
             $empresaId = $contato->empresa_id;
 
-            return $query->select('pedido_servico.*')
+            $query->select('pedido_servico.*')
                 ->join('pedidos', 'pedido_servico.pedido_id', '=', 'pedidos.id')
                 ->join('empresa_licitacao_servico', function($join) use ($empresaId) {
                     $join->on('pedidos.licitacao_id', '=', 'empresa_licitacao_servico.licitacao_id')
                          ->on('pedido_servico.servico_id', '=', 'empresa_licitacao_servico.servico_id')
                          ->where('empresa_licitacao_servico.empresa_id', '=', $empresaId);
-                })
-                ->get();
+                });
+
+            return EmpresaLicitacaoServico::aplicarFiltroDaEmpresaVigente($query)->get();
         }
 
         // 2. Solicitante (Filtra pela revista)
@@ -89,7 +91,8 @@ class PedidoServicoController extends Controller
         $licitacaoIds = $pedidoServicos->pluck('pedido.licitacao_id')->unique();
         $servicoIds = $pedidoServicos->pluck('servico_id')->unique();
 
-        return DB::table('empresa_licitacao_servico')
+        return EmpresaLicitacaoServico::query()
+            ->daEmpresaVigente()
             ->join('empresas', 'empresa_licitacao_servico.empresa_id', '=', 'empresas.id')
             ->whereIn('licitacao_id', $licitacaoIds)
             ->whereIn('servico_id', $servicoIds)

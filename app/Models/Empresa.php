@@ -23,7 +23,9 @@ class Empresa extends Model
 
     public function licitacoes()
     {
-        return $this->belongsToMany(Licitacao::class, 'empresa_licitacao');
+        return $this->belongsToMany(Licitacao::class, 'empresa_licitacao')
+            ->withPivot(['classificacao', 'vigente', 'motivo_substituicao'])
+            ->withTimestamps();
     }
     public function servicos()
     {
