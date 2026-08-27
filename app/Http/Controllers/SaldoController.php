@@ -26,13 +26,15 @@ class SaldoController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'licitacao_id' => 'required|exists:licitacoes,id',
             'revista_id' => 'required|exists:revistas,id',
             'recurso_recebido' => 'required|numeric',
-            'recurso_estagio' => 'required|numeric',
+            'recurso_estagio' => 'nullable|numeric',
+            'observacao' => 'nullable|string',
         ]);
-        
+
+        $recursoEstagio = $validated['recurso_estagio'] ?? 0;
 
 
         $licitacao = Licitacao::findOrFail($request->licitacao_id);
@@ -72,7 +74,8 @@ class SaldoController extends Controller
             ],
             [
                 'recurso_recebido' => $request->recurso_recebido,
-                'recurso_estagio' => $request->recurso_estagio,
+                'recurso_estagio' => $recursoEstagio,
+                'observacao' => $validated['observacao'] ?? null,
             ]
         );
 

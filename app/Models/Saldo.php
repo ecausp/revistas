@@ -20,6 +20,7 @@ class Saldo extends Model
         'recurso_recebido',
         'recurso_estagio',
         'valor_contratado',
+        'observacao',
     ];
 
     public function revista()

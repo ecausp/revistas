@@ -11,7 +11,9 @@
     <div class="card-body">
 
     <span><strong>Licitação: </strong></span><span>{{ $saldo->licitacao->descricao }} / {{ $saldo->licitacao->ano }}</span><br />  
-    <span><strong>Revista: </strong></span><span>{{ $saldo->revista->name }}</span>
+    <span><strong>Revista: </strong></span><span>{{ $saldo->revista->name }}</span><br />
+    <span><strong>Observação: </strong></span>
+    <span>{{ $saldo->observacao ?: 'Não informada' }}</span>
 
     <x-table>
         <thead>
