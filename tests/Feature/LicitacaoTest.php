@@ -137,18 +137,116 @@ class LicitacaoTest extends TestCase
 
         $response = $this->actingAs($this->financeiro)
             ->post(route('licitacoes.addEmpresas', $licitacao), [
-                'empresas' => $ids
+                'empresas' => [
+                    $ids[0] => ['selecionada' => 1, 'classificacao' => 1],
+                    $ids[1] => ['selecionada' => 1, 'classificacao' => 2],
+                ],
+                'empresa_vigente' => $ids[0],
             ]);
 
         $response->assertRedirect(route('licitacoes.index'));
         
         // Verifica se o relacionamento foi criado na tabela pivô
-        foreach ($ids as $id) {
+        foreach ($ids as $indice => $id) {
             $this->assertDatabaseHas('empresa_licitacao', [
                 'licitacao_id' => $licitacao->id,
-                'empresa_id' => $id
+                'empresa_id' => $id,
+                'classificacao' => $indice + 1,
+                'vigente' => $indice === 0,
             ]);
         }
+    }
+
+    /** @test */
+    public function pode_substituir_empresa_vigente_com_motivo()
+    {
+        $licitacao = Licitacao::factory()->create();
+        [$vencedora, $segundaColocada] = Empresa::factory()->count(2)->create();
+
+        $licitacao->empresas()->attach([
+            $vencedora->id => ['classificacao' => 1, 'vigente' => true],
+            $segundaColocada->id => ['classificacao' => 2, 'vigente' => false],
+        ]);
+
+        $response = $this->actingAs($this->financeiro)
+            ->post(route('licitacoes.addEmpresas', $licitacao), [
+                'empresas' => [
+                    $vencedora->id => ['selecionada' => 1, 'classificacao' => 1],
+                    $segundaColocada->id => [
+                        'selecionada' => 1,
+                        'classificacao' => 2,
+                        'motivo_substituicao' => 'Empresa vencedora desistiu do contrato.',
+                    ],
+                ],
+                'empresa_vigente' => $segundaColocada->id,
+            ]);
+
+        $response->assertRedirect(route('licitacoes.index'));
+        $this->assertDatabaseHas('empresa_licitacao', [
+            'licitacao_id' => $licitacao->id,
+            'empresa_id' => $vencedora->id,
+            'vigente' => false,
+        ]);
+        $this->assertDatabaseHas('empresa_licitacao', [
+            'licitacao_id' => $licitacao->id,
+            'empresa_id' => $segundaColocada->id,
+            'classificacao' => 2,
+            'vigente' => true,
+            'motivo_substituicao' => 'Empresa vencedora desistiu do contrato.',
+        ]);
+    }
+
+    /** @test */
+    public function exige_motivo_quando_a_empresa_vigente_nao_e_a_primeira_colocada()
+    {
+        $licitacao = Licitacao::factory()->create();
+        [$vencedora, $segundaColocada] = Empresa::factory()->count(2)->create();
+
+        $response = $this->actingAs($this->financeiro)
+            ->from(route('licitacoes.index'))
+            ->post(route('licitacoes.addEmpresas', $licitacao), [
+                'empresas' => [
+                    $vencedora->id => ['selecionada' => 1, 'classificacao' => 1],
+                    $segundaColocada->id => ['selecionada' => 1, 'classificacao' => 2],
+                ],
+                'empresa_vigente' => $segundaColocada->id,
+            ]);
+
+        $response->assertRedirect(route('licitacoes.index'));
+        $response->assertSessionHasErrors([
+            "empresas.{$segundaColocada->id}.motivo_substituicao",
+        ]);
+        $this->assertDatabaseCount('empresa_licitacao', 0);
+    }
+
+    /** @test */
+    public function exibe_classificacao_vigencia_e_motivo_da_substituicao()
+    {
+        $licitacao = Licitacao::factory()->create();
+        $empresa = Empresa::factory()->create(['razao_social' => 'Empresa Classificada']);
+        $licitacao->empresas()->attach($empresa->id, [
+            'classificacao' => 2,
+            'vigente' => true,
+            'motivo_substituicao' => 'Substituição por desistência.',
+        ]);
+
+        $index = $this->actingAs($this->financeiro)->get(route('licitacoes.index'));
+
+        $index->assertOk();
+        $index->assertSee('2ª - Empresa Classificada');
+        $index->assertSee('(Vigente)');
+
+        $licitacao->load('empresas');
+        $this->view('licitacoes.partials.empresas', ['licitacao' => $licitacao])
+            ->assertSee('2ª')
+            ->assertSee('Vigente')
+            ->assertSee('Substituição por desistência.');
+
+        $empresa->load('licitacoes');
+        $this->view('empresas.partials.licitacoes', ['empresa' => $empresa])
+            ->assertSee('2ª')
+            ->assertSee('Vigente')
+            ->assertSee('Substituição por desistência.');
     }
 
     /** @test */

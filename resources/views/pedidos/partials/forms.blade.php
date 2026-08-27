@@ -15,7 +15,8 @@
                 $mapaDados = collect([]); 
                 
                 if ($idLicitacaoAtual) {
-                    $mapaDados = \DB::table('empresa_licitacao_servico')
+                    $mapaDados = \App\Models\EmpresaLicitacaoServico::query()
+                        ->daEmpresaVigente()
                         ->join('empresas', 'empresa_licitacao_servico.empresa_id', '=', 'empresas.id')
                         ->where('licitacao_id', $idLicitacaoAtual)
                         ->select(

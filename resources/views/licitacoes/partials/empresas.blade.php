@@ -12,6 +12,9 @@
                 <tr>
                     <th>Razão Social</th>
                     <th>CNPJ</th>
+                    <th class="text-center">Classificação</th>
+                    <th class="text-center">Situação</th>
+                    <th>Motivo da substituição</th>
                     <th class="text-center">Serviços</th>
                     <th class="text-center">Ações</th>
                 </tr>
@@ -21,6 +24,11 @@
                 <tr>
                     <td>{{ $empresa->razao_social }}</td>
                     <td>{{ $empresa->cnpj }}</td>
+                    <td class="text-center">{{ $empresa->pivot->classificacao }}ª</td>
+                    <td class="text-center">
+                        {{ $empresa->pivot->vigente ? 'Vigente' : 'Classificada' }}
+                    </td>
+                    <td>{{ $empresa->pivot->motivo_substituicao ?: '-' }}</td>
                     <td class="text-center">
                         @if ($empresa->servicos->count() > 0)
                             {{-- 

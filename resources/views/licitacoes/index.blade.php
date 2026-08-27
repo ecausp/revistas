@@ -21,7 +21,7 @@
                     <th>Descrição</th>
                     <th>Ano</th>
                     <th>Valor Total</th>
-                    <th>Empresas Associadas</th>
+                    <th>Empresas Classificadas</th>
                     <th>Ações</th>
                 </tr>
             </thead>
@@ -35,7 +35,13 @@
                     <td>
                         @if ($licitacao->empresas->isNotEmpty())
                             @foreach ($licitacao->empresas as $empresa)
-                                <span>{{ $empresa->razao_social }} ; </span>
+                                <span>
+                                    {{ $empresa->pivot->classificacao }}ª - {{ $empresa->razao_social }}
+                                    @if ($empresa->pivot->vigente)
+                                        <strong>(Vigente)</strong>
+                                    @endif
+                                    @if (!$loop->last)<br>@endif
+                                </span>
                             @endforeach
                         @else
                             <span>Nenhuma empresa associada!</span>
@@ -50,38 +56,41 @@
                         <a href="{{ route('licitacoes.edit', $licitacao) }}" class="btn btn-primary"><i
                                 class="fas fa-edit"></i></a>
 
-                        <button type="button" class="btn btn-primary" title="Associar Empresas à Licitação" data-bs-toggle="modal" data-bs-target="#empresasModal{{ $licitacao->id }}">
+                        <button type="button" class="btn btn-primary" title="Classificar empresas da licitação"
+                            data-toggle="modal" data-target="#empresasModal{{ $licitacao->id }}">
                             <i class="fas fa-building"></i>
                         </button>
                     
                         <a href="{{ route('saldos.create', ['licitacao' => $licitacao->id]) }}" class="btn btn-primary">
                             <i class="fas fa-money-bill"></i></a>
 
-                        <!-- Inclui o modal partial -->
-                        @include('licitacoes.partials.modal-empresas', ['licitacao' => $licitacao, 'empresas' => $empresas])
                         @endif        
                     </td>
                 </tr>
                 @endforeach
             </tbody>
         </x-table>
+        @if(auth()->user()->hasRole('financeiro'))
+            @foreach ($licitacoes as $licitacao)
+                @include('licitacoes.partials.modal-empresas', [
+                    'licitacao' => $licitacao,
+                    'empresas' => $empresas,
+                ])
+            @endforeach
+        @endif
     </div>
     @endsection
     
 @section('javascripts_bottom')
     @parent
     <script>
-    $(document).ready(function() {
-        $('.select-empresas').select2({
-            width: '100%',
-            placeholder: 'Selecione as empresas'
+    document.querySelectorAll('.empresa-selecao').forEach(function (checkbox) {
+        checkbox.addEventListener('change', function () {
+            const linha = this.closest('tr');
+            linha.querySelectorAll('.empresa-dado').forEach(function (campo) {
+                campo.disabled = !checkbox.checked;
+            });
         });
     });
 </script>
-@endsection
-
-
-@section('javascripts_bottom')
-@parent
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 @endsection

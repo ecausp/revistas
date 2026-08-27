@@ -120,6 +120,40 @@ class ChatTest extends TestCase
     }
 
     /** @test */
+    public function notifica_apenas_contatos_da_empresa_vigente()
+    {
+        $this->licitacao->empresas()->attach($this->empresa->id, [
+            'classificacao' => 1,
+            'vigente' => true,
+        ]);
+        $empresaClassificada = Empresa::factory()->create();
+        $contatoClassificado = User::factory()->create();
+        Contato::create([
+            'user_id' => $contatoClassificado->id,
+            'empresa_id' => $empresaClassificada->id,
+        ]);
+        $this->licitacao->empresas()->attach($empresaClassificada->id, [
+            'classificacao' => 2,
+            'vigente' => false,
+        ]);
+        EmpresaLicitacaoServico::factory()->create([
+            'empresa_id' => $empresaClassificada->id,
+            'licitacao_id' => $this->licitacao->id,
+            'servico_id' => $this->servico->id,
+        ]);
+
+        $this->actingAs($this->solicitanteUser)
+            ->post(route('chat.store', $this->pedido), ['message' => 'Notificar vigente']);
+
+        Mail::assertSent(ChatEnviadoMail::class, function ($mail) {
+            return $mail->hasTo($this->contatoUser->email);
+        });
+        Mail::assertNotSent(ChatEnviadoMail::class, function ($mail) use ($contatoClassificado) {
+            return $mail->hasTo($contatoClassificado->email);
+        });
+    }
+
+    /** @test */
     public function view_do_pedido_contem_o_chat_e_identifica_contato_corretamente()
     {
         Chat::create([

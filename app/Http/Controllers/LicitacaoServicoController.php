@@ -15,6 +15,7 @@ class LicitacaoServicoController extends Controller
         ]);
 
         $relacao = EmpresaLicitacaoServico::with('empresa')
+            ->daEmpresaVigente()
             ->where('licitacao_id', $request->licitacao_id)
             ->where('servico_id', $request->servico_id)
             ->first();

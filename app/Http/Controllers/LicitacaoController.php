@@ -9,6 +9,9 @@ use App\Models\Solicitante;
 use App\Models\Saldo;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class LicitacaoController extends Controller
 {
@@ -51,7 +54,7 @@ class LicitacaoController extends Controller
     {
         \UspTheme::activeUrl('licitacoes');
 
-        $licitacoes = Licitacao::orderBy('ano', 'desc')->orderBy('descricao')->get();
+        $licitacoes = Licitacao::with('empresas')->orderBy('ano', 'desc')->orderBy('descricao')->get();
         $empresas = Empresa::get();
         return view('licitacoes.index', compact('licitacoes', 'empresas'));
     }
@@ -123,17 +126,83 @@ class LicitacaoController extends Controller
 
     public function addEmpresas(Request $request, Licitacao $licitacao)
     {
-        // Validação básica
-        $request->validate([
-            'empresas' => 'required|array',          // deve ser um array
-            'empresas.*' => 'exists:empresas,id',    // cada ID precisa existir na tabela empresas
+        $this->authorize('admin-financeiro');
+
+        $empresas = collect($request->input('empresas', []))
+            ->filter(fn ($dados) => !empty($dados['selecionada']))
+            ->all();
+
+        $validator = Validator::make([
+            'empresas' => $empresas,
+            'empresa_vigente' => $request->input('empresa_vigente'),
+        ], [
+            'empresas' => 'required|array|min:1',
+            'empresas.*.classificacao' => 'required|integer|min:1|distinct',
+            'empresas.*.motivo_substituicao' => 'nullable|string|max:2000',
+            'empresa_vigente' => 'required|integer|exists:empresas,id',
         ]);
 
-        // Vincula as empresas selecionadas à licitação
-        // syncWithoutDetaching evita remover empresas já vinculadas
-        $licitacao->empresas()->syncWithoutDetaching($request->empresas);
+        $validated = $validator->validate();
+        $empresaVigenteId = (int) $validated['empresa_vigente'];
+        $empresasIds = array_map('intval', array_keys($validated['empresas']));
 
-        // Redireciona de volta com mensagem de sucesso
+        if (!in_array($empresaVigenteId, $empresasIds, true)) {
+            throw ValidationException::withMessages([
+                'empresa_vigente' => 'A empresa vigente deve estar entre as empresas classificadas.',
+            ]);
+        }
+
+        $classificacoes = collect($validated['empresas'])
+            ->pluck('classificacao')
+            ->map(fn ($classificacao) => (int) $classificacao)
+            ->sort()
+            ->values()
+            ->all();
+
+        if ($classificacoes !== range(1, count($classificacoes))) {
+            throw ValidationException::withMessages([
+                'empresas' => 'As classificações devem ser sequenciais, começando em 1.',
+            ]);
+        }
+
+        $dadosVigente = $validated['empresas'][$empresaVigenteId];
+        if ((int) $dadosVigente['classificacao'] > 1 && blank($dadosVigente['motivo_substituicao'] ?? null)) {
+            throw ValidationException::withMessages([
+                "empresas.{$empresaVigenteId}.motivo_substituicao" =>
+                    'Informe o motivo da substituição da empresa vencedora.',
+            ]);
+        }
+
+        $empresasJaAssociadas = $licitacao->empresas()->pluck('empresas.id')->map(fn ($id) => (int) $id);
+        if ($empresasJaAssociadas->diff($empresasIds)->isNotEmpty()) {
+            throw ValidationException::withMessages([
+                'empresas' => 'Empresas já associadas à licitação devem permanecer classificadas.',
+            ]);
+        }
+
+        $dadosSincronizacao = collect($validated['empresas'])->mapWithKeys(
+            fn ($dados, $empresaId) => [
+                $empresaId => [
+                    'classificacao' => (int) $dados['classificacao'],
+                    'vigente' => (int) $empresaId === $empresaVigenteId,
+                    'motivo_substituicao' => $dados['motivo_substituicao'] ?? null,
+                ],
+            ]
+        )->all();
+
+        DB::transaction(function () use ($licitacao, $dadosSincronizacao) {
+            Licitacao::whereKey($licitacao->id)->lockForUpdate()->first();
+
+            DB::table('empresa_licitacao')
+                ->where('licitacao_id', $licitacao->id)
+                ->update([
+                    'classificacao' => DB::raw('classificacao + 1000000'),
+                    'vigente' => false,
+                ]);
+
+            $licitacao->empresas()->syncWithoutDetaching($dadosSincronizacao);
+        });
+
         session()->flash('success', 'Atualizado com sucesso!');
         return redirect()->route('licitacoes.index');
     }
