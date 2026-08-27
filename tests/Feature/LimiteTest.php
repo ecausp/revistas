@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Limite;
 use App\Models\Licitacao;
 use App\Models\Revista;
+use App\Models\Saldo;
 use App\Models\Servico;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
@@ -67,6 +68,74 @@ class LimiteTest extends TestCase
             'servico_id' => $this->servico->id,
             'editor' => $this->financeiro->id 
         ]);
+    }
+
+    /** @test */
+    public function financeiro_pode_criar_limite_acima_do_recurso_disponivel()
+    {
+        Saldo::factory()->create([
+            'licitacao_id' => $this->licitacao->id,
+            'revista_id' => $this->revista->id,
+            'recurso_recebido' => 100,
+        ]);
+
+        $dados = [
+            'licitacao_id' => $this->licitacao->id,
+            'revista_id' => $this->revista->id,
+            'servico_id' => $this->servico->id,
+            'quantidade' => 10,
+            'valor_unitario' => 150,
+        ];
+
+        $response = $this->actingAs($this->financeiro)
+            ->post(route('limites.store'), $dados);
+
+        $response->assertRedirect(route('limites.index'));
+        $this->assertDatabaseHas('limites', $dados);
+    }
+
+    /** @test */
+    public function financeiro_pode_atualizar_limite_acima_do_recurso_disponivel()
+    {
+        Saldo::factory()->create([
+            'licitacao_id' => $this->licitacao->id,
+            'revista_id' => $this->revista->id,
+            'recurso_recebido' => 100,
+        ]);
+        $limite = Limite::factory()->create([
+            'licitacao_id' => $this->licitacao->id,
+            'revista_id' => $this->revista->id,
+            'servico_id' => $this->servico->id,
+        ]);
+        $dados = [
+            'licitacao_id' => $this->licitacao->id,
+            'revista_id' => $this->revista->id,
+            'servico_id' => $this->servico->id,
+            'quantidade' => 10,
+            'valor_unitario' => 150,
+        ];
+
+        $response = $this->actingAs($this->financeiro)
+            ->put(route('limites.update', $limite), $dados);
+
+        $response->assertRedirect(route('limites.index'));
+        $this->assertDatabaseHas('limites', ['id' => $limite->id] + $dados);
+    }
+
+    /** @test */
+    public function formularios_de_limite_exibem_saldo()
+    {
+        $limite = Limite::factory()->create();
+        $responses = [
+            $this->actingAs($this->financeiro)->get(route('limites.create')),
+            $this->actingAs($this->financeiro)->get(route('limites.edit', $limite)),
+        ];
+
+        foreach ($responses as $response) {
+            $response->assertOk();
+            $response->assertSee('Saldo');
+            $response->assertDontSee('Diferença');
+        }
     }
 
     /** @test */

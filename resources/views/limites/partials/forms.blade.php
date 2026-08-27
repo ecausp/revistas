@@ -96,11 +96,11 @@
             <!-- Linha divisória -->
             <hr class="my-2 border-primary opacity-25">
 
-            <!-- Linha 5: Diferença (resultado) -->
+            <!-- Linha 5: Saldo -->
             <div class="d-flex justify-content-between align-items-center">
-                <span class="text-muted">Valor Total Disponível:</span>
+                <span class="text-muted">Saldo:</span>
                 <span class="fs-5 fw-bold text-success">
-                    <span id="diferenca_valores">0,00</span>
+                    <span id="saldo_valores">0,00</span>
                 </span>
             </div>
         </div>
