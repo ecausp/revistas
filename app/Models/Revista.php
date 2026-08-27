@@ -18,6 +18,10 @@ class Revista extends Model
         "email_revista",
     ];
 
+    protected $hidden = [
+        'centro_despesa',
+    ];
+
     public function solicitantes()
     {
 
@@ -41,7 +45,6 @@ class Revista extends Model
         return self::create([
             'editor' => $request->user()->id,
             'name' => $request->name,
-            'centro_despesa' => $request->centro_despesa,
             'responsavel_centro_despesa' => $responsavel,
             'email_revista' => $request->email_revista,
         ]);
@@ -57,7 +60,6 @@ class Revista extends Model
         $this->update([
             'editor' => $request->user()->id,
             'name' => $request->name,
-            'centro_despesa' => $request->centro_despesa,
             'responsavel_centro_despesa' => $responsaveisString,
             'email_revista' => $request->email_revista,
         ]);

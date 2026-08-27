@@ -21,22 +21,6 @@
 </div>
 
 <div class="mb-1">
-    <label for="centro_despesa" class="form-label">Centro de Despesa </label>
-    <select class="form-control select2" name="centro_despesa" id="centro_despesa" 
-            @unless($isFinanceiro) disabled @endunless
-            required>
-        @if (isset($revista))
-            <option value="{{ $revista->centro_despesa }}" selected>{{ $revista->centro_despesa }}</option>
-        @else
-            <option value="" selected>Centro de despesa...</option>
-        @endif
-        @foreach ($centros_despesas as $centro_despesa)
-            <option value="{{ $centro_despesa['etrhie'] }}">{{ $centro_despesa['etrhie'] }}</option>
-        @endforeach
-    </select>
-</div>
-
-<div class="mb-1">
     <label for="responsavel_centro_despesa" class="form-label">Editor(es)</label>
     <select class="form-control select2" 
             name="responsavel_centro_despesa[]"

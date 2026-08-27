@@ -8,7 +8,6 @@
         Revista: {{ $revista->name }}
     </div>
     <div class="card-body">
-        <p><strong>Centro de Despesa: </strong>{{ $revista->centro_despesa }}</p>
         <p><strong>Editor(es): </strong>
             @foreach (explode(',', $revista->responsavel_centro_despesa) as $editorRevista)
                 {{ \Uspdev\Replicado\Pessoa::dump($editorRevista)['nompesttd'] }} @if (!$loop->last) , @endif

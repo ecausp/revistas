@@ -13,7 +13,7 @@
         <div class="mb-1">
         <label for="revista_id" class="form-label">Revista</label>
         <select class="form-control select2" name="revista_id" id="revista_id" disabled>
-            <option value="{{ $limite->revista->id }}">{{ $limite->revista->name }} - {{ $limite->revista->centro_despesa }}</option>
+            <option value="{{ $limite->revista->id }}">{{ $limite->revista->name }}</option>
              <input type="hidden" name="revista_id" value="{{ $limite->revista->id }}">
         </select>
     </div>
@@ -23,7 +23,7 @@
         <label for="revista_id" class="form-label">Revista</label>
         <select class="form-control select2" name="revista_id" id="revista_id">
             @foreach ($revistas as $revista)
-            <option value="{{ $revista->id }}">{{ $revista->name }} - {{ $revista->centro_despesa }}</option>
+            <option value="{{ $revista->id }}">{{ $revista->name }}</option>
             @endforeach
         </select>
     </div>

@@ -16,7 +16,6 @@
             <thead>
                 <tr>
                     <th>Nome</th>
-                    <th>Centro de Despesas</th>
                     <th>Editor(es)</th>
                     <th>Ações</th>
                 </tr>
@@ -25,7 +24,6 @@
                 @foreach ($revistas as $revista)
                 <tr>
                     <td>{{ $revista->name }}</td>
-                    <td>{{ $revista->centro_despesa }}</td>
                     <td>
                         @foreach (explode(',', $revista->responsavel_centro_despesa) as $editorRevista)
                             {{ \Uspdev\Replicado\Pessoa::dump($editorRevista)['nompesttd'] ?? $editorRevista }} @if (!$loop->last) , @endif

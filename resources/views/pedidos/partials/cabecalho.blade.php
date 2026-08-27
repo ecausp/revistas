@@ -12,9 +12,6 @@
             <p><strong>Solicitante:</strong> {{ $pedido->solicitante->user->name }}</p>
         </div>
         <div class="col-md-6">
-            <p><strong>Centro de Despesa:</strong> {{ $pedido->revista->centro_despesa }} </p>
-        </div>
-        <div class="col-md-6">
             <p><strong>Editor(es):</strong>
                 @foreach (explode(',', $pedido->revista->responsavel_centro_despesa) as $editorRevista)
                     {{ \Uspdev\Replicado\Pessoa::dump($editorRevista)['nompesttd'] }} @if (!$loop->last) , @endif
@@ -41,9 +38,6 @@
         </div>
         <div class="col-md-6">
             <p><strong>Solicitante:</strong> {{ $solicitante->user->name }}</p>
-        </div>
-        <div class="col-md-6">
-            <p><strong>Centro de Despesa:</strong> {{ $solicitante->revista->centro_despesa }} </p>
         </div>
         <div class="col-md-6">
             <p><strong>Editor(es):</strong>

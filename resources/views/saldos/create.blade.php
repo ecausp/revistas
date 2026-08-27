@@ -32,7 +32,7 @@
                 @foreach($revistas as $revista)
                     <option value="{{ $revista->id }}"
                         @if($saldosExistentes->pluck('revista_id')->contains($revista->id)) selected @endif>
-                        {{ $revista->name }} - {{ $revista->centro_despesa }}
+                        {{ $revista->name }}
                     </option>
                 @endforeach
             </select>
