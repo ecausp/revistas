@@ -7,7 +7,6 @@ use App\Models\Solicitante;
 use App\Models\User;
 use App\Models\Saldo;
 use Illuminate\Http\Request;
-use Uspdev\Replicado\Financeiro;
 use Uspdev\Replicado\Pessoa;
 use App\Util\ReplicadoTemp;
 
@@ -16,7 +15,7 @@ class RevistaController extends Controller
 {
     /*
      * Exibe um index com todas as revistas;
-     * Tabela com as colunas [Nome, Centro de Despesas, Responsável pelo Centro de Despesas, Ações]
+     * Tabela com as colunas [Nome, Editor(es), Ações]
      * Acesso exclusivo para usuários com a permissão 'admin-financeiro'
      */
     public function index()
@@ -42,7 +41,6 @@ class RevistaController extends Controller
     }
     /*
      * Exibe um formulario para cadastro de uma nova Revista
-     * Traz do Replicado uma lista com todos centros de despesas
      * Traz do ReplicadoTemp uma lista com todos os servidores e docentes ativos de uma unidade específica
      * Acesso exclusivo para usuários com a permissão 'admin-financeiro'
      */
@@ -50,11 +48,10 @@ class RevistaController extends Controller
     {
         $this->authorize("admin-financeiro");
         
-        $centros_despesas = $this->listarCentrosDespesas();
         $responsaveis_centro_despesa =  $this->listarServidoresDocentes();
         
         \UspTheme::activeUrl('revistas/create');
-        return view('revistas.create', compact('centros_despesas', 'responsaveis_centro_despesa'));
+        return view('revistas.create', compact('responsaveis_centro_despesa'));
     }
 
     /**
@@ -67,7 +64,6 @@ class RevistaController extends Controller
 
         $request->validate([
             'name' => 'required',
-            'centro_despesa' => 'required',
             'responsavel_centro_despesa' => 'required',
             'email_revista' => 'required',
         ]);
@@ -95,7 +91,7 @@ class RevistaController extends Controller
 
     /*
      * Exibe os dados de uma Revista
-     * Os dados exibidos são: Centro de Despesas, Responsável pelo Centro de Despesas e uma tabela de Solicitantes
+     * Os dados exibidos são: editores, e-mail e uma tabela de solicitantes
      * A tabela de Solicitantes tem as seguintes colunas: [Nome, E-mail, Número USP]
      * Traz informacoes do usuario que criou/editou essa revista por ultimo e a data da criacao/edicao
      * Acesso exclusivo para usuários com a permissão 'admin-financeiro'
@@ -118,7 +114,6 @@ class RevistaController extends Controller
 
     /**
      * Carrega o formulário de edição de uma Revista
-     * Traz os dados de centros de despesas do Replicado
      * Traz os dados de servidores e docentes do ReplicadoTemp
      * Acesso exclusivo para usuários com a permissão 'admin-financeiro'
      */
@@ -128,10 +123,9 @@ class RevistaController extends Controller
         $solicitante = Solicitante::Where('user_id', $user->id)->first();
         if($user->hasAnyRole(['admin','financeiro']) || $solicitante != null && $solicitante->revista_id == $revista->id)
         {
-            $centros_despesas = $this->listarCentrosDespesas();
             $responsaveis_centro_despesa =  $this->listarServidoresDocentes();
         
-            return view('revistas.edit', compact('revista', 'centros_despesas','responsaveis_centro_despesa'));
+            return view('revistas.edit', compact('revista', 'responsaveis_centro_despesa'));
         }
         else
         {
@@ -150,7 +144,6 @@ class RevistaController extends Controller
 
         $request->validate([
             'name' => 'required',
-            'centro_despesa' => 'required',
             'responsavel_centro_despesa' => 'required',
             'email_revista' => 'required',
         ]);
@@ -185,11 +178,6 @@ class RevistaController extends Controller
         return redirect()->route('revistas.index');
     }
 
-
-    protected function listarCentrosDespesas()
-    {
-        return Financeiro::ListarCentrosDespesas();
-    }
 
     protected function listarServidoresDocentes()
     {

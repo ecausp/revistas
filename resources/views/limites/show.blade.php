@@ -22,7 +22,7 @@
             </p>
         @endif
         
-        <p><strong>Revista: </strong>{{ $limite->revista->name }} - {{ $limite->revista->centro_despesa }}</p>
+        <p><strong>Revista: </strong>{{ $limite->revista->name }}</p>
         
         {{-- LÓGICA DO PRAZO (Vem da relação agora) --}}
         <p><strong>Prazo: </strong> 

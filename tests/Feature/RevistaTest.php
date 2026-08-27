@@ -63,7 +63,7 @@ private function mockPessoaPadrão()
     /** @test */
     public function admin_acessa_index_e_ve_todas_as_revistas()
     {
-        Revista::factory()->count(3)->create();
+        Revista::factory()->count(3)->create(['centro_despesa' => 'CD-NAO-EXIBIR']);
 
         $this->mockPessoaPadrão();
 
@@ -71,7 +71,17 @@ private function mockPessoaPadrão()
 
         $response->assertOk();
         $response->assertViewHas('revistas');
+        $response->assertDontSee('CD-NAO-EXIBIR');
         $this->assertCount(3, $response->viewData('revistas'));
+    }
+
+    /** @test */
+    public function centro_de_despesa_nao_aparece_na_serializacao_da_revista()
+    {
+        $revista = Revista::factory()->create(['centro_despesa' => 'CD-NAO-EXIBIR']);
+
+        $this->assertArrayNotHasKey('centro_despesa', $revista->toArray());
+        $this->assertSame('CD-NAO-EXIBIR', $revista->centro_despesa);
     }
 
 
@@ -84,7 +94,6 @@ private function mockPessoaPadrão()
 
         $dados = [
             'name' => 'Revista Nova',
-            'centro_despesa' => '1234',
             'responsavel_centro_despesa' => [$codpes],
             'email_revista' => 'nova@usp.br',
         ];
@@ -92,7 +101,10 @@ private function mockPessoaPadrão()
         $response = $this->actingAs($this->adminUser)->post(route('revistas.store'), $dados);
 
         $response->assertRedirect(route('revistas.index'));
-        $this->assertDatabaseHas('revistas', ['name' => 'Revista Nova']);
+        $this->assertDatabaseHas('revistas', [
+            'name' => 'Revista Nova',
+            'centro_despesa' => null,
+        ]);
         $this->assertDatabaseHas('solicitantes', ['user_id' => $usuario->id]);
     }
 
@@ -103,7 +115,6 @@ private function mockPessoaPadrão()
 
         $this->partialMock(RevistaController::class, function ($mock) {
             $mock->shouldAllowMockingProtectedMethods();
-            $mock->shouldReceive('listarCentrosDespesas')->andReturn([]);
             $mock->shouldReceive('listarServidoresDocentes')->andReturn([]);
         });
 
@@ -112,6 +123,7 @@ private function mockPessoaPadrão()
         $response = $this->actingAs($this->adminUser)->get(route('revistas.edit', $revista));
 
         $response->assertOk();
+        $response->assertDontSee('Centro de Despesa');
     }
 
     /** @test */
@@ -119,6 +131,7 @@ private function mockPessoaPadrão()
     {
         $userA = User::factory()->create(['codpes' => 111, 'name' => 'User A']);
         $revista = Revista::factory()->create(['responsavel_centro_despesa' => '111']);
+        $centroDespesaOriginal = (string) $revista->centro_despesa;
         Solicitante::create(['user_id' => $userA->id, 'revista_id' => $revista->id]);
         $userA->givePermissionTo('revistas.revista');
 
@@ -126,7 +139,6 @@ private function mockPessoaPadrão()
 
         $dadosUpdate = [
             'name' => 'Revista Nome Alterado',
-            'centro_despesa' => $revista->centro_despesa,
             'responsavel_centro_despesa' => ['222'],
             'email_revista' => 'novoemail@usp.br',
         ];
@@ -137,6 +149,7 @@ private function mockPessoaPadrão()
         $response->assertRedirect(route('revistas.index'));
 
         $this->assertDatabaseHas('revistas', ['id' => $revista->id, 'responsavel_centro_despesa' => '222']);
+        $this->assertSame($centroDespesaOriginal, $revista->fresh()->centro_despesa);
         $this->assertDatabaseHas('solicitantes', ['user_id' => $userB->id]);
         $this->assertDatabaseMissing('solicitantes', ['user_id' => $userA->id]);
         $this->assertFalse($userA->fresh()->hasPermissionTo('revistas.revista'));
