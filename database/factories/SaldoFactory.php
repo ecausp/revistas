@@ -21,6 +21,7 @@ class SaldoFactory extends Factory
             'recurso_recebido' => $this->faker->randomFloat(2, 1000, 5000),
             'recurso_estagio' => $this->faker->randomFloat(2, 0, 1000),
             'valor_contratado' => 0, // Geralmente começa em 0 até o método atualizaValorContratado ser chamado
+            'observacao' => null,
         ];
     }
 }

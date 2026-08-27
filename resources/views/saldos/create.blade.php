@@ -46,6 +46,7 @@
                         <th class="text-center">Revista</th>
                         <th class="text-center">Recurso recebido</th>
                         <th class="text-center">Recurso reservado para estágio</th>
+                        <th class="text-center">Observação</th>
                         <th class="text-center">Ações</th>
                     </tr>
                 </thead>
@@ -53,7 +54,7 @@
                 @foreach($saldosExistentes as $saldo)
                     <tr data-revista-id="{{ $saldo->revista_id }}">
                         <td>{{ $saldo->revista->name }}</td>
-                        <td colspan="3">
+                        <td colspan="4">
                             {{-- Form de cada linha --}}
                             <form action="{{ route('saldos.store') }}" method="POST" class="d-flex gap-2" onsubmit="return desformatarMoeda(this)">
                                 @csrf
@@ -67,6 +68,9 @@
                                 <input type="text" name="recurso_estagio" class="form-control money mr-3"
                                     value="{{ number_format($saldo->recurso_estagio, 2, ',', '.') }}"
                                     placeholder="0,00">
+
+                                <textarea name="observacao" class="form-control mr-3" rows="1"
+                                    placeholder="Outras fontes de recurso">{{ $saldo->observacao }}</textarea>
 
                                 <button type="submit" class="btn btn-success btn-sm ml-2" title="Salvar">
                                     <i class="fas fa-check"></i>
@@ -109,7 +113,7 @@ $(document).ready(function(){
                 $('#tabela-saldos tbody').append(`
                     <tr data-revista-id="${revistaId}">
                         <td>${revistaName}</td>
-                        <td colspan="3">
+                        <td colspan="4">
                             <form action="{{ route('saldos.store') }}" method="POST" class="d-flex gap-2" onsubmit="return desformatarMoeda(this)">
                                 @csrf
                                 <input type="hidden" name="licitacao_id" value="{{ $licitacao->id }}">
@@ -117,6 +121,7 @@ $(document).ready(function(){
 
                                 <input type="text" name="recurso_recebido" class="form-control money mr-3" placeholder="0,00">
                                 <input type="text" name="recurso_estagio" class="form-control money mr-3" placeholder="0,00">
+                                <textarea name="observacao" class="form-control mr-3" rows="1" placeholder="Outras fontes de recurso"></textarea>
 
                                 <button type="submit" class="btn btn-success btn-sm ml-2">
                                     <i class="fas fa-check"></i>

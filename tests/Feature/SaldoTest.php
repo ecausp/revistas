@@ -29,6 +29,7 @@ class SaldoTest extends TestCase
         $guards = ['web', 'senhaunica'];
         foreach ($guards as $guard) {
             Permission::firstOrCreate(['name' => 'financeiro', 'guard_name' => $guard]);
+            Permission::firstOrCreate(['name' => 'admin', 'guard_name' => $guard]);
             $roleFinan = Role::firstOrCreate(['name' => 'financeiro', 'guard_name' => $guard]);
             $roleFinan->givePermissionTo('financeiro');
         }
@@ -53,6 +54,7 @@ class SaldoTest extends TestCase
             'revista_id' => $this->revista->id,
             'recurso_recebido' => 2000.00,
             'recurso_estagio' => 500.00,
+            'observacao' => 'Receita de inscrições da Pós-Graduação',
         ];
 
         $response = $this->actingAs($this->financeiro)
@@ -63,11 +65,65 @@ class SaldoTest extends TestCase
         $this->assertDatabaseHas('saldos', [
             'licitacao_id' => $this->licitacao->id,
             'revista_id' => $this->revista->id,
-            'recurso_recebido' => 2000.00
+            'recurso_recebido' => 2000.00,
+            'recurso_estagio' => 500.00,
+            'observacao' => 'Receita de inscrições da Pós-Graduação',
         ]);
 
         // Verifica se atualizou o valor_cadastrado na licitação
         $this->assertEquals(2000.00, $this->licitacao->fresh()->valor_cadastrado);
+
+        $saldo = Saldo::where('licitacao_id', $this->licitacao->id)
+            ->where('revista_id', $this->revista->id)
+            ->firstOrFail();
+        $this->actingAs($this->financeiro)
+            ->get(route('saldos.show', $saldo))
+            ->assertOk()
+            ->assertSee('Receita de inscrições da Pós-Graduação');
+    }
+
+    /** @test */
+    public function store_assume_zero_quando_recurso_de_estagio_nao_e_informado()
+    {
+        $dados = [
+            'licitacao_id' => $this->licitacao->id,
+            'revista_id' => $this->revista->id,
+            'recurso_recebido' => 2000.00,
+            'recurso_estagio' => '',
+            'observacao' => 'Outra fonte de recurso',
+        ];
+
+        $response = $this->actingAs($this->financeiro)
+            ->post(route('saldos.store'), $dados);
+
+        $response->assertSessionHas('success');
+        $this->assertDatabaseHas('saldos', [
+            'licitacao_id' => $this->licitacao->id,
+            'revista_id' => $this->revista->id,
+            'recurso_estagio' => 0,
+            'observacao' => 'Outra fonte de recurso',
+        ]);
+    }
+
+    /** @test */
+    public function observacao_e_exibida_em_modal_nas_views_de_licitacao_e_revista()
+    {
+        $saldo = Saldo::factory()->create([
+            'licitacao_id' => $this->licitacao->id,
+            'revista_id' => $this->revista->id,
+            'observacao' => 'Receita de processo seletivo',
+        ]);
+        $views = [
+            'licitacoes.partials.saldos',
+            'revistas.partials.saldos',
+        ];
+
+        foreach ($views as $view) {
+            $response = $this->view($view, ['saldos' => collect([$saldo])]);
+
+            $response->assertSee('data-target="#observacaoSaldoModal' . $saldo->id . '"', false);
+            $response->assertSeeText('Receita de processo seletivo');
+        }
     }
 
     /** @test */
