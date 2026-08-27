@@ -115,8 +115,8 @@
                 </div>
 
                 <div class="linha-valor total-disponivel">
-                    <span>Diferença</span>
-                    <span>R$ <strong id="diferenca_valores" class="valor-zero">0,00</strong></span>
+                    <span>Saldo</span>
+                    <span>R$ <strong id="saldo_valores" class="valor-zero">0,00</strong></span>
                 </div>
             </div>
 
@@ -124,7 +124,7 @@
                  AÇÕES
             ========================== --}}
             <div class="mt-4 text-right">
-                <button type="submit" class="btn btn-success" id="btn-salvar">
+                <button type="submit" class="btn btn-success">
                     Salvar limite
                 </button>
             </div>
@@ -241,7 +241,7 @@ $(document).ready(function () {
                 parseFloat(data.total_limites)
                     .toLocaleString('pt-BR', { minimumFractionDigits: 2 })
             );
-            calcularDiferenca();
+            calcularSaldo();
         });
     }
 
@@ -254,31 +254,30 @@ $(document).ready(function () {
             total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })
         );
 
-        calcularDiferenca();
+        calcularSaldo();
     }
 
-    function calcularDiferenca() {
-    // Mantendo exatamente os nomes que você já usava
-    let base   = parseFloat($('#valor_recurso_financeiro').text().replace(/\./g,'').replace(',','.')) || 0;
-    let usados = parseFloat($('#valor_limites_cadastrados').text().replace(/\./g,'').replace(',','.')) || 0;
-    let pedido = parseFloat($('#valor_total_pedido').text().replace(/\./g,'').replace(',','.')) || 0;
+    function calcularSaldo() {
+        let base   = parseFloat($('#valor_recurso_financeiro').text().replace(/\./g,'').replace(',','.')) || 0;
+        let usados = parseFloat($('#valor_limites_cadastrados').text().replace(/\./g,'').replace(',','.')) || 0;
+        let pedido = parseFloat($('#valor_total_pedido').text().replace(/\./g,'').replace(',','.')) || 0;
 
-    let diff = base - (usados + pedido);
+        let saldo = base - (usados + pedido);
 
-    // 1. Atualiza o texto na tela usando a sua variável 'diff'
-    $('#diferenca_valores').text(
-        diff.toLocaleString('pt-BR', { minimumFractionDigits: 2 })
-    );
+        $('#saldo_valores').text(
+            saldo.toLocaleString('pt-BR', { minimumFractionDigits: 2 })
+        );
 
-    // 2. Trava do botão e cores usando a sua lógica
-    if (diff < 0) {
-        $('#diferenca_valores').removeClass('valor-positivo valor-zero').addClass('valor-negativo');
-        $('#btn-salvar').prop('disabled', true).css('cursor', 'not-allowed');
-    } else {
-        $('#diferenca_valores').removeClass('valor-negativo valor-zero').addClass('valor-positivo');
-        $('#btn-salvar').prop('disabled', false).css('cursor', 'pointer');
+        let saldoElement = $('#saldo_valores');
+        saldoElement.removeClass('valor-positivo valor-negativo valor-zero');
+        if (saldo > 0) {
+            saldoElement.addClass('valor-positivo');
+        } else if (saldo < 0) {
+            saldoElement.addClass('valor-negativo');
+        } else {
+            saldoElement.addClass('valor-zero');
+        }
     }
-}
 
     $('#licitacao_id, #servico_id').on('change', carregarDadosRelacao);
     $('#licitacao_id, #revista_id').on('change', carregarValorRecursoFinanceiro);

@@ -117,7 +117,7 @@ $(document).ready(function() {
                         maximumFractionDigits: 2
                     });
                     $('#valor_total_licitacao').text(valorFormatado);
-                    calcularDiferenca();
+                    calcularSaldo();
                 },
                 error: function() {
                     alert('Erro ao buscar valor total da licitação.');
@@ -138,11 +138,11 @@ $(document).ready(function() {
         });
 
         $('#valor_total_pedido').text(valorTotalFormatado);
-        calcularDiferenca();
+        calcularSaldo();
     }
 
-    // Função para calcular a diferença entre os valores
-    function calcularDiferenca() {
+    // Função para calcular o saldo entre os valores
+    function calcularSaldo() {
         // Pega os valores formatados
         let valorLicitacao = $('#valor_total_licitacao').text();
         let valorPedido = $('#valor_total_pedido').text().replace('-', '').trim();
@@ -153,27 +153,25 @@ $(document).ready(function() {
         let valorPedidoNum = valorPedido ?
             parseFloat(valorPedido.replace(/\./g, '').replace(',', '.')) : 0;
 
-        // Calcula a diferença
-        let diferenca = valorLicitacaoNum - valorPedidoNum;
+        let saldo = valorLicitacaoNum - valorPedidoNum;
 
         // Formata o resultado
-        let diferencaFormatada = diferenca.toLocaleString('pt-BR', {
+        let saldoFormatado = saldo.toLocaleString('pt-BR', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
         });
 
-        // Atualiza o campo da diferença
-        let diferencaElement = $('#diferenca_valores');
-        diferencaElement.text(diferencaFormatada);
+        let saldoElement = $('#saldo_valores');
+        saldoElement.text(saldoFormatado);
 
         // Estiliza conforme o valor
-        diferencaElement.removeClass('valor-positivo valor-negativo valor-zero');
-        if (diferenca > 0) {
-            diferencaElement.addClass('valor-positivo');
-        } else if (diferenca < 0) {
-            diferencaElement.addClass('valor-negativo');
+        saldoElement.removeClass('valor-positivo valor-negativo valor-zero');
+        if (saldo > 0) {
+            saldoElement.addClass('valor-positivo');
+        } else if (saldo < 0) {
+            saldoElement.addClass('valor-negativo');
         } else {
-            diferencaElement.addClass('valor-zero');
+            saldoElement.addClass('valor-zero');
         }
     }
 
@@ -212,43 +210,15 @@ $(document).ready(function() {
     });
 
     // Formata valores antes do submit
-    $('form').on('submit', function(e) {
-        e.preventDefault(); //garantir que o evento é cancelado caso necessário
-
+    $('form').on('submit', function() {
         let quantidade = $('#quantidade').val();
         if (quantidade) $('#quantidade').val(quantidade.replace(/\./g,''));
 
         let valorUnitario = $('#valor_unitario').val();
         if (valorUnitario) $('#valor_unitario').val(valorUnitario.replace(/\./g,'').replace(',','.'));
-
-        let diferenca = parseFloat($('#diferenca_valores').text().replace(/\./g,'').replace(',','.')) || 0;
-        if (diferenca < 0) {
-            mostrarMensagem(
-                'Atenção! O valor total do pedido + limites já cadastrados excede o valor do recurso dessa revista.',
-                'danger'
-            );
-            return false;
-        }
-
-        this.submit();
     });
 
     
 });
-
-
-function mostrarMensagem(mensagem, tipo = 'success') {
-    const alertHtml = `
-        <div class="alert alert-${tipo} alert-dismissible fade show mt-3" role="alert">
-            ${mensagem}
-        </div>
-    `;
-    $('#alert-container').html(alertHtml);
-
-    // Fecha automaticamente após 3 segundos
-    setTimeout(() => {
-        $('.alert').alert('close');
-    }, 3000);
-}
 </script>
 @endsection
