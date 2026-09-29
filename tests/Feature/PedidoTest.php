@@ -116,4 +116,41 @@ class PedidoTest extends TestCase
         $this->actingAs($this->financeiro)->post(route('pedidos.concluido', $pedido));
         $this->assertInstanceOf(Concluido::class, $pedido->fresh()->status);
     }
+
+    /** @test */
+    public function financeiro_pode_enviar_pedido_em_elaboracao_para_analise_da_empresa()
+    {
+        $servico = Servico::factory()->create();
+        $pedido = Pedido::factory()->create([
+            'status' => EmElaboracao::class,
+            'revista_id' => $this->revista->id,
+            'licitacao_id' => $this->licitacao->id,
+        ]);
+
+        $pedido->servicos()->attach($servico->id, [
+            'quantidade' => 1,
+            'valor_unitario' => 10,
+        ]);
+
+        EmpresaLicitacaoServico::factory()->create([
+            'empresa_id' => $this->empresa->id,
+            'servico_id' => $servico->id,
+            'licitacao_id' => $this->licitacao->id,
+        ]);
+
+        $this->actingAs($this->financeiro);
+        $botoes = view('pedidos.partials.botoes', compact('pedido'))->render();
+
+        $this->assertStringContainsString(
+            route('pedidos.analise-empresa', $pedido),
+            $botoes
+        );
+
+        $this->actingAs($this->financeiro)
+            ->post(route('pedidos.analise-empresa', $pedido))
+            ->assertRedirect(route('pedidos.index'));
+
+        $this->assertInstanceOf(EmAnaliseEmpresa::class, $pedido->fresh()->status);
+        Mail::assertSent(PedidoEnviadoParaEmpresaMail::class);
+    }
 }

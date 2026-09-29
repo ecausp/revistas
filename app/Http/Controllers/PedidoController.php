@@ -510,11 +510,11 @@ public function show(Pedido $pedido)
 
     public function paraAnaliseEmpresa(Pedido $pedido)
     {
+        $solicitante = Solicitante::where('user_id', auth()->id())->first();
+        $usuarioPodeEnviar = auth()->user()->hasRole('financeiro')
+            || ($solicitante && $pedido->revista_id === $solicitante->revista_id);
 
-        // só pode ser enviado se o usuário for:
-            // a) solicitante da revista 
-            // b) se a revista do pedido for a revista do usuário
-        if(Solicitante::where('user_id', auth()->id())->exists() && $pedido->revista->id == Solicitante::where('user_id', auth()->id())->first()->revista->id)
+        if($usuarioPodeEnviar)
         {
             // 1. Atualiza o status do pedido
             $pedido->status->transitionTo(EmAnaliseEmpresa::class);
@@ -533,15 +533,12 @@ public function show(Pedido $pedido)
 
             session()->flash('success', 'Pedido enviado por e-mail para os contatos da empresa responsável.');
             
-            // redireciona o usuario:
-            $solicitante = Solicitante::where('user_id', auth()->id())->first();
-            $pedidos = Pedido::where('revista_id', $solicitante->revista_id)->get();  
-            return view('pedidos.index', compact('pedidos'));
+            return redirect()->route('pedidos.index');
         }
 
         else
         {
-            session()->flash('danger', 'Usuário não é solicitante da revista e não pode enviar pedidos para a empresa.');
+            session()->flash('danger', 'Usuário não possui permissão para enviar pedidos para a empresa.');
             return redirect()->route('home');
         }
     }
