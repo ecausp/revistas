@@ -4,11 +4,16 @@
     <!-- se o status do pedido for "em elaboração": -->
     @if($pedido->status == "em_elaboracao")
         <!-- se o usuário for solicitante da revista: -->
-        @if(auth()->user()->can('acesso-revista') && !auth()->user()->can('admin') && ! auth()->user()->hasRole('financeiro'))
-            
+        @if(auth()->user()->can('acesso-revista') && !auth()->user()->can('admin') && !auth()->user()->hasRole('financeiro'))
             <!-- [1] - editar -->
             <a href="{{ route('pedidos.edit', $pedido) }}" class="btn btn-primary"><i class="fas fa-edit"></i>Editar</a>
-        
+        @endif
+
+        <!-- solicitantes da revista e financeiro podem enviar para a empresa -->
+        @if(
+            (auth()->user()->can('acesso-revista') && !auth()->user()->can('admin'))
+            || auth()->user()->hasRole('financeiro')
+        )
             <!-- [3] - enviar para empresa -->
             <form action="{{ route('pedidos.analise-empresa', $pedido) }}" method="POST" class="d-inline">
             @csrf
