@@ -12,8 +12,11 @@
 
 {{-- SUCCESS --}}
 @if (session()->has('success'))
-    <div class="alert alert-success auto-hide" role="alert">
+    <div class="alert alert-success alert-dismissible fade show auto-hide" role="alert">
         {{ session('success') }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Fechar">
+            <span aria-hidden="true">&times;</span>
+        </button>
     </div>
 @endif
 
@@ -29,15 +32,21 @@
 
 {{-- WARNING --}}
 @if (session()->has('warning'))
-    <div class="alert alert-warning auto-hide" role="alert">
+    <div class="alert alert-warning alert-dismissible fade show auto-hide" role="alert">
         {{ session('warning') }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Fechar">
+            <span aria-hidden="true">&times;</span>
+        </button>
     </div>
 @endif
 
 {{-- INFO --}}
 @if (session()->has('info'))
-    <div class="alert alert-info auto-hide" role="alert">
+    <div class="alert alert-info alert-dismissible fade show auto-hide" role="alert">
         {{ session('info') }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Fechar">
+            <span aria-hidden="true">&times;</span>
+        </button>
     </div>
 @endif
 
