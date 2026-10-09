@@ -139,6 +139,19 @@ class LimiteTest extends TestCase
     }
 
     /** @test */
+    public function mensagem_flash_de_limite_e_exibida_apenas_uma_vez()
+    {
+        $mensagem = 'Limite atualizado para teste de mensagem única.';
+
+        $response = $this->actingAs($this->financeiro)
+            ->withSession(['success' => $mensagem])
+            ->get(route('limites.index'));
+
+        $response->assertOk();
+        $this->assertSame(1, substr_count($response->getContent(), $mensagem));
+    }
+
+    /** @test */
     public function total_por_revista_e_licitacao_retorna_soma_correta_via_json()
     {
         // Limite 1: 5 x 100 = 500
