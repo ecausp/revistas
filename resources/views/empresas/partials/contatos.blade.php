@@ -11,11 +11,13 @@
                 <th>Telefone</th>
             </tr>
         </thead>
-        @foreach ($contatos as $contato)
         <tbody>
-            <td>{{ $contato->user->name }}</td>
-            <td>{{ $contato->user->email }}</td>
-            <td>{{ $contato->user->telefone }}</td>
+            @foreach ($contatos as $contato)
+            <tr>
+                <td>{{ $contato->user->name }}</td>
+                <td>{{ $contato->user->email }}</td>
+                <td>{{ $contato->user->telefone }}</td>
+            </tr>
             @endforeach
         </tbody>
     </x-table-simples>

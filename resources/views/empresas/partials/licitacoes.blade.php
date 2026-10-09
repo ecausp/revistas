@@ -3,7 +3,7 @@
     <x-table-simples>
         <thead>
             <tr>
-                <th colspan="3">Licitações</th>
+                <th colspan="6">Licitações</th>
             </tr>
             <tr>
                 <th>Descrição</th>

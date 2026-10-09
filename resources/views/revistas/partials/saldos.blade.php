@@ -3,7 +3,7 @@
     <x-table-simples>
         <thead>
             <tr>
-                <th colspan="3">Recursos Financeiros</th>
+                <th colspan="5">Recursos Financeiros</th>
             </tr>
             <tr>
                 <th class="text-center">Licitação</th>
