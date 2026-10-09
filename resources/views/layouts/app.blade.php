@@ -27,7 +27,10 @@
 <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
 
 <style>
-    /* Seus estilos personalizados */
+    /* Remove o contêiner vazio de informações do DataTables. */
+    .dataTables_wrapper .border-info:empty {
+        display: none !important;
+    }
 </style>
 @endsection
 
