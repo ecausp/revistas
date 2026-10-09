@@ -4,7 +4,10 @@
         <label for="licitacao_id" class="form-label">Licitação</label>
         <select class="form-control select2" name="licitacao_id" id="licitacao_id">
             @foreach ($licitacoes as $licitacao)
-            <option value="{{ $licitacao->id }}">{{ $licitacao->descricao }} - {{ $licitacao->ano }}</option>
+            <option value="{{ $licitacao->id }}"
+                @selected((string) old('licitacao_id', $limite->licitacao_id ?? '') === (string) $licitacao->id)>
+                {{ $licitacao->descricao }} - {{ $licitacao->ano }}
+            </option>
             @endforeach
         </select>
     </div>
@@ -33,7 +36,10 @@
         <label for="servico_id" class="form-label">Serviço</label>
         <select class="form-control select2" name="servico_id" id="servico_id">
             @foreach ($servicos as $servico)
-            <option value="{{ $servico->id }}">{{ $servico->descricao }} - {{ $servico->unidade_medida }}</option>
+            <option value="{{ $servico->id }}"
+                @selected((string) old('servico_id', $limite->servico_id ?? '') === (string) $servico->id)>
+                {{ $servico->descricao }} - {{ $servico->unidade_medida }}
+            </option>
             @endforeach
         </select>
     </div>
@@ -42,7 +48,7 @@
     <div class="mb-1">
         <label for="valor_unitario" class="form-label">Valor Unitário</label>
         <input type="text" class="form-control money" name="valor_unitario" id="valor_unitario"
-            value="{{ old('valor_unitario', isset($limite) ? $limite->valor_unitario : '') }}" placeholder="0,00"
+            value="{{ isset($limite) ? number_format((float) $limite->valor_unitario, 2, ',', '.') : '' }}" placeholder="0,00"
             readonly>
 
 

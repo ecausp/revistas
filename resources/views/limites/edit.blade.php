@@ -83,26 +83,37 @@ TODO: Verificar se o Bootstrap Datepicker funciona com o Laravel USP Theme.
 @parent
 <script>
 $(document).ready(function() {
-    // Função para carregar o valor unitário via AJAX
-    function carregarValorUnitario(servicoId) {
-        if (servicoId) {
-            $.ajax({
-                url: `/servicos/${servicoId}/valor-unitario`,
-                type: 'GET',
-                success: function(data) {
-                    let valorFormatado = parseFloat(data.valor_unitario).toLocaleString('pt-BR', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                    });
+    const urlDadosRelacao = "{{ route('licitacoes-servicos.dados') }}";
 
-                    $('#valor_unitario').val(valorFormatado).prop('readonly', true);
-                    atualizarValorTotal();
-                },
-                error: function() {
-                    alert('Erro ao buscar valor unitário do serviço.');
-                }
-            });
-        }
+    // O valor unitário pertence à relação entre licitação, serviço e empresa vigente.
+    function carregarValorUnitario() {
+        let licitacaoId = $('#licitacao_id').val();
+        let servicoId = $('#servico_id').val();
+
+        if (!licitacaoId || !servicoId) return;
+
+        $.get(urlDadosRelacao, {
+            licitacao_id: licitacaoId,
+            servico_id: servicoId
+        }).done(function(data) {
+            let valor = Number.parseFloat(data.valor_unitario);
+
+            if (!Number.isFinite(valor)) {
+                $('#valor_unitario').val('');
+                atualizarValorTotal();
+                return;
+            }
+
+            $('#valor_unitario').val(valor.toLocaleString('pt-BR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }));
+            atualizarValorTotal();
+        }).fail(function() {
+            $('#valor_unitario').val('');
+            atualizarValorTotal();
+            alert('Não foi encontrado valor unitário para a licitação e o serviço selecionados.');
+        });
     }
 
     // Função para carregar o valor da licitação
@@ -179,8 +190,8 @@ $(document).ready(function() {
     $('.select2').select2({language: "pt-BR"});
 
     // Eventos
-    $('#servico_id').on('select2:select', function(e) {
-        carregarValorUnitario($(this).val());
+    $('#licitacao_id, #servico_id').on('select2:select', function() {
+        carregarValorUnitario();
     });
 
     $('#licitacao_id').on('select2:select', function(e) {
@@ -188,8 +199,8 @@ $(document).ready(function() {
     });
 
     // Carrega valores iniciais se existirem
-    if ($('#servico_id').val()) {
-        carregarValorUnitario($('#servico_id').val());
+    if ($('#licitacao_id').val() && $('#servico_id').val()) {
+        carregarValorUnitario();
     }
     if ($('#licitacao_id').val()) {
         carregarValorLicitacao($('#licitacao_id').val());
