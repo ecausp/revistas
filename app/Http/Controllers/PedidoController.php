@@ -115,7 +115,7 @@ class PedidoController extends Controller
             'quantidades' => 'required|array',
             'quantidades.*' => 'integer|min:1',
             'arquivos' => 'nullable|array',
-            'arquivos.*' => 'nullable|file|mimes:pdf,jpg,jpeg,png,svg,tiff|max:3072',
+            'arquivos.*' => 'nullable|file|mimes:pdf,jpg,jpeg,png,svg,tiff,doc,docx,xls,xlsx|max:3072',
             'descricoes' => 'nullable|array',
             'descricoes.*' => 'required_with:arquivos|string|max:255', 
         ];
@@ -168,7 +168,7 @@ class PedidoController extends Controller
         // Validação (Apenas arquivos e descrições, mantendo a regra de segurança)
         $rules = [
             'arquivos' => 'required|array',
-            'arquivos.*' => 'file|mimes:pdf,jpg,jpeg,png,svg,tiff|max:3072', // 3MB
+            'arquivos.*' => 'file|mimes:pdf,jpg,jpeg,png,svg,tiff,doc,docx,xls,xlsx|max:3072', // 3MB
             'descricoes' => 'required|array',
             'descricoes.*' => 'required|string|max:255',
         ];
