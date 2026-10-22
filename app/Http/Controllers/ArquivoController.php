@@ -12,7 +12,7 @@ class ArquivoController extends Controller
         $request->validate([
             'pedido_id' => 'required|exists:pedidos,id',
             'descricao' => 'required|string|max:255',
-            'arquivo'   => 'required|file|mimes:pdf,jpg,jpeg,png,svg,tiff|max:3072', // 3MB
+            'arquivo'   => 'required|file|mimes:pdf,jpg,jpeg,png,svg,tiff,doc,docx,xls,xlsx|max:3072', // 3MB
         ]);
 
         Arquivo::salvarArquivo(
