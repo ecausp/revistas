@@ -301,29 +301,30 @@ public function show(Pedido $pedido)
         return view('pedidos.show', $viewData);
     }
 
-    // Solicitante
-    if (Solicitante::where('user_id', auth()->id())->exists()) {
-        $solicitante_atual = Solicitante::where('user_id', auth()->id())->first();
-        if ($solicitante_atual->revista_id == $pedido->revista_id) {
-            return view('pedidos.show', $viewData);
-        }
-        session()->flash('danger', 'Esse pedido não pertence à sua revista.');
-        return redirect()->route('home');
-    }
-
-    // Contato
-    if (Contato::where('user_id', auth()->id())->exists()) {
-        $contato = Contato::where('user_id', auth()->id())->first();
+    // Solicitante ou Editor
+        // Solicitante ou Editor da Revista
+    if (Solicitante::where('user_id', auth()->id())->exists() || Revista::where('editor', auth()->id())->exists()) {
         
-        // Verifica se a empresa do contato está na lista de empresas do pedido
-        $empresaNoPedido = $pedido->servicos->flatMap->empresasLicitacoes
-            ->pluck('empresa_id')
-            ->contains($contato->empresa_id);
+        // Verifica se ele tem vínculo como solicitante com a revista DESTE pedido
+        $isSolicitante = Solicitante::where('user_id', auth()->id())
+                            ->where('revista_id', $pedido->revista_id)
+                            ->exists();
 
-        if ($empresaNoPedido) {
+        // Verifica se ele é o editor DESTA revista específica (AQUI ESTÁ A CORREÇÃO)
+        $isEditor = Revista::where('id', $pedido->revista_id)
+                            ->where('editor', auth()->id())
+                            ->exists();
+
+        // Se ele for o solicitante original DO PEDIDO (regra antiga)
+        $isDonoDoPedido = $pedido->solicitante && $pedido->solicitante->user_id == auth()->id();
+
+        // Regra de liberação: Se for editor da revista, solicitante da revista ou o dono do pedido, PODE VER!
+        if ($isEditor || $isSolicitante || $isDonoDoPedido) {
             return view('pedidos.show', $viewData);
         }
-        session()->flash('danger', 'Usuário não possui acesso a esse recurso.');
+        
+        // Se chegou aqui, ele tem acesso a outras revistas, mas não a desta
+        session()->flash('danger', 'Esse pedido não pertence à sua revista.');
         return redirect()->route('home');
     }
 
@@ -863,21 +864,25 @@ public function show(Pedido $pedido)
     /**
      * Retorna a coleção de Pedidos que o usuário logado tem permissão para visualizar.
      */
-private function getPedidosDoUsuario()
+    private function getPedidosDoUsuario()
     {
         $user = auth()->user();
 
         // 1. Admin ou Financeiro (vê todos)
         if ($user->hasRole('admin') || $user->hasRole('financeiro')) {
-
             return Pedido::orderBy('id', 'desc')->get();
         }
 
-        // 2. Solicitante (vê pedidos da sua revista)
-        if (Solicitante::where('user_id', $user->id)->exists()) {
-            $solicitante = Solicitante::where('user_id', $user->id)->first();
+        // 2. Verifica se o usuário tem vínculo como solicitante ou editor
+        $revistasPermitidas = Revista::where(function ($query) use ($user) {
+            $query->where('editor', $user->id)
+                  ->orWhereHas('solicitantes', function ($q) use ($user) {
+                      $q->where('user_id', $user->id);
+                  });
+        })->pluck('id');
 
-            return Pedido::where('revista_id', $solicitante->revista_id)
+        if ($revistasPermitidas->isNotEmpty()) {
+            return Pedido::whereIn('revista_id', $revistasPermitidas)
                          ->orderBy('id', 'desc')
                          ->get();
         }
@@ -886,7 +891,6 @@ private function getPedidosDoUsuario()
         if (Contato::where('user_id', $user->id)->exists()) {
             $contato = Contato::where('user_id', $user->id)->first();
             
-            // Busca IDs dos serviços que esta empresa presta (independente de licitação, para listar histórico geral)
             $servicosDaEmpresa = EmpresaLicitacaoServico::query()
                 ->daEmpresaVigente()
                 ->where('empresa_id', $contato->empresa_id)
@@ -899,9 +903,8 @@ private function getPedidosDoUsuario()
             ->get();
         }
         
-        
-        // 4. Usuário logado sem papel relevante cadastrado
-        return collect(); // Retorna uma coleção vazia
+        // 4. Usuário logado sem papel relevante
+        return collect(); 
     }
 
     /**
