@@ -64,20 +64,36 @@ function formatarMilharesInteiro(numero) {
     return Math.round(numero)
         .toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 }
-
-
-$(document).ready(function() {
-    $('.select2').select2({language: "pt-BR"});
     
-    // --- Lógica para exibir nomes de múltiplos arquivos selecionados (melhoria de usabilidade) ---
+$(document).ready(function() {
+    
+    // 1. Mantém o Select2 dos Serviços
+    $('.select2').select2({
+        language: "pt-BR",
+        width: '100%'
+    });
+
+    // 2. Inicializa a Revista com Select2 (busca ativada por padrão)
+    $('.select2-revista').select2({
+        language: "pt-BR",
+        width: '100%',
+        placeholder: "Digite para buscar...",
+    });
+
+    // 3. Quando o usuário selecionar uma revista, o form envia sozinho
+    $('.select2-revista').on('select2:select', function (e) {
+        $(this).closest('form').submit();
+    });
+    
+    
+    // --- Lógica para exibir nomes de múltiplos arquivos selecionados ---
     $('#arquivos').on('change', function() {
+
         const files = this.files;
         const $display = $('#file-names-display');
-        $display.empty(); // Limpa a lista anterior
+        $display.empty(); 
 
         if (files.length > 0) {
-            
-            // Gerando a estrutura de tabela para exibição de detalhes dos arquivos
             let fileListHtml = `<p><strong>${files.length} arquivo(s) selecionado(s):</strong></p>
                 <table class="table table-sm table-striped small mb-0">
                     <thead>
@@ -102,8 +118,6 @@ $(document).ready(function() {
             fileListHtml += '</tbody></table>';
             $display.html(fileListHtml);
         }
-        
-        // Dispara a checagem do botão salvar, pois os campos de descrição estão agora visíveis
         controlarBotaoSalvar();
     });
     // --- FIM DA LÓGICA DE ARQUIVOS ---

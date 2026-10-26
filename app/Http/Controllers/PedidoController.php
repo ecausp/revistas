@@ -88,16 +88,40 @@ class PedidoController extends Controller
         }
         
         // 3. Busca de Dados
-        // Pega a revista que ele faz parte
-        $revista = Revista::where('id', $solicitante->revista_id)->first();
-        
+        $user = auth()->user();
+        $revistasPermitidas = collect();
+
+        // Busca as revistas onde o usuário é editor ou solicitante
+        if ($user) {
+            $revistasPermitidas = Revista::where(function ($query) use ($user) {
+                $query->where('editor', $user->id)
+                      ->orWhereHas('solicitantes', function ($q) use ($user) {
+                          $q->where('user_id', $user->id);
+                      });
+            })->get();
+        }
+
+        if ($revistasPermitidas->isNotEmpty()) {
+            // Pega o ID da URL, se não existir pega a primeira da lista
+            $revistaSelecionadaId = request('revista_id', $revistasPermitidas->first()->id);
+            $revista = $revistasPermitidas->firstWhere('id', $revistaSelecionadaId) ?? $revistasPermitidas->first();
+            
+            // Sincroniza o objeto solicitante para que o cabeçalho, limites e serviços leiam os dados certos
+            $solicitante->revista_id = $revista->id;
+            $solicitante->setRelation('revista', $revista); 
+        } else {
+            // Fallback para usuários comuns (não financeiros)
+            $revista = Revista::where('id', $solicitante->revista_id)->first();
+        }
+
         // Chama o método auxiliar para buscar e mapear os serviços
         $servicosComLimite = $this->getServicosComLimites($revista, $licitacao);
 
-        return view('pedidos.create', compact('solicitante', 'licitacao', 'servicosComLimite'));
-    }
+        return view('pedidos.create', compact('solicitante', 'licitacao', 'servicosComLimite', 'revistasPermitidas'));
+        }
+    
 
-    /**
+        /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
@@ -121,6 +145,23 @@ class PedidoController extends Controller
         ];
 
         $validated = $request->validate($rules);
+
+        // --- NOVA VALIDAÇÃO DE SEGURANÇA ---
+        $user = auth()->user();
+        if ($user->hasRole('financeiro')) {
+            $temPermissao = Revista::where('id', $validated['revista_id'])
+                ->where(function($q) use ($user) {
+                    $q->where('editor', $user->id) // (Se for codpes, trocar para $user->codpes)
+                      ->orWhereHas('solicitantes', function($q2) use ($user) {
+                          $q2->where('user_id', $user->id);
+                      });
+                })->exists();
+
+            if (!$temPermissao) {
+                abort(403, 'Você não tem permissão para criar pedidos para esta revista.');
+            }
+        }
+        // -----------------------------------
 
         // 2. CRIAÇÃO DO PEDIDO
         $pedido = Pedido::create([
