@@ -301,30 +301,50 @@ public function show(Pedido $pedido)
         return view('pedidos.show', $viewData);
     }
 
-    // Solicitante ou Editor
-        // Solicitante ou Editor da Revista
+    // Solicitante ou Editor 
     if (Solicitante::where('user_id', auth()->id())->exists() || Revista::where('editor', auth()->id())->exists()) {
         
-        // Verifica se ele tem vínculo como solicitante com a revista DESTE pedido
         $isSolicitante = Solicitante::where('user_id', auth()->id())
                             ->where('revista_id', $pedido->revista_id)
                             ->exists();
 
-        // Verifica se ele é o editor DESTA revista específica (AQUI ESTÁ A CORREÇÃO)
         $isEditor = Revista::where('id', $pedido->revista_id)
                             ->where('editor', auth()->id())
                             ->exists();
 
-        // Se ele for o solicitante original DO PEDIDO (regra antiga)
         $isDonoDoPedido = $pedido->solicitante && $pedido->solicitante->user_id == auth()->id();
 
-        // Regra de liberação: Se for editor da revista, solicitante da revista ou o dono do pedido, PODE VER!
         if ($isEditor || $isSolicitante || $isDonoDoPedido) {
             return view('pedidos.show', $viewData);
         }
-        
-        // Se chegou aqui, ele tem acesso a outras revistas, mas não a desta
         session()->flash('danger', 'Esse pedido não pertence à sua revista.');
+        return redirect()->route('home');
+    }
+
+    // --- BLOCO DO CONTATO DA EMPRESA ---
+    if (Contato::where('user_id', auth()->id())->exists()) {
+        $contato = Contato::where('user_id', auth()->id())->first();
+        
+        // Verifica se a empresa do contato tem algum serviço neste pedido
+        // A forma mais segura é verificar na tabela 'pedido_servico' quais serviços estão no pedido,
+        // e depois ver se a empresa do contato fornece algum desses serviços na licitação.
+        
+        $empresaIdDoContato = $contato->empresa_id;
+
+        // Pega os IDs dos serviços do pedido
+        $servicosDoPedido = $pedido->servicos->pluck('id');
+
+        // Verifica se a empresa do contato tem algum desses serviços na licitação do pedido
+        $empresaTemServicoNoPedido = EmpresaLicitacaoServico::where('licitacao_id', $pedido->licitacao_id)
+            ->where('empresa_id', $empresaIdDoContato)
+            ->whereIn('servico_id', $servicosDoPedido)
+            ->exists();
+
+        if ($empresaTemServicoNoPedido) {
+            return view('pedidos.show', $viewData);
+        }
+        
+        session()->flash('danger', 'Sua empresa não tem serviços vinculados a este pedido.');
         return redirect()->route('home');
     }
 
