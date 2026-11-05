@@ -1,20 +1,12 @@
-
 <div class="container mt-5 col pb-3 pl-3">
 
     <!-- se o status do pedido for "em elaboração": -->
     @if($pedido->status == "em_elaboracao")
-        <!-- se o usuário for solicitante da revista: -->
         @if(auth()->user()->can('acesso-revista') && !auth()->user()->can('admin') && !auth()->user()->hasRole('financeiro'))
-            <!-- [1] - editar -->
             <a href="{{ route('pedidos.edit', $pedido) }}" class="btn btn-primary"><i class="fas fa-edit"></i>Editar</a>
         @endif
 
-        <!-- solicitantes da revista e financeiro podem enviar para a empresa -->
-        @if(
-            (auth()->user()->can('acesso-revista') && !auth()->user()->can('admin'))
-            || auth()->user()->hasRole('financeiro')
-        )
-            <!-- [3] - enviar para empresa -->
+        @if((auth()->user()->can('acesso-revista') && !auth()->user()->can('admin')) || auth()->user()->hasRole('financeiro'))
             <form action="{{ route('pedidos.analise-empresa', $pedido) }}" method="POST" class="d-inline">
             @csrf
                 <button type="submit" class="btn btn-success" title="Enviar para análise da empresa.">
@@ -23,55 +15,38 @@
             </form>
         @endif
 
-        <!-- se o usuario for solicitante da revista, admin ou financeiro: -->
         @if((auth()->user()->can('admin') || auth()->user()->can('acesso-revista')) || auth()->user()->hasRole('financeiro'))
-            
-            <!-- [4] - deletar -->
             @include('pedidos.partials.delete')
-        
         @endif
-
     @endif
 
 
     <!-- se o status do pedido for "em analise empresa": -->
     @if($pedido->status == "em_analise_empresa")
-        <!-- se o usuário for contato da empresa: -->
         @if(auth()->user()->can('acesso-empresa') && !auth()->user()->can('admin') && ! auth()->user()->hasRole('financeiro'))
-            <!-- [1] - devolver o pedido-->
-            <!-- Botão que abre o modal para inserir o motivo da devolução-->
             <button type="button" class="btn btn-warning" title="Devolver para a revista" data-bs-toggle="modal" data-bs-target="#modalDevolver">
                 <i class="fas fa-undo-alt"></i> Devolver
             </button>
 
-            <!-- [2] - aprovar o pedido-->
             <form action="{{ route('pedidos.analise-financeiro', $pedido) }}" method="POST" class="d-inline">
             @csrf
                 <button type="submit" class="btn btn-info" title="Enviar para análise do financeiro.">
                     <i class="fas fa-glasses"></i> Aprovar
                 </button>
             </form>
-        
         @endif
     @endif
 
     <!-- se o status do pedido for "em analise financeiro": -->
     @if($pedido->status == "em_analise_financeiro")
-        <!-- se o usuário for do financeiro: -->
         @if(auth()->user()->hasRole('financeiro'))
-            <!-- [1] - devolver o pedido-->
-            <!-- Botão que abre o modal para inserir o motivo da devolução-->
             <button type="button" class="btn btn-warning" title="Devolver para a revista" data-bs-toggle="modal" data-bs-target="#modalDevolver">
                 <i class="fas fa-undo-alt"></i> Devolver
             </button>
 
-            <!-- [2] - aprovar o pedido-->
-            <!-- Botão que abre o modal para inserir os números -->
-            <button type="button" class="btn btn-success" title="Enviar para execução" 
-                    data-bs-toggle="modal" data-bs-target="#modalAprovar">
+            <button type="button" class="btn btn-success" title="Enviar para execução" data-bs-toggle="modal" data-bs-target="#modalAprovar">
                 <i class="fas fa-tools"></i> Aprovar
             </button>
-        
         @endif
     @endif
 
@@ -79,12 +54,33 @@
     @if($pedido->status == "em_execucao")
         <!-- se o usuário for do financeiro: -->
         @if(auth()->user()->hasRole('financeiro'))
-            <!-- Botão para salvar em PDF -->
             <button id="btnPdf" class="btn btn-primary no-print">
                 <i class="fas fa-file-pdf"></i> Salvar em PDF
             </button>
         <!-- se o usuário for da empresa: -->
         @elseif(auth()->user()->can('acesso-empresa') && !auth()->user()->can('admin') && ! auth()->user()->hasRole('financeiro'))
+            
+            {{-- FORMULÁRIO DE UPLOAD (Adicionado aqui) --}}
+            <div class="card mb-3 border-primary">
+                <div class="card-body py-2">
+                    <form action="{{ route('pedidos.store-arquivo', $pedido->id) }}" method="POST" enctype="multipart/form-data" class="d-flex align-items-end gap-2 flex-wrap">
+                        @csrf
+                        <input type="hidden" name="origem" value="empresa">
+                        <div>
+                            <label class="form-label mb-0 small">Anexar Trabalho Realizado</label>
+                            <input class="form-control form-control-sm" type="file" name="arquivos[]" required>
+                        </div>
+                        <div>
+                            <label class="form-label mb-0 small">Descrição</label>
+                            <input type="text" name="descricoes[]" class="form-control form-control-sm" placeholder="Ex: Diagramação final" required>
+                        </div>
+                        <div>
+                            <button type="submit" class="btn btn-sm btn-primary"><i class="fas fa-upload"></i> Enviar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
             <!-- Botão que envia o pedido para conferência-->
             <form action="{{ route('pedidos.conferencia', $pedido) }}" method="POST" class="d-inline">
             @csrf
@@ -97,15 +93,11 @@
 
     <!-- se o status do pedido for "em conferencia": -->
     @if($pedido->status == "em_conferencia")
-        <!-- se o usuário for da revista: -->
         @if(auth()->user()->can('acesso-revista') && !auth()->user()->can('admin') && ! auth()->user()->hasRole('financeiro'))
-        <!-- [1] - devolver o pedido-->
-            <!-- Botão que abre o modal para inserir o motivo da devolução-->
             <button type="button" class="btn btn-success" title="Devolver para a empresa" data-bs-toggle="modal" data-bs-target="#modalDevolver">
                 <i class="fas fa-undo-alt"></i> Devolver
             </button>
-        <!-- [2] - enviar o pedido-->
-        <!-- Botão que envia o pedido para o status 'em pagamento'-->
+
             <form action="{{ route('pedidos.em-pagamento', $pedido) }}" method="POST" class="d-inline">
             @csrf
                 <button type="submit" class="btn btn-info" title="Enviar para Pagamento.">
@@ -115,9 +107,8 @@
         @endif
     @endif
 
-        <!-- se o status do pedido for "em pagamento": -->
+    <!-- se o status do pedido for "em pagamento": -->
     @if($pedido->status == "em_pagamento")
-       <!-- se o usuário for do financeiro: -->
         @if(auth()->user()->hasRole('financeiro'))
             <form action="{{ route('pedidos.concluido', $pedido) }}" method="POST" class="d-inline">
             @csrf

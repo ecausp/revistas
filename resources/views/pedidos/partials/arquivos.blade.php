@@ -19,7 +19,12 @@
             @foreach ($pedido->arquivos as $arquivo)
             <tr style="font-size: .85em">
                 <td>{{ $arquivo->nome }}</td>
-                <td>{{ $arquivo->descricao }}</td>
+                <td>{{ str_replace(['[empresa] ', '[revista] '], '', $arquivo->descricao) }}
+    
+                    @if(str_contains($arquivo->descricao, '[empresa]'))
+                        <span class="badge bg-success ms-2">Trabalho Realizado</span>
+                    @endif
+                </td>
                 <td>
                     <a href="{{ asset('storage/' . $arquivo->caminho) }}" target="_blank"
                         style="width: 30px; height: 30px;"

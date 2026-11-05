@@ -199,62 +199,55 @@ class PedidoController extends Controller
             return redirect()->route('home');
         }
     }
-    
-    /**
-     * Anexa MÚLTIPLOS arquivos a um pedido existente (usado na edição).
-     * O formulário da edição deve mirar esta rota.
-     */
-    public function storeArquivo(Request $request, Pedido $pedido)
+
+         public function storeArquivo(Request $request, Pedido $pedido)
     {
-        // Validação (Apenas arquivos e descrições, mantendo a regra de segurança)
+        // 1. Validação
         $rules = [
             'arquivos' => 'required|array',
-            'arquivos.*' => 'file|mimes:pdf,jpg,jpeg,png,svg,tiff,doc,docx,xls,xlsx|max:3072', // 3MB
+            'arquivos.*' => 'file|mimes:pdf,jpg,jpeg,png,svg,tiff,doc,docx,xls,xlsx|max:3072',
             'descricoes' => 'required|array',
             'descricoes.*' => 'required|string|max:255',
+            'origem' => 'nullable|string',
         ];
 
         $request->validate($rules);
         
         // 2. Processamento dos Arquivos
-        try {
-            $files = $request->file('arquivos');
-            $descriptions = $request->input('descricoes', []); 
-            $arquivos_salvos = 0;
+        $files = $request->file('arquivos');
+        $descriptions = $request->input('descricoes', []); 
+        $origem = $request->input('origem', 'revista'); 
+        $arquivos_salvos = 0;
 
-            // CRÍTICO: Checagem de alinhamento N:N
-            if (count($files) !== count($descriptions)) {
-                 throw new \Exception('Erro de submissão: O número de arquivos e descrições não é compatível.');
-            }
-
-            foreach ($files as $index => $file) {
-                if ($file && $file->isValid()) {
-                    $description = $descriptions[$index]; 
-                    
-                    $fileName = time() . '_' . $file->getClientOriginalName();
-                    // Salva o arquivo no disco 'public'
-                    $path = $file->storeAs('arquivos', $fileName, 'public'); 
-
-                    // Cria o registro Arquivo associado ao Pedido
-                    Arquivo::create([
-                        'pedido_id' => $pedido->id,
-                        'nome' => $fileName,
-                        'descricao' => $description, 
-                        'caminho' => $path,
-                    ]);
-                    $arquivos_salvos++;
-                }
-            }
-            
-            // Resposta de Sucesso (Volta para a tela de edição)
-            return back()->with('success', "$arquivos_salvos arquivo(s) anexado(s) com sucesso!");
-
-        } catch (\Exception $e) {
-            // Resposta de Falha
-            return back()->with('danger', 'Erro ao processar arquivos: ' . $e->getMessage());
+        if (count($files) !== count($descriptions)) {
+            return back()->with('danger', 'Erro de submissão: O número de arquivos e descrições não é compatível.');
         }
-    }
 
+        foreach ($files as $index => $file) {
+            if ($file && $file->isValid()) {
+                $description = $descriptions[$index]; 
+                
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $path = $file->storeAs('arquivos', $fileName, 'public'); 
+
+                Arquivo::create([
+                    'pedido_id' => $pedido->id,
+                    'nome' => $fileName,
+                    // Mantemos a origem na descrição para a badge funcionar depois
+                    'descricao' => "[$origem] " . $description, 
+                    'caminho' => $path,
+                ]);
+                $arquivos_salvos++;
+            }
+        }
+        
+        // 3. HISTÓRICO (Sem envio de e-mail)
+        if ($origem === 'empresa' && $pedido->status instanceof \App\States\EmExecucao) {
+            $pedido->adicionarHistorico($pedido->status, "A empresa anexou o(s) arquivo(s) do trabalho realizado.");
+        }
+
+        return back()->with('success', "$arquivos_salvos arquivo(s) anexado(s) com sucesso!");
+    }
     /**
      * Display the specified resource.
      */
