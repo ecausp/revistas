@@ -211,8 +211,10 @@ class PedidoController extends Controller
             'origem' => 'nullable|string',
         ];
 
-        $request->validate($rules);
-        
+        $request->validate($rules, [
+            'descricoes.*.required' => 'O campo descrição é obrigatório.',
+        ]);
+                
         // 2. Processamento dos Arquivos
         $files = $request->file('arquivos');
         $descriptions = $request->input('descricoes', []); 
@@ -246,7 +248,7 @@ class PedidoController extends Controller
             $pedido->adicionarHistorico($pedido->status, "A empresa anexou o(s) arquivo(s) do trabalho realizado.");
         }
 
-        return back()->with('success', "$arquivos_salvos arquivo(s) anexado(s) com sucesso!");
+        return back()->with('success', "$arquivos_salvos Arquivo(s) anexado(s) com sucesso!");
     }
     /**
      * Display the specified resource.

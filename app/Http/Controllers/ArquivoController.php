@@ -24,6 +24,19 @@ class ArquivoController extends Controller
         return redirect()->back()->with('success', 'Arquivo adicionado com sucesso.');
     }
 
+    public function view($id)
+    {
+        $arquivo = Arquivo::findOrFail($id);
+        
+        $path = storage_path('app/public/' . $arquivo->caminho);
+        
+        if (!file_exists($path)) {
+            abort(404, 'Arquivo físico não encontrado no servidor.');
+        }
+        
+        return response()->download($path, $arquivo->nome);
+    }
+
     public function destroy(Arquivo $arquivo)
     {
         $arquivo->excluirArquivo();

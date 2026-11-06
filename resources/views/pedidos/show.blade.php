@@ -19,30 +19,27 @@
         <div id="tabela-servicos">
           @include('pedidos.partials.servicos')
         </div>
-
         @include('pedidos.partials.arquivos')
-
+        @include('pedidos.partials.trabalho_realizado')
         @include('pedidos.partials.historico')
-
-         @include('pedidos.partials.modal_empenho')
+        @include('pedidos.partials.modal_empenho')
+        
          
-        <div id="chatContainer" class="no-print">
+         <div id="chatContainer" class="no-print">
             @include('chat.view', ['pedido' => $pedido])
         </div>
-
         
-
     </div>
-</div>
-
+</div> 
 
 <div class="mt-3 pl-3">
     <small class="text-muted">Atualizado em {{ date_format($pedido->updated_at, 'd/m/Y H:i') }}
     <br />por {{ $pedido->solicitante->user->name }} - {{ $pedido->solicitante->user->email }}</small>
 </div>
 
-@include('pedidos.partials.botoes')
-
+<div class="row">
+    @include('pedidos.partials.botoes')
+</div>
 <!-- Modal de motivo da devolução do pedido -->
 <div class="modal fade" id="modalDevolver" tabindex="-1" aria-labelledby="modalDevolverLabel" aria-hidden="true"
         data-bs-backdrop="static" data-bs-keyboard="false">
@@ -92,7 +89,8 @@
 
 @section('javascripts_bottom')
     @parent
-    
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -133,4 +131,79 @@
         }
     }
     </style>
+    <script>
+    $(document).ready(function() {
+        // Lógica para exibir nomes de múltiplos arquivos selecionados no card de trabalho realizado
+        $('#arquivos').on('change', function() {
+            const files = this.files;
+            const $display = $('#file-names-display');
+            $display.empty();
+
+            if (files.length > 0) {
+                let fileListHtml = `<p><strong>${files.length} arquivo(s) selecionado(s):</strong></p>
+                    <table class="table table-sm table-striped small mb-0">
+                        <thead>
+                            <tr>
+                                <th style="width: 40%;">Arquivo</th>
+                                <th style="width: 15%;">Tamanho</th>
+                                <th style="width: 45%;">Descrição</th> 
+                            </tr>
+                        </thead>
+                        <tbody>`;
+
+                for (let i = 0; i < files.length; i++) {
+                    const fileSizeMB = (files[i].size / 1024 / 1024).toFixed(2);
+                    
+                    fileListHtml += `<tr>
+                        <td><i class="fas fa-file-alt mr-1"></i> ${files[i].name}</td>
+                        <td>${fileSizeMB} MB</td>
+                        <td><input type="text" name="descricoes[]" class="form-control form-control-sm" placeholder="Obrigatório"></td>
+                    </tr>`;
+                }
+
+                fileListHtml += '</tbody></table>';
+                $display.html(fileListHtml);
+            }
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function() {
+        // Função que verifica o botão
+        function verificarBotao() {
+            let todasPreenchidas = true;
+            let temArquivos = false;
+
+            // Verifica todos os inputs de descrição gerados dinamicamente
+            $('input[name="descricoes[]"]').each(function() {
+                temArquivos = true;
+                if ($(this).val().trim() === '') {
+                    todasPreenchidas = false;
+                    return false; // Sai do loop
+                }
+            });
+
+            // Se não houver arquivos selecionados ou alguma descrição vazia, desabilita
+            if (!temArquivos || !todasPreenchidas) {
+                $('.btn-enviar-trabalho').prop('disabled', true);
+            } else {
+                $('.btn-enviar-trabalho').prop('disabled', false);
+            }
+        }
+
+        // Quando o usuário digita na descrição, verifica
+        $(document).on('input', 'input[name="descricoes[]"]', function() {
+            verificarBotao();
+        });
+
+        // Quando o usuário seleciona o arquivo, espera um pouquinho e verifica
+        $('#arquivos').on('change', function() {
+            setTimeout(verificarBotao, 200); // 200ms para garantir que a tabela foi gerada
+        });
+        
+        // Verifica ao carregar a página
+        setTimeout(verificarBotao, 200);
+    });
+</script>
 @endsection

@@ -59,28 +59,6 @@
             </button>
         <!-- se o usuário for da empresa: -->
         @elseif(auth()->user()->can('acesso-empresa') && !auth()->user()->can('admin') && ! auth()->user()->hasRole('financeiro'))
-            
-            {{-- FORMULÁRIO DE UPLOAD (Adicionado aqui) --}}
-            <div class="card mb-3 border-primary">
-                <div class="card-body py-2">
-                    <form action="{{ route('pedidos.store-arquivo', $pedido->id) }}" method="POST" enctype="multipart/form-data" class="d-flex align-items-end gap-2 flex-wrap">
-                        @csrf
-                        <input type="hidden" name="origem" value="empresa">
-                        <div>
-                            <label class="form-label mb-0 small">Anexar Trabalho Realizado</label>
-                            <input class="form-control form-control-sm" type="file" name="arquivos[]" required>
-                        </div>
-                        <div>
-                            <label class="form-label mb-0 small">Descrição</label>
-                            <input type="text" name="descricoes[]" class="form-control form-control-sm" placeholder="Ex: Diagramação final" required>
-                        </div>
-                        <div>
-                            <button type="submit" class="btn btn-sm btn-primary"><i class="fas fa-upload"></i> Enviar</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
             <!-- Botão que envia o pedido para conferência-->
             <form action="{{ route('pedidos.conferencia', $pedido) }}" method="POST" class="d-inline">
             @csrf
