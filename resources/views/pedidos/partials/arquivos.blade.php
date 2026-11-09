@@ -19,14 +19,16 @@
             @foreach ($pedido->arquivos as $arquivo)
             <tr style="font-size: .85em">
                 <td>{{ $arquivo->nome }}</td>
-                <td>{{ $arquivo->descricao }}</td>
+                <td>{{ str_replace(['[empresa] ', '[revista] '], '', $arquivo->descricao) }}
+    
+                    @if(str_contains($arquivo->descricao, '[empresa]'))
+                        <span class="badge badge-success ms-2">Trabalho Realizado</span>
+                    @endif
+                </td>
                 <td>
-                    <a href="{{ asset('storage/' . $arquivo->caminho) }}" target="_blank"
-                        style="width: 30px; height: 30px;"
-                        class="btn btn-primary btn-sm d-inline-flex align-items-center justify-content-center"> 
-                        <i class="fas fa-eye"></i>
-                    </a>
-
+                        <a href="{{ route('arquivos.visualizar', $arquivo->id) }}" target="_blank" class="btn btn-sm btn-primary" title="Visualizar">
+                            <i class="fas fa-eye"></i>
+                        </a>
                     @php
                         // Verifica se a ROTA ATUAL é a de EDIÇÃO (pedidos.edit)
                         $isEditPage = Route::is('pedidos.edit');
